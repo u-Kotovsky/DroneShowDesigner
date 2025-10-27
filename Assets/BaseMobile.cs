@@ -62,23 +62,26 @@ public class BaseMobile : MonoBehaviour
     
     public void WriteDmxRotation(int offset, Vector3 rotation, bool flipYtoZ = false)
     {
-        xRotationCoarse = Utility.GetCoarse(rotation.x, MinAngle, MaxAngle);
-        xRotationFine = Utility.GetFine(rotation.x, MinAngle, MaxAngle);
+        var xRotationCoarseFine = CoarseFineChannelSet.GetCoarseFineChannelRepresentation(Mathf.InverseLerp(MinAngle, MaxAngle, rotation.x));
+        xRotationCoarse = xRotationCoarseFine.coarse;
+        xRotationFine = xRotationCoarseFine.fine;
         
-        yRotationCoarse = Utility.GetCoarse(rotation.y, MinAngle, MaxAngle);
-        yRotationFine = Utility.GetFine(rotation.y, MinAngle, MaxAngle);
+        var yRotationCoarseFine = CoarseFineChannelSet.GetCoarseFineChannelRepresentation(Mathf.InverseLerp(MinAngle, MaxAngle, rotation.y));
+        yRotationCoarse = yRotationCoarseFine.coarse;
+        yRotationFine = yRotationCoarseFine.fine;
         
-        zRotationCoarse = Utility.GetCoarse(rotation.z, MinAngle, MaxAngle);
-        zRotationFine = Utility.GetFine(rotation.z, MinAngle, MaxAngle);
+        var zRotationCoarseFine = CoarseFineChannelSet.GetCoarseFineChannelRepresentation(Mathf.InverseLerp(MinAngle, MaxAngle, rotation.z));
+        zRotationCoarse = zRotationCoarseFine.coarse;
+        zRotationFine = zRotationCoarseFine.fine;
         
-        Buffer[offset] = xRotationCoarse;
-        Buffer[offset + 1] = xRotationFine;
+        Buffer[offset + 1] = xRotationCoarse;
+        Buffer[offset] = xRotationFine;
     
-        Buffer[offset + (flipYtoZ ? 4 : 2)] = yRotationCoarse;
-        Buffer[offset + (flipYtoZ ? 5 : 3)] = yRotationFine;
+        Buffer[offset + (flipYtoZ ? 4 : 3)] = yRotationCoarse;
+        Buffer[offset + (flipYtoZ ? 5 : 2)] = yRotationFine;
     
-        Buffer[offset + (flipYtoZ ? 2 : 4)] = zRotationCoarse;
-        Buffer[offset + (flipYtoZ ? 3 : 5)] = zRotationFine;
+        Buffer[offset + (flipYtoZ ? 2 : 5)] = zRotationCoarse;
+        Buffer[offset + (flipYtoZ ? 3 : 4)] = zRotationFine;
     }
     #endregion
     
