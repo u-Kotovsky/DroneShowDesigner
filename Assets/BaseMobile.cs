@@ -48,14 +48,14 @@ public class BaseMobile : MonoBehaviour
     #endregion
 
     #region Rotation
-    private byte xRotationCoarse;
-    private byte xRotationFine;
+    protected byte xRotationCoarse;
+    protected byte xRotationFine;
 
-    private byte yRotationCoarse;
-    private byte yRotationFine;
+    protected byte yRotationCoarse;
+    protected byte yRotationFine;
 
-    private byte zRotationCoarse;
-    private byte zRotationFine;
+    protected byte zRotationCoarse;
+    protected byte zRotationFine;
 
     protected float MinAngle = -180;
     protected float MaxAngle = 180;

@@ -12,28 +12,33 @@ public class Utility
         // Map from 0-1 to target range
         return toMin + (normalized * (toMax - toMin));
     }
-
-    public static byte GetCoarse(float value, float minValue = -800, float maxValue = 800)
+    
+    // I don't know what am I doing okay
+    public static byte GetCoarse(float input, float minValue = -800, float maxValue = 800)
     {
-        value = Mathf.Clamp(value, minValue, maxValue);
-            
-        float normalized = Mathf.InverseLerp(minValue, maxValue, value);
-        int scaledValue = (int)(normalized * 65535.0f); // Scale to 16-bit range (0-65535)
-        byte coarse = (byte)(scaledValue / 256);
-        //int coarse = scaledValue >> 8;  // Divide by 256 using bit shift
-
+        // 1) clamp
+        input = Mathf.Clamp(input, minValue, maxValue);
+        // 2) normalize
+        float normalized = Mathf.InverseLerp(minValue, maxValue, input);
+        // 3) scale
+        uint value = (uint)(normalized * ushort.MaxValue);
+        // 4) get upper byte
+        float coarse = value >> 8;
+        // 5) return byte value
         return (byte)coarse;
     }
 
-    public static byte GetFine(float value, float minValue = -800, float maxValue = 800)
+    public static byte GetFine(float input, float minValue = -800, float maxValue = 800)
     {
-        value = Mathf.Clamp(value, minValue, maxValue);
-            
-        float normalized = Mathf.InverseLerp(minValue, maxValue, value);
-        int scaledValue = (int)(normalized * 65535.0f); // Scale to 16-bit range (0-65535)
-        byte fine = (byte)(scaledValue % 256);
-        //int fine = scaledValue & 0xFF;  // Get remainder using bit mask
-
+        // 1) clamp
+        input = Mathf.Clamp(input, minValue, maxValue);
+        // 2) normalize
+        float normalized = Mathf.InverseLerp(minValue, maxValue, input);
+        // 3) scale
+        uint value = (uint)(normalized * ushort.MaxValue);
+        // 4) get upper byte
+        float fine = value & 0xFF;
+        // 5) return byte value
         return (byte)fine;
     }
 }
