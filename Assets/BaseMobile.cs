@@ -36,7 +36,7 @@ public class BaseMobile : MonoBehaviour
         zPositionCoarse = Utility.GetCoarse(position.z, MinPosition, MaxPosition);
         zPositionFine = Utility.GetFine(position.z, MinPosition, MaxPosition);
         
-        Buffer[offset] = xPositionCoarse;
+        Buffer[offset + 0] = xPositionCoarse;
         Buffer[offset + 1] = xPositionFine;
     
         Buffer[offset + (flipYtoZ ? 4 : 2)] = yPositionCoarse;
@@ -74,14 +74,14 @@ public class BaseMobile : MonoBehaviour
         zRotationCoarse = zRotationCoarseFine.coarse;
         zRotationFine = zRotationCoarseFine.fine;
         
-        Buffer[offset + 1] = xRotationCoarse;
-        Buffer[offset] = xRotationFine;
+        Buffer[offset + 0] = xRotationCoarse;
+        Buffer[offset + 1] = xRotationFine;
     
-        Buffer[offset + (flipYtoZ ? 4 : 3)] = yRotationCoarse;
-        Buffer[offset + (flipYtoZ ? 5 : 2)] = yRotationFine;
+        Buffer[offset + (flipYtoZ ? 4 : 2)] = yRotationCoarse;
+        Buffer[offset + (flipYtoZ ? 5 : 3)] = yRotationFine;
     
-        Buffer[offset + (flipYtoZ ? 2 : 5)] = zRotationCoarse;
-        Buffer[offset + (flipYtoZ ? 3 : 4)] = zRotationFine;
+        Buffer[offset + (flipYtoZ ? 2 : 4)] = zRotationCoarse;
+        Buffer[offset + (flipYtoZ ? 3 : 5)] = zRotationFine;
     }
     #endregion
     
