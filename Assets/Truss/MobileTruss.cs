@@ -13,6 +13,16 @@ namespace Truss
             MinAngle = -270;
             MaxAngle = 270;
         }
+
+        public float GetMaxPosition()
+        {
+            return MaxPosition;
+        }
+
+        public float GetMaxAngle()
+        {
+            return MaxAngle;
+        }
         
         public new byte[] GetDmxData()
         {
