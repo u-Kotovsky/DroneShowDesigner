@@ -39,6 +39,9 @@ public class FixtureSpawnManager : MonoBehaviour
             SpawnLightingDrones();
         if (useMobileTruss)
             SpawnMobileTruss();
+        
+        Application.targetFrameRate = 60;
+        Application.runInBackground = true;
     }
 
     private void Update()
