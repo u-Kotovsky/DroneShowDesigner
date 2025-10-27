@@ -126,6 +126,7 @@ public class FixtureSpawnManager : MonoBehaviour
                     trussSwapTimer = 0;
                     currentTrussPreset = nextTrussPreset;
                     nextTrussPreset++;
+                    trussState = TrussState.WaitingForTimer;
                     if (nextTrussPreset >= trussPresets.Length) nextTrussPreset = 0;
                 }
                 break;
