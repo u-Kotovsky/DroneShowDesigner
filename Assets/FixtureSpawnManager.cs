@@ -115,7 +115,7 @@ public class FixtureSpawnManager : MonoBehaviour
     #region Mobile Truss
     private void WriteTrussSpecialData(byte[] buffer)
     {
-        buffer[6] = 255;
+        buffer[5] = 255;
     }
         
     public void SpawnMobileTruss()
