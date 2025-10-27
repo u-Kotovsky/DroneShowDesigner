@@ -8,6 +8,8 @@ namespace Truss
 
             MinPosition = -50;
             MaxPosition = 50;
+            MinAngle = -270;
+            MaxAngle = 270;
         }
         
         public new byte[] GetDmxData()
