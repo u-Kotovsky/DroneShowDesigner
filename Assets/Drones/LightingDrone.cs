@@ -1,3 +1,4 @@
+using UnityEditor;
 using UnityEngine;
 
 namespace Drones
@@ -43,6 +44,41 @@ namespace Drones
             WriteDmxPosition(0, transform.position, true);
             WriteDmxColor(color);
             return Buffer;
+        }
+        
+        [CanEditMultipleObjects]
+        [CustomEditor(typeof(LightingDrone))]
+        public class LightingDrone_Editor : Editor
+        {
+            private bool updateOnValidate = true;
+            private Color color = Color.black;
+            private LightingDrone drone;
+            
+            public override void OnInspectorGUI()
+            {
+                base.OnInspectorGUI();
+                
+                if (drone == null) drone = (LightingDrone)target;
+                
+                GUILayout.Label("Editor-only preview features");
+                
+                updateOnValidate = EditorGUILayout.Toggle("Update on Validate", updateOnValidate);
+                
+                color = EditorGUILayout.ColorField("Color", color);
+                
+                if (updateOnValidate)
+                    WriteDataToDrone();
+
+                if (GUILayout.Button("SetPyroEffect"))
+                {
+                    WriteDataToDrone();
+                }
+            }
+
+            private void WriteDataToDrone()
+            {
+                drone.color = color;
+            }
         }
     }
 }

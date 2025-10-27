@@ -13,7 +13,7 @@ namespace Drones
     public class DroneNavigation : MonoBehaviour
     {
         private BaseDrone drone;
-        private DroneNavigationState state = DroneNavigationState.WaitingForTimer;
+        private DroneNavigationState state = DroneNavigationState.None;
         private float timer;
         
         private Vector3 lastPosition;
@@ -23,7 +23,7 @@ namespace Drones
         {
             drone = GetComponent<BaseDrone>();
             
-            lastPosition = transform.position;
+            lastPosition = transform.localPosition;
         }
 
         private void Update()
@@ -51,14 +51,14 @@ namespace Drones
                     break;
                 case DroneNavigationState.UpdatingPosition:
                     timer += Time.deltaTime;
-                    transform.position = Vector3.Lerp(lastPosition, nextPosition, 
+                    transform.localPosition = Vector3.Lerp(lastPosition, nextPosition, 
                         Utility.MapRange(timer, 0, 5, 0, 1));
                     
                     if (timer >= 5)
                     {
                         timer = 0;
                         state = DroneNavigationState.WaitingForTimer;
-                        transform.position = nextPosition;
+                        transform.localPosition = nextPosition;
                         lastPosition = nextPosition;
                         try
                         {

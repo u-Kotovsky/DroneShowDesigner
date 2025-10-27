@@ -39,9 +39,26 @@ public class FixtureSpawnManager : MonoBehaviour
             SpawnLightingDrones();
         if (useMobileTruss)
             SpawnMobileTruss();
-        
+
         Application.targetFrameRate = 60;
-        Application.runInBackground = true;
+        Application.runInBackground = true; // 31
+        
+        lightingDronePool[0].transform.parent.localPosition = new Vector3(-15, 20, 50);
+        
+        int counter = 0;
+        for (var i = 0; i < 500; i++)
+        {
+            for (int j = 0; j < 32; j++)
+            {
+                var drone = lightingDronePool[counter];
+                
+                drone.transform.localPosition = new Vector3(j, i, 0);
+                drone.GetComponent<LightingDrone>().color = Color.white;
+                
+                counter++;
+            }
+        }
+        
     }
 
     private void Update()
