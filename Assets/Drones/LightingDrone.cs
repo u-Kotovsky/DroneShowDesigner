@@ -5,6 +5,7 @@ namespace Drones
     public class LightingDrone : BaseDrone
     {
         #region Color
+        private static readonly int BaseColor = Shader.PropertyToID("_BaseColor");
         private byte r;
         private byte g;
         private byte b;
@@ -13,35 +14,35 @@ namespace Drones
 
         public void WriteDmxColor(Color value)
         {
-            r = (byte)MapRange(value.r, 0, 1, 0, 255);
-            g = (byte)MapRange(value.g, 0, 1, 0, 255);
-            b = (byte)MapRange(value.b, 0, 1, 0, 255);
+            r = (byte)Utility.MapRange(value.r, 0, 1, 0, 255);
+            g = (byte)Utility.MapRange(value.g, 0, 1, 0, 255);
+            b = (byte)Utility.MapRange(value.b, 0, 1, 0, 255);
             
-            buffer[6] = r;
-            buffer[7] = g;
-            buffer[8] = b;
+            Buffer[6] = r;
+            Buffer[7] = g;
+            Buffer[8] = b;
             
-            if (droneRenderers == null) return;
-            foreach (var droneRenderer in droneRenderers)
+            if (DroneRenderers == null) return;
+            foreach (var droneRenderer in DroneRenderers)
             {
                 if (droneRenderer == null || droneRenderer.sharedMaterial == null)
                     continue;
                 
-                droneRenderer.sharedMaterial.SetColor("_BaseColor", color);
+                droneRenderer.sharedMaterial.SetColor(BaseColor, color);
             }
         }
         #endregion
         
         private void Awake()
         {
-            buffer = new byte[9]; // 9 Channels
+            Buffer = new byte[9];
         }
         
-        public byte[] GetDmxData()
+        public new byte[] GetDmxData()
         {
-            WriteDmxPosition(transform.position);
+            WriteDmxPosition(0, transform.position, true);
             WriteDmxColor(color);
-            return buffer;
+            return Buffer;
         }
     }
 }

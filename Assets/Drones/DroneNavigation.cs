@@ -14,19 +14,19 @@ namespace Drones
     {
         private BaseDrone drone;
         private DroneNavigationState state = DroneNavigationState.WaitingForTimer;
-        private float timer = 0;
+        private float timer;
         
         private Vector3 lastPosition;
         private Vector3 nextPosition;
     
-        void Start()
+        private void Start()
         {
             drone = GetComponent<BaseDrone>();
             
             lastPosition = transform.position;
         }
 
-        void Update()
+        private void Update()
         {
             switch (state)
             {
@@ -52,7 +52,8 @@ namespace Drones
                 case DroneNavigationState.UpdatingPosition:
                     timer += Time.deltaTime;
                     transform.position = Vector3.Lerp(lastPosition, nextPosition, 
-                        BaseDrone.MapRange(timer, 0, 5, 0, 1));
+                        Utility.MapRange(timer, 0, 5, 0, 1));
+                    
                     if (timer >= 5)
                     {
                         timer = 0;
@@ -75,9 +76,7 @@ namespace Drones
 
         private Vector3 NextRandomPosition()
         {
-            Vector3 position = new Vector3(Random.Range(-22, 22), Random.Range(1, 4), Random.Range(-22, 22));
-            
-            return position;
+            return new Vector3(Random.Range(-22, 22), Random.Range(1, 4), Random.Range(-22, 22));
         }
     }
 }

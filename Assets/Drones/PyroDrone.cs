@@ -7,38 +7,39 @@ namespace Drones
         private byte pitch;
         private byte yaw;
         private byte roll;
-        private readonly float minAngle = -180;
-        private readonly float maxAngle = 180;
         
         private byte index = 0;
         
         private void Awake()
         {
-            buffer = new byte[10]; // 10 Channels
+            Buffer = new byte[10];
+            MinAngle = -180;
+            MaxAngle = 180;
         }
 
         public void WriteDmxRotation(Vector3 eulerAngles)
         {
-            pitch = (byte)MapRange(eulerAngles.x, 0, 1, minAngle, maxAngle);
-            yaw = (byte)MapRange(eulerAngles.y, 0, 1, minAngle, maxAngle);
-            roll = (byte)MapRange(eulerAngles.z, 0, 1, minAngle, maxAngle);
+            pitch = (byte)Utility.MapRange(eulerAngles.x, 0, 1, MinAngle, MaxAngle);
+            yaw = (byte)Utility.MapRange(eulerAngles.y, 0, 1, MinAngle, MaxAngle);
+            roll = (byte)Utility.MapRange(eulerAngles.z, 0, 1, MinAngle, MaxAngle);
             
-            buffer[6] = pitch;
-            buffer[7] = yaw;
-            buffer[8] = roll;
+            Buffer[6] = pitch;
+            Buffer[7] = yaw;
+            Buffer[8] = roll;
         }
 
         public void WriteDmxIndex(byte value)
         {
-            buffer[9] = value;
+            Buffer[9] = value;
         }
 
-        public byte[] GetDmxData()
+        public new byte[] GetDmxData()
         {
-            WriteDmxPosition(transform.position);
+            WriteDmxPosition(0, transform.position, true);
             WriteDmxRotation(transform.rotation.eulerAngles);
             WriteDmxIndex(index);
-            return buffer;
+            
+            return Buffer;
         }
     }
 }
