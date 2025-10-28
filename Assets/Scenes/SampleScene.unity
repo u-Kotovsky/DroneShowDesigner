@@ -566,10 +566,10 @@ MonoBehaviour:
   lightingDroneSpawnCount: 1000
   pyroDroneSpawnCount: 16
   droneMargin: 1
-  usePyroDrone: 0
+  usePyroDrone: 1
   useLightingDrone: 0
   useMobileTruss: 1
-  useMobileLight: 1
+  useMobileLight: 0
   mobileTrussPrefab: {fileID: 754546245766397386, guid: 530ff6db3877f4c4ba9e49fc34329193, type: 3}
   mobileTrussPool: []
   mobileTrussSpawnCount: 12
