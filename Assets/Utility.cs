@@ -27,7 +27,7 @@ public class Utility
         uint value = (uint)(normalized * ushort.MaxValue);
         // 4) get upper byte
         double coarse = value >> 8;
-        Debug.Log($"input {input} {normalized} {value} [{minValue} {maxValue}] fine {coarse}");
+        //Debug.Log($"input {input} {normalized} {value} [{minValue} {maxValue}] fine {coarse}");
         // 5) return byte value
         return (byte)coarse;
     }
@@ -42,7 +42,7 @@ public class Utility
         uint value = (uint)(normalized * ushort.MaxValue);
         // 4) get upper byte
         double fine = value & 0xFF;
-        Debug.Log($"input {input} {normalized} {value} [{minValue} {maxValue}] fine {fine}");
+        //Debug.Log($"input {input} {normalized} {value} [{minValue} {maxValue}] fine {fine}");
         // 5) return byte value
         return (byte)fine;
     }

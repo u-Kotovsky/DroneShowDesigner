@@ -99,7 +99,7 @@ public class FixtureSpawnManager : MonoBehaviour
         {
             case TrussState.WaitingForTimer:
                 trussSwapTimer += Time.deltaTime;
-                if (trussSwapTimer >= 5)
+                if (trussSwapTimer >= 2)
                 {
                     trussSwapTimer = 0;
                     trussState = TrussState.Moving;
@@ -113,15 +113,15 @@ public class FixtureSpawnManager : MonoBehaviour
                     mobileTrussPool[i].transform.localPosition = Vector3.Lerp(
                         trussPresets[currentTrussPreset][i].GetPosition(), 
                         trussPresets[nextTrussPreset][i].GetPosition(), 
-                        Utility.MapRange(trussSwapTimer, 0, 5, 0, 1));
+                        Utility.MapRange(trussSwapTimer, 0, 2, 0, 1));
                     
                     mobileTrussPool[i].transform.localRotation = Quaternion.Slerp(
                         trussPresets[currentTrussPreset][i].GetRotation(),
                         trussPresets[nextTrussPreset][i].GetRotation(), 
-                        Utility.MapRange(trussSwapTimer, 0, 5, 0, 1));
+                        Utility.MapRange(trussSwapTimer, 0, 2, 0, 1));
                 }
                 
-                if (trussSwapTimer >= 7.5f)
+                if (trussSwapTimer >= 2f)
                 {
                     trussSwapTimer = 0;
                     currentTrussPreset = nextTrussPreset;
