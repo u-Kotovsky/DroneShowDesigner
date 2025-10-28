@@ -1,68 +1,66 @@
 using UnityEngine;
 
-public class TrussPreset
+namespace Truss
 {
-    public byte xPositionCoarse;
-    public byte xPositionFine;
+    public class TrussPreset
+    {
+        private byte xPositionCoarse;
+        private byte xPositionFine;
     
-    public byte yPositionCoarse;
-    public byte yPositionFine;
+        private byte yPositionCoarse;
+        private byte yPositionFine;
     
-    public byte zPositionCoarse;
-    public byte zPositionFine;
+        private byte zPositionCoarse;
+        private byte zPositionFine;
     
-    public byte xRotationCoarse;
-    public byte xRotationFine;
+        private byte xRotationCoarse;
+        private byte xRotationFine;
     
-    public byte yRotationCoarse;
-    public byte yRotationFine;
+        private byte yRotationCoarse;
+        private byte yRotationFine;
     
-    public byte zRotationCoarse;
-    public byte zRotationFine;
+        private byte zRotationCoarse;
+        private byte zRotationFine;
 
-    public TrussPreset() { }
+        public TrussPreset() { }
 
-    public TrussPreset(
-        byte xpc, byte xpf,
-        byte ypc, byte ypf,
-        byte zpc, byte zpf,
+        public TrussPreset(
+            byte xpc, byte xpf,
+            byte ypc, byte ypf,
+            byte zpc, byte zpf,
         
-        byte xrc, byte xrf,
-        byte yrc, byte yrf,
-        byte zrc, byte zrf)
-    {
-        this.xPositionCoarse = xpc;
-        this.xPositionFine = xpf;
-        this.yPositionCoarse = ypc;
-        this.yPositionFine = ypf;
-        this.zPositionCoarse = zpc;
-        this.zPositionFine = zpf;
-        this.xRotationCoarse = xrc;
-        this.xRotationFine = xrf;
-        this.yRotationCoarse = yrc;
-        this.yRotationFine = yrf;
-        this.zRotationCoarse = zrc;
-        this.zRotationFine = zrf;
-    }
+            byte xrc, byte xrf,
+            byte yrc, byte yrf,
+            byte zrc, byte zrf)
+        {
+            xPositionCoarse = xpc;
+            xPositionFine = xpf;
+            yPositionCoarse = ypc;
+            yPositionFine = ypf;
+            zPositionCoarse = zpc;
+            zPositionFine = zpf;
+            xRotationCoarse = xrc;
+            xRotationFine = xrf;
+            yRotationCoarse = yrc;
+            yRotationFine = yrf;
+            zRotationCoarse = zrc;
+            zRotationFine = zrf;
+        }
 
-    public Vector3 GetPosition()
-    {
-        return new Vector3(
-            Utility.GetValueFromCoarseFine(xPositionCoarse, xPositionFine, -50, 50),
-            Utility.GetValueFromCoarseFine(yPositionCoarse, yPositionFine, -50, 50),
-            Utility.GetValueFromCoarseFine(zPositionCoarse, zPositionFine, -50, 50));
-    }
+        public Vector3 GetPosition()
+        {
+            return new Vector3(
+                Utility.GetValueFromCoarseFine(xPositionCoarse, xPositionFine, -50, 50),
+                Utility.GetValueFromCoarseFine(yPositionCoarse, yPositionFine, -50, 50),
+                Utility.GetValueFromCoarseFine(zPositionCoarse, zPositionFine, -50, 50));
+        }
 
-    public Quaternion GetRotation()
-    {
-        // IT FUCKIN WORKS BUT ONLY IN UNITY, DMX DATA THAT SENT IS MESSED UP
-        //return new Vector3(
-        //    Utility.GetValueFromCoarseFine(xRotationCoarse, xRotationFine, -270, 270),
-        //    Utility.GetValueFromCoarseFine(yRotationCoarse, yRotationFine, -270, 270),
-        //    Utility.GetValueFromCoarseFine(zRotationCoarse, zRotationFine, -270, 270)) * 540;
-        return Quaternion.Euler(new Vector3(
-            Utility.GetValueFromCoarseFine(xRotationCoarse, xRotationFine),
-            Utility.GetValueFromCoarseFine(yRotationCoarse, yRotationFine),
-            Utility.GetValueFromCoarseFine(zRotationCoarse, zRotationFine)) * 540);
+        public Quaternion GetRotation()
+        {
+            return Quaternion.Euler(new Vector3(
+                Utility.GetValueFromCoarseFine(xRotationCoarse, xRotationFine),
+                Utility.GetValueFromCoarseFine(yRotationCoarse, yRotationFine),
+                Utility.GetValueFromCoarseFine(zRotationCoarse, zRotationFine)) * 540);
+        }
     }
 }

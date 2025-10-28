@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace Drones
 {
+    // TODO: Boundary box visuals/limit for editor usage
     public class LightingDrone : BaseDrone
     {
         #region Color

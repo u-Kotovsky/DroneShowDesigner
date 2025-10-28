@@ -187,10 +187,8 @@ public class FixtureSpawnManager : MonoBehaviour
             
         Debug.Log($"{mobileTrussPool.Length} mobile trusses are instanced");
         
-        
         // Default Arches [Set Start[
-        TrussPreset[] preset1 = new TrussPreset[12]; // bad
-
+        TrussPreset[] preset1 = new TrussPreset[12];
         preset1[0] = new TrussPreset(79, 216, 142, 185, 141, 129, 5, 63, 151, 129, 21, 238);
         preset1[1] = new TrussPreset(94, 190, 157, 68, 152, 222, 1, 251, 159, 141, 13, 213);
         preset1[2] = new TrussPreset(116, 40, 165, 81, 159, 40, 165, 145, 166, 0, 4, 211);
@@ -205,8 +203,7 @@ public class FixtureSpawnManager : MonoBehaviour
         preset1[11] = new TrussPreset(176, 38, 142, 184, 114, 125, 165, 97, 151, 140, 148, 184);
         
         // Circling
-        TrussPreset[] preset2 = new TrussPreset[12]; // this works fineish, just truss are vertical aligned in world.
-        
+        TrussPreset[] preset2 = new TrussPreset[12];
         preset2[0] = new TrussPreset(66, 20, 143, 91, 144, 114, 0, 0, 92, 113, 127, 255);
         preset2[1] = new TrussPreset(82, 164, 143, 91, 173, 35, 0, 0, 106, 170, 127, 255);
         preset2[2] = new TrussPreset(111, 85, 143, 91, 189, 179, 0, 0, 120, 226, 127, 255);
@@ -221,8 +218,7 @@ public class FixtureSpawnManager : MonoBehaviour
         preset2[11] = new TrussPreset(189, 183, 143, 91, 111, 82, 0, 0, 7, 28, 127, 255);
         
         // Grid 1
-        TrussPreset[] preset3 = new TrussPreset[12]; // position is right, but rotation is fucked
-        
+        TrussPreset[] preset3 = new TrussPreset[12];
         preset3[0] = new TrussPreset(102, 102, 158, 183, 163, 214, 0, 0, 0, 0, 0, 0);
         preset3[1] = new TrussPreset(127, 255, 158, 183, 163, 214, 0, 0, 0, 0, 0, 0);
         preset3[2] = new TrussPreset(153, 153, 158, 183, 163, 214, 0, 0, 0, 0, 0, 0);
@@ -237,8 +233,7 @@ public class FixtureSpawnManager : MonoBehaviour
         preset3[11] = new TrussPreset(153, 153, 158, 183, 92, 40, 0, 0, 0, 0, 0, 0);
         
         // Grid 2
-        TrussPreset[] preset4 = new TrussPreset[12]; // position is right, but rotation is fucked x2
-        
+        TrussPreset[] preset4 = new TrussPreset[12];
         preset4[0] = new TrussPreset(102, 102, 158, 183, 163, 214, 0, 0, 42, 170, 0, 0);
         preset4[1] = new TrussPreset(127, 255, 158, 183, 163, 214, 0, 0, 42, 170, 0, 0);
         preset4[2] = new TrussPreset(153, 153, 158, 183, 163, 214, 0, 0, 42, 170, 0, 0);
@@ -254,7 +249,6 @@ public class FixtureSpawnManager : MonoBehaviour
         
         // Arches Half Mirrored
         TrussPreset[] preset5 = new TrussPreset[12];
-        
         preset5[0] = new TrussPreset(79, 216, 142, 185, 141, 129, 5, 63, 151, 129, 21, 238);
         preset5[1] = new TrussPreset(94, 190, 157, 68, 152, 222, 1, 251, 159, 141, 13, 213);
         preset5[2] = new TrussPreset(116, 40, 165, 81, 159, 40, 165, 145, 166, 0, 4, 211);
@@ -276,14 +270,6 @@ public class FixtureSpawnManager : MonoBehaviour
         trussPresets[4] = preset5;
         
         SetTrussPreset(trussPresets[0]);
-
-        Debug.Log($"Mathf inverse lerp -270 270 70: {Mathf.InverseLerp(-270, 270, 70)}");
-        
-        // test case:
-        // we have 5, 63
-        
-        Test1(5, 63);
-        Test1(176, 38);
     }
 
     private void SetTrussPreset(TrussPreset[] preset)
@@ -294,17 +280,6 @@ public class FixtureSpawnManager : MonoBehaviour
             truss1.transform.localPosition = preset[i].GetPosition();
             truss1.transform.localRotation = preset[i].GetRotation();
         }
-    }
-
-    private void Test1(byte coarse1, byte fine1)
-    {
-        Debug.Log($"End/Start test");
-        Debug.Log($"before reconstruction. coarse: {coarse1}, fine: {fine1}");
-        float value1 = Utility.GetValueFromCoarseFine(coarse1, fine1, -50, 50);
-        Debug.Log($"value from coarse&fine: {value1}");
-        float coarse2 = Utility.GetCoarse(value1, -50, 50);
-        float fine2 = Utility.GetFine(value1, -50, 50);
-        Debug.Log($"after reconstruction. coarse: {coarse2}, fine: {fine2}");
     }
         
     public void WriteMobileTrussDataToGlobalBuffer()

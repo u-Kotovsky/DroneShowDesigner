@@ -60,28 +60,26 @@ public class BaseMobile : MonoBehaviour
     protected float MinAngle = -180;
     protected float MaxAngle = 180;
     
-    public void WriteDmxRotation(int offset, Vector3 rotation, bool flipYtoZ = false)
+    public void WriteDmxRotation(int offset, Vector3 rotation)
     {
-        var xRotationCoarseFine = CoarseFineChannelSet.GetCoarseFineChannelRepresentation(Mathf.InverseLerp(MinAngle, MaxAngle, rotation.x));
-        xRotationCoarse = xRotationCoarseFine.coarse;
-        xRotationFine = xRotationCoarseFine.fine;
+        float angle = MaxAngle * 2;
+        xRotationCoarse = Utility.GetCoarse(rotation.x / angle);
+        xRotationFine = Utility.GetFine(rotation.x / angle);
         
-        var yRotationCoarseFine = CoarseFineChannelSet.GetCoarseFineChannelRepresentation(Mathf.InverseLerp(MinAngle, MaxAngle, rotation.y));
-        yRotationCoarse = yRotationCoarseFine.coarse;
-        yRotationFine = yRotationCoarseFine.fine;
+        yRotationCoarse = Utility.GetCoarse(rotation.y / angle);
+        yRotationFine = Utility.GetFine(rotation.y / angle);
         
-        var zRotationCoarseFine = CoarseFineChannelSet.GetCoarseFineChannelRepresentation(Mathf.InverseLerp(MinAngle, MaxAngle, rotation.z));
-        zRotationCoarse = zRotationCoarseFine.coarse;
-        zRotationFine = zRotationCoarseFine.fine;
+        zRotationCoarse = Utility.GetCoarse(rotation.z / angle);
+        zRotationFine = Utility.GetFine(rotation.z / angle);
         
         Buffer[offset + 0] = xRotationCoarse;
         Buffer[offset + 1] = xRotationFine;
     
-        Buffer[offset + (flipYtoZ ? 4 : 2)] = yRotationCoarse;
-        Buffer[offset + (flipYtoZ ? 5 : 3)] = yRotationFine;
+        Buffer[offset + 2] = yRotationCoarse;
+        Buffer[offset + 3] = yRotationFine;
     
-        Buffer[offset + (flipYtoZ ? 2 : 4)] = zRotationCoarse;
-        Buffer[offset + (flipYtoZ ? 3 : 5)] = zRotationFine;
+        Buffer[offset + 4] = zRotationCoarse;
+        Buffer[offset + 5] = zRotationFine;
     }
     #endregion
     
