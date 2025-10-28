@@ -20,16 +20,13 @@ public class TrussPreset
     public byte zRotationCoarse;
     public byte zRotationFine;
 
-    public TrussPreset()
-    {
-        
-    }
+    public TrussPreset() { }
 
     public TrussPreset(
         byte xpc, byte xpf,
         byte ypc, byte ypf,
         byte zpc, byte zpf,
-
+        
         byte xrc, byte xrf,
         byte yrc, byte yrf,
         byte zrc, byte zrf)

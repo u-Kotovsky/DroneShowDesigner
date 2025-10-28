@@ -17,7 +17,7 @@ public class Utility
     
     
     // I don't know what am I doing okay
-    public static byte GetCoarse(float input, float minValue = -800, float maxValue = 800)
+    public static byte GetCoarse(float input, float minValue, float maxValue)
     {
         // 1) clamp
         //input = Mathf.Clamp(input, minValue, maxValue);
@@ -27,11 +27,12 @@ public class Utility
         uint value = (uint)(normalized * ushort.MaxValue);
         // 4) get upper byte
         double coarse = value >> 8;
+        Debug.Log($"input {input} {normalized} {value} [{minValue} {maxValue}] fine {coarse}");
         // 5) return byte value
         return (byte)coarse;
     }
 
-    public static byte GetFine(float input, float minValue = -800, float maxValue = 800)
+    public static byte GetFine(float input, float minValue, float maxValue)
     {
         // 1) clamp
         //input = Mathf.Clamp(input, minValue, maxValue);
@@ -41,6 +42,37 @@ public class Utility
         uint value = (uint)(normalized * ushort.MaxValue);
         // 4) get upper byte
         double fine = value & 0xFF;
+        Debug.Log($"input {input} {normalized} {value} [{minValue} {maxValue}] fine {fine}");
+        // 5) return byte value
+        return (byte)fine;
+    }
+    
+    public static byte GetCoarse(float input) // input = 0 .. 1
+    {
+        // 1) clamp
+        //input = Mathf.Clamp(input, minValue, maxValue);
+        // 2) normalize
+        //double normalized = Mathf.InverseLerp(minValue, maxValue, input);
+        // 3) scale
+        uint value = (uint)(input * ushort.MaxValue);
+        // 4) get upper byte
+        double coarse = value >> 8;
+        //Debug.Log($"input {input} {input} {value} fine {coarse}");
+        // 5) return byte value
+        return (byte)coarse;
+    }
+
+    public static byte GetFine(float input) // input = 0 .. 1
+    {
+        // 1) clamp
+        //input = Mathf.Clamp(input, minValue, maxValue);
+        // 2) normalize
+        //double normalized = Mathf.InverseLerp(minValue, maxValue, input);
+        // 3) scale
+        uint value = (uint)(input * ushort.MaxValue);
+        // 4) get upper byte
+        double fine = value & 0xFF;
+        //Debug.Log($"input {input} {input} {value} [{minValue} {maxValue}] fine {fine}");
         // 5) return byte value
         return (byte)fine;
     }

@@ -31,22 +31,22 @@ namespace Truss
             //var xRotationCoarseFine = CoarseFineChannelSet.GetCoarseFineChannelRepresentation(scaledX);
             //xRotationCoarse = xRotationCoarseFine.coarse;
             //xRotationFine = xRotationCoarseFine.fine;
-            xRotationCoarse = Utility.GetCoarse(rotation.x, MinAngle, MaxAngle);
-            xRotationFine = Utility.GetFine(rotation.x, MinAngle, MaxAngle);
+            xRotationCoarse = Utility.GetCoarse(rotation.x / 540);
+            xRotationFine = Utility.GetFine(rotation.x / 540);
         
             //float scaledY = Mathf.InverseLerp(MinAngle, MaxAngle, rotation.y);
             //var yRotationCoarseFine = CoarseFineChannelSet.GetCoarseFineChannelRepresentation(scaledY);
             //yRotationCoarse = yRotationCoarseFine.coarse;
             //yRotationFine = yRotationCoarseFine.fine;
-            yRotationCoarse = Utility.GetCoarse(rotation.y, MinAngle, MaxAngle);
-            yRotationFine = Utility.GetFine(rotation.y, MinAngle, MaxAngle);
+            yRotationCoarse = Utility.GetCoarse(rotation.y / 540);
+            yRotationFine = Utility.GetFine(rotation.y / 540);
         
             //float scaledZ = Mathf.InverseLerp(MinAngle, MaxAngle, rotation.z);
             //var zRotationCoarseFine = CoarseFineChannelSet.GetCoarseFineChannelRepresentation(scaledZ);
             //zRotationCoarse = zRotationCoarseFine.coarse;
             //zRotationFine = zRotationCoarseFine.fine;
-            zRotationCoarse = Utility.GetCoarse(rotation.z, MinAngle, MaxAngle);
-            zRotationFine = Utility.GetFine(rotation.z, MinAngle, MaxAngle);
+            zRotationCoarse = Utility.GetCoarse(rotation.z / 540);
+            zRotationFine = Utility.GetFine(rotation.z / 540);
             
             // XYZ -
             // XZY -
