@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Drones
+namespace Fixtures.Drones
 {
     public class BaseDrone : BaseMobile, IDrone
     {

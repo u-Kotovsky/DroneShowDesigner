@@ -1,4 +1,4 @@
-namespace Drones
+namespace Fixtures.Drones
 {
     public interface IDrone
     {

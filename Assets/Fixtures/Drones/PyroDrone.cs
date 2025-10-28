@@ -1,9 +1,8 @@
 using System;
-using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
-namespace Drones
+namespace Fixtures.Drones
 {
     // TODO: Boundary box visuals/limit for editor usage
     public class PyroDrone : BaseDrone

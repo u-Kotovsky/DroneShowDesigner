@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Truss
+namespace Fixtures.Truss
 {
     public class TrussPreset
     {

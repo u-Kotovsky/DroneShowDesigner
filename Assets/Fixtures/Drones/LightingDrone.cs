@@ -1,7 +1,7 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace Drones
+namespace Fixtures.Drones
 {
     // TODO: Boundary box visuals/limit for editor usage
     public class LightingDrone : BaseDrone

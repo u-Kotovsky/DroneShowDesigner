@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-namespace Drones
+namespace Fixtures.Drones
 {
     public enum DroneNavigationState
     {
