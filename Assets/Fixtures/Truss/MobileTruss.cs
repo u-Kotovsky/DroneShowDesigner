@@ -1,10 +1,13 @@
+using UnityEditor;
+using UnityEngine;
+
 namespace Fixtures.Truss
 {
     // TODO: Boundary box visuals/limit for editor usage
     public class MobileTruss : BaseMobile
     {
         public int index;
-        
+
         private void Awake()
         {
             Buffer = new byte[14];
@@ -24,15 +27,63 @@ namespace Fixtures.Truss
         {
             return MaxAngle;
         }
-        
+
         public new byte[] GetDmxData()
         {
             WriteDmxPosition(0, transform.localPosition);
             WriteDmxRotation(6, transform.localRotation.eulerAngles);
-            
+
             return Buffer;
         }
+        
+        
+        [CustomEditor(typeof(MobileTruss))]
+        public class MobileTruss_Editor : Editor
+        {
+            private BaseMobile baseMobile;
+            
+            public override void OnInspectorGUI()
+            {
+                base.OnInspectorGUI();
+                
+                if (baseMobile == null) baseMobile = target as BaseMobile;
+                
+                GUILayout.Space(10);
+
+                EditorGUILayout.LabelField($"Copy data as raw DMX Array");
+                if (GUILayout.Button("Copy All"))
+                {
+                    byte[] dmxData = baseMobile.GetDmxData();
+                    GUIUtility.systemCopyBuffer = "[" + string.Join(", ", dmxData) + "]";
+                }
+
+                EditorGUILayout.BeginHorizontal();
+                
+                if (GUILayout.Button("Copy Position"))
+                {
+                    byte[] dmxData = baseMobile.GetDmxData();
+                    byte[] bytes = new byte[6];
+                    
+                    System.Buffer.BlockCopy(dmxData, 0, bytes, 0, 6);
+                    
+                    GUIUtility.systemCopyBuffer = "[" + string.Join(", ", bytes) + "]";
+                }
+                
+                if (GUILayout.Button("Copy Rotation"))
+                {
+                    byte[] dmxData = baseMobile.GetDmxData();
+                    byte[] bytes = new byte[6];
+                    
+                    System.Buffer.BlockCopy(dmxData, 7, bytes, 0, 6);
+                    
+                    GUIUtility.systemCopyBuffer = "[" + string.Join(", ", bytes) + "]";
+                }
+                
+                EditorGUILayout.EndHorizontal();
+            }
+        }
     }
+
 
     public class MobileTrussPresetManager
     {

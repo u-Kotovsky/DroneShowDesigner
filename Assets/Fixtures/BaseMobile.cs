@@ -1,3 +1,5 @@
+using Fixtures.Truss;
+using UnityEditor;
 using UnityEngine;
 
 namespace Fixtures
@@ -89,6 +91,53 @@ namespace Fixtures
             WriteDmxPosition(0, transform.position);
             WriteDmxRotation(6, transform.rotation.eulerAngles);
             return Buffer;
+        }
+        
+        [CustomEditor(typeof(BaseMobile))]
+        public class BaseMobile_Editor : Editor
+        {
+            private BaseMobile baseMobile;
+            
+            // TODO: Refactor this to be more generic, improve code reusability.
+            
+            public override void OnInspectorGUI()
+            {
+                base.OnInspectorGUI();
+                
+                if (baseMobile == null) baseMobile = target as BaseMobile;
+                
+                GUILayout.Space(10);
+
+                if (GUILayout.Button("Copy Raw DMX Data as Array"))
+                {
+                    byte[] dmxData = baseMobile.GetDmxData();
+                    GUIUtility.systemCopyBuffer = "[" + string.Join(", ", dmxData) + "]";
+                }
+
+                EditorGUILayout.BeginHorizontal();
+                
+                if (GUILayout.Button("Copy Raw DMX Position as Array"))
+                {
+                    byte[] dmxData = baseMobile.GetDmxData();
+                    byte[] bytes = new byte[6];
+                    
+                    System.Buffer.BlockCopy(dmxData, 0, bytes, 0, 6);
+                    
+                    GUIUtility.systemCopyBuffer = "[" + string.Join(", ", bytes) + "]";
+                }
+                
+                if (GUILayout.Button("Copy Raw DMX Rotation as Array"))
+                {
+                    byte[] dmxData = baseMobile.GetDmxData();
+                    byte[] bytes = new byte[6];
+                    
+                    System.Buffer.BlockCopy(dmxData, 7, bytes, 0, 6);
+                    
+                    GUIUtility.systemCopyBuffer = "[" + string.Join(", ", bytes) + "]";
+                }
+                
+                EditorGUILayout.EndHorizontal();
+            }
         }
     }
 }
