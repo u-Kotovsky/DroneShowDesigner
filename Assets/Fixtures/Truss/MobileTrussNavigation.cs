@@ -4,7 +4,7 @@ namespace Fixtures.Truss
 {
     public class MobileTrussNavigation : MonoBehaviour
     {
-        private enum TrussState
+        public enum TrussState
         {
             None,
             WaitingForTimer,
@@ -13,6 +13,8 @@ namespace Fixtures.Truss
         
         private MobileTruss mobileTruss;
 
+        public bool cyclePresets = true;
+
         private void Awake()
         {
             mobileTruss = GetComponent<MobileTruss>();
@@ -20,10 +22,14 @@ namespace Fixtures.Truss
 
         public bool playTrussPresetSwap;
 
-        private TrussState trussState = TrussState.WaitingForTimer;
+        public TrussState trussState = TrussState.WaitingForTimer;
         private float trussSwapTimer;
         private int currentTrussPreset;
-        private int nextTrussPreset = 1;
+        public int nextTrussPreset = 1;
+        [Tooltip("How much time pass before it'll start move trusses")]
+        public float timeToWait = 2;
+        [Tooltip("How much time it needs to move trusses")]
+        public float timeToMove = 2;
         
         private void Update()
         {
@@ -33,7 +39,7 @@ namespace Fixtures.Truss
             {
                 case TrussState.WaitingForTimer:
                     trussSwapTimer += Time.deltaTime;
-                    if (trussSwapTimer >= 2)
+                    if (trussSwapTimer >= timeToWait)
                     {
                         trussSwapTimer = 0;
                         trussState = TrussState.Moving;
@@ -45,19 +51,19 @@ namespace Fixtures.Truss
                     transform.localPosition = Vector3.Lerp(
                         MobileTrussPresetManager.trussPresets[currentTrussPreset][mobileTruss.fixtureIndex].GetPosition(), 
                         MobileTrussPresetManager.trussPresets[nextTrussPreset][mobileTruss.fixtureIndex].GetPosition(), 
-                        Utility.MapRange(trussSwapTimer, 0, 2, 0, 1));
+                        Utility.MapRange(trussSwapTimer, 0, timeToMove + 0.001f, 0, 1));
                 
                     transform.localRotation = Quaternion.Slerp(
                         MobileTrussPresetManager.trussPresets[currentTrussPreset][mobileTruss.fixtureIndex].GetRotation(),
                         MobileTrussPresetManager.trussPresets[nextTrussPreset][mobileTruss.fixtureIndex].GetRotation(), 
-                        Utility.MapRange(trussSwapTimer, 0, 2, 0, 1));
+                        Utility.MapRange(trussSwapTimer, 0, timeToMove + 0.001f, 0, 1));
                 
-                    if (trussSwapTimer >= 2f)
+                    if (trussSwapTimer >= timeToMove)
                     {
                         trussSwapTimer = 0;
                         currentTrussPreset = nextTrussPreset;
                         nextTrussPreset++;
-                        trussState = TrussState.WaitingForTimer;
+                        trussState = cyclePresets ? TrussState.WaitingForTimer : TrussState.None;
                         if (nextTrussPreset >= MobileTrussPresetManager.trussPresets.Length) nextTrussPreset = 0;
                     }
                     break;

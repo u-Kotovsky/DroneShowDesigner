@@ -168,14 +168,41 @@ namespace Fixtures.Truss
             preset5[10] = new TrussPreset(161, 64, 156, 187, 102, 120, 169, 48, 71, 239, 13, 121);
             preset5[11] = new TrussPreset(176, 38, 142, 131, 114, 62, 5, 214, 66, 17, 21, 106);
             
+            TrussPreset[] preset6 = new TrussPreset[12];
+            preset6[0] = new TrussPreset(66, 19, 159, 255, 144, 113, 42, 170, 135, 28, 0, 0);
+            preset6[1] = new TrussPreset(82, 163, 159, 255, 173, 34, 42, 170, 149, 84, 0, 0);
+            preset6[2] = new TrussPreset(111, 85, 159, 255, 189, 179, 42, 170, 163, 140, 0, 0);
+            preset6[3] = new TrussPreset(144, 117, 159, 255, 189, 180, 42, 170, 7, 27, 0, 0);
+            preset6[4] = new TrussPreset(173, 37, 159, 255, 173, 34, 42, 170, 21, 85, 0, 0);
+            preset6[5] = new TrussPreset(189, 183, 159, 255, 144, 114, 42, 170, 35, 141, 0, 0);
+            preset6[6] = new TrussPreset(66, 19, 159, 255, 111, 81, 42, 170, 120, 226, 0, 0);
+            preset6[7] = new TrussPreset(82, 164, 159, 255, 82, 160, 42, 170, 106, 170, 0, 0);
+            preset6[8] = new TrussPreset(111, 85, 159, 255, 66, 15, 42, 170, 92, 112, 0, 0);
+            preset6[9] = new TrussPreset(144, 117, 159, 255, 66, 16, 42, 170, 78, 55, 0, 0);
+            preset6[10] = new TrussPreset(173, 38, 159, 255, 82, 160, 42, 170, 63, 255, 0, 0);
+            preset6[11] = new TrussPreset(189, 183, 159, 255, 111, 82, 42, 170, 49, 199, 0, 0);
             
+            /*TrussPreset[] preset6 = new TrussPreset[12];
+            preset6[0] = new TrussPreset();
+            preset6[1] = new TrussPreset();
+            preset6[2] = new TrussPreset();
+            preset6[3] = new TrussPreset();
+            preset6[4] = new TrussPreset();
+            preset6[5] = new TrussPreset();
+            preset6[6] = new TrussPreset();
+            preset6[7] = new TrussPreset();
+            preset6[8] = new TrussPreset();
+            preset6[9] = new TrussPreset();
+            preset6[10] = new TrussPreset();
+            preset6[11] = new TrussPreset();*/
             
-            trussPresets = new TrussPreset[5][];
+            trussPresets = new TrussPreset[6][];
             trussPresets[0] = preset1;
             trussPresets[1] = preset2;
             trussPresets[2] = preset3;
             trussPresets[3] = preset4;
             trussPresets[4] = preset5;
+            trussPresets[5] = preset6;
         }
     }
 }
