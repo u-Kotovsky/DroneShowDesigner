@@ -83,5 +83,53 @@ namespace Fixtures
             float normalized = combinedValue / (float)ushort.MaxValue;
             return normalized;
         }
+        
+        public static void CopyDmxValuesAsArray(byte[] buffer)
+        {
+            GUIUtility.systemCopyBuffer = "[" + string.Join(", ", buffer) + "]";
+        }
+        
+        public static void CopyDmxValuesAsArray(byte[] dmxData, int offset, int size)
+        {
+            byte[] bytes = new byte[size];
+                    
+            System.Buffer.BlockCopy(dmxData, offset, bytes, 0, size);
+
+            CopyDmxValuesAsArray(bytes);
+        }
+        
+        public static void CopyValuesAsArray(string[] buffer)
+        {
+            GUIUtility.systemCopyBuffer = string.Join("\n", buffer); 
+        }
+
+        public static void CopyAllDmxValuesAsMa3Representation(byte[] dmxData, int globalChannelStart)
+        {
+            int universe = (int)Mathf.Floor(globalChannelStart / 512) + 1;
+            int addressStart = (globalChannelStart % 512) + 1;
+            string[] values = new string[dmxData.Length];
+                    
+            for (var i = 0; i < values.Length; i++)
+                values[i] = $"{universe}.{addressStart + i} {dmxData[i]}";
+
+            CopyValuesAsArray(values);
+        }
+
+        public static void CopyDmxValuesWithOffsetAsMa3Representation(byte[] dmxData, int globalChannelStart, int offset, int size)
+        {
+            byte[] bytes = new byte[size];
+                    
+            System.Buffer.BlockCopy(dmxData, offset, bytes, 0, size);
+            
+            int universe = (int)Mathf.Floor(globalChannelStart / 512) + 1;
+            int addressStart = (globalChannelStart % 512) + 1;
+            string[] values = new string[bytes.Length];
+                    
+            for (var i = offset; i < values.Length; i++)
+                values[i] = $"{universe}.{addressStart + i} {bytes[i]}";
+
+            CopyValuesAsArray(values);
+            
+        }
     }
 }

@@ -50,36 +50,40 @@ namespace Fixtures.Truss
                 
                 GUILayout.Space(10);
 
+                #region Collect data as [0, 0, 0 ... 0]
                 EditorGUILayout.LabelField($"Copy data as raw DMX Array");
                 if (GUILayout.Button("Copy All"))
-                {
-                    byte[] dmxData = baseMobile.GetDmxData();
-                    GUIUtility.systemCopyBuffer = "[" + string.Join(", ", dmxData) + "]";
-                }
+                    Utility.CopyDmxValuesAsArray(baseMobile.GetDmxData());
+
+                EditorGUILayout.BeginHorizontal();
+                if (GUILayout.Button("Copy Position"))
+                    Utility.CopyDmxValuesAsArray(baseMobile.GetDmxData(), 0, 6);
+                
+                if (GUILayout.Button("Copy Rotation"))
+                    Utility.CopyDmxValuesAsArray(baseMobile.GetDmxData(), 7, 6);
+                
+                EditorGUILayout.EndHorizontal();
+                #endregion
+                
+                GUILayout.Space(10);
+                
+                #region Collect data as UNIVERSE.CHANNEL_VALUE array
+                EditorGUILayout.LabelField($"Copy data as raw DMX Array in format UNIVERSE.CHANNEL_VALUE");
+                if (GUILayout.Button("Copy All1"))
+                    Utility.CopyAllDmxValuesAsMa3Representation(baseMobile.GetDmxData(), baseMobile.globalChannelStart);
 
                 EditorGUILayout.BeginHorizontal();
                 
-                if (GUILayout.Button("Copy Position"))
-                {
-                    byte[] dmxData = baseMobile.GetDmxData();
-                    byte[] bytes = new byte[6];
-                    
-                    System.Buffer.BlockCopy(dmxData, 0, bytes, 0, 6);
-                    
-                    GUIUtility.systemCopyBuffer = "[" + string.Join(", ", bytes) + "]";
-                }
+                if (GUILayout.Button("Copy Position1"))
+                    Utility.CopyDmxValuesWithOffsetAsMa3Representation(baseMobile.GetDmxData(), baseMobile.globalChannelStart,
+                        0, 6);
                 
-                if (GUILayout.Button("Copy Rotation"))
-                {
-                    byte[] dmxData = baseMobile.GetDmxData();
-                    byte[] bytes = new byte[6];
-                    
-                    System.Buffer.BlockCopy(dmxData, 7, bytes, 0, 6);
-                    
-                    GUIUtility.systemCopyBuffer = "[" + string.Join(", ", bytes) + "]";
-                }
+                if (GUILayout.Button("Copy Rotation1"))
+                    Utility.CopyDmxValuesWithOffsetAsMa3Representation(baseMobile.GetDmxData(), baseMobile.globalChannelStart,
+                        6, 6);
                 
                 EditorGUILayout.EndHorizontal();
+                #endregion
             }
         }
     }
@@ -165,6 +169,8 @@ namespace Fixtures.Truss
             preset5[9] = new TrussPreset(139, 214, 164, 153, 95, 245, 170, 161, 81, 112, 4, 162);
             preset5[10] = new TrussPreset(161, 64, 156, 187, 102, 120, 169, 48, 71, 239, 13, 121);
             preset5[11] = new TrussPreset(176, 38, 142, 131, 114, 62, 5, 214, 66, 17, 21, 106);
+            
+            
             
             trussPresets = new TrussPreset[5][];
             trussPresets[0] = preset1;
