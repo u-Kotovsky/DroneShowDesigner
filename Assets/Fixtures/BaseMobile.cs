@@ -1,4 +1,3 @@
-using Fixtures.Truss;
 using UnityEditor;
 using UnityEngine;
 
@@ -9,6 +8,7 @@ namespace Fixtures
         public FixtureSpawnManager spawnManager;
         public int globalChannelStart;
         protected byte[] Buffer;
+        public int fixtureIndex;
     
         private void Awake()
         {

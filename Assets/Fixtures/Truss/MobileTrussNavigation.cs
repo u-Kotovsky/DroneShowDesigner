@@ -43,13 +43,13 @@ namespace Fixtures.Truss
                     trussSwapTimer += Time.deltaTime;
                     
                     transform.localPosition = Vector3.Lerp(
-                        MobileTrussPresetManager.trussPresets[currentTrussPreset][mobileTruss.index].GetPosition(), 
-                        MobileTrussPresetManager.trussPresets[nextTrussPreset][mobileTruss.index].GetPosition(), 
+                        MobileTrussPresetManager.trussPresets[currentTrussPreset][mobileTruss.fixtureIndex].GetPosition(), 
+                        MobileTrussPresetManager.trussPresets[nextTrussPreset][mobileTruss.fixtureIndex].GetPosition(), 
                         Utility.MapRange(trussSwapTimer, 0, 2, 0, 1));
                 
                     transform.localRotation = Quaternion.Slerp(
-                        MobileTrussPresetManager.trussPresets[currentTrussPreset][mobileTruss.index].GetRotation(),
-                        MobileTrussPresetManager.trussPresets[nextTrussPreset][mobileTruss.index].GetRotation(), 
+                        MobileTrussPresetManager.trussPresets[currentTrussPreset][mobileTruss.fixtureIndex].GetRotation(),
+                        MobileTrussPresetManager.trussPresets[nextTrussPreset][mobileTruss.fixtureIndex].GetRotation(), 
                         Utility.MapRange(trussSwapTimer, 0, 2, 0, 1));
                 
                     if (trussSwapTimer >= 2f)

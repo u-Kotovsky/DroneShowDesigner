@@ -6,8 +6,6 @@ namespace Fixtures.Truss
     // TODO: Boundary box visuals/limit for editor usage
     public class MobileTruss : BaseMobile
     {
-        public int index;
-
         private void Awake()
         {
             Buffer = new byte[14];
@@ -51,7 +49,7 @@ namespace Fixtures.Truss
                 GUILayout.Space(10);
 
                 #region Collect data as [0, 0, 0 ... 0]
-                EditorGUILayout.LabelField($"Copy data as raw DMX Array");
+                EditorGUILayout.LabelField($"Copy raw DMX data array");
                 if (GUILayout.Button("Copy All"))
                     Utility.CopyDmxValuesAsArray(baseMobile.GetDmxData());
 
@@ -68,7 +66,7 @@ namespace Fixtures.Truss
                 GUILayout.Space(10);
                 
                 #region Collect data as UNIVERSE.CHANNEL_VALUE array
-                EditorGUILayout.LabelField($"Copy data as raw DMX Array in format UNIVERSE.CHANNEL_VALUE");
+                EditorGUILayout.LabelField($"Copy raw DMX position and data array in format UNIVERSE.CHANNEL_VALUE");
                 if (GUILayout.Button("Copy All1"))
                     Utility.CopyAllDmxValuesAsMa3Representation(baseMobile.GetDmxData(), baseMobile.globalChannelStart);
 

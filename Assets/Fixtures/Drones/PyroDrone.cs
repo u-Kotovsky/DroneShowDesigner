@@ -11,7 +11,7 @@ namespace Fixtures.Drones
         protected byte yaw;
         protected byte roll;
         
-        protected byte index = 0;
+        protected byte index;
         
         private void Awake()
         {

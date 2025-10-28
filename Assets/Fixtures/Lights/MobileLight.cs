@@ -6,8 +6,6 @@ namespace Fixtures.Lights
     // TODO: Boundary box visuals/limit for editor usage
     public class MobileLight : BaseMobile
     {
-        public int index;
-
         private void Awake()
         {
             Buffer = new byte[6];

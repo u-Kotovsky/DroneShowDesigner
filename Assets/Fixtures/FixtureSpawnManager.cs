@@ -12,6 +12,12 @@ namespace Fixtures
     {
         public DmxController dmxController;
         
+        [Header("Fixtures to enable on start")]
+        public bool usePyroDrone = false;
+        public bool useLightingDrone = false;
+        public bool useMobileTruss = true;
+        public bool useMobileLight = true;
+        
         [Header("Drone Spawn Settings")]
         public GameObject dronePrefab;
         public GameObject[] lightingDronePool;
@@ -21,10 +27,6 @@ namespace Fixtures
         public int pyroDroneSpawnCount = 16;
         public float droneMargin = 1;
         
-        public bool usePyroDrone = false;
-        public bool useLightingDrone = false;
-        public bool useMobileTruss = true;
-        public bool useMobileLight = true;
         
         [Header("Mobile Truss Spawn Settings")]
         public GameObject mobileTrussPrefab;
@@ -181,9 +183,10 @@ namespace Fixtures
                 mobileLightPool[i] = Instantiate(mobileLightPrefab, new Vector3(i * droneMargin, 2, 0), Quaternion.identity);
                 mobileLightPool[i].transform.SetParent(pool.transform);
                 fixture = mobileLightPool[i].AddComponent<MobileLight>();
-                fixture.index = i;
+                fixture.fixtureIndex = i;
                 fixture.spawnManager = this;
                 fixture.globalChannelStart = offset + (i * fixture.GetDmxData().Length);
+                fixture.gameObject.name = "MobileLight #" + fixture.fixtureIndex;
             }
             
             Debug.Log($"{mobileLightPool.Length} mobile lights are instanced");
@@ -212,18 +215,19 @@ namespace Fixtures
         {
             GameObject pool = new GameObject("MobileTrussPool");
             mobileTrussPool = new GameObject[mobileTrussSpawnCount];
-            MobileTruss truss;
+            MobileTruss fixture;
             int offset = 6; // Start for mobile truss.
 
             for (int i = 0; i < mobileTrussPool.Length; i++)
             {
                 mobileTrussPool[i] = Instantiate(mobileTrussPrefab, new Vector3(i * droneMargin * 9, 2, 0), Quaternion.identity);
                 mobileTrussPool[i].transform.SetParent(pool.transform);
-                truss = mobileTrussPool[i].AddComponent<MobileTruss>();
-                truss.index = i;
-                truss.spawnManager = this;
-                truss.globalChannelStart = offset + (i * truss.GetDmxData().Length);
-                var nav = truss.gameObject.AddComponent<MobileTrussNavigation>();
+                fixture = mobileTrussPool[i].AddComponent<MobileTruss>();
+                fixture.fixtureIndex = i;
+                fixture.spawnManager = this;
+                fixture.globalChannelStart = offset + (i * fixture.GetDmxData().Length);
+                fixture.gameObject.name = "MobileTruss #" + fixture.fixtureIndex;
+                var nav = fixture.gameObject.AddComponent<MobileTrussNavigation>();
                 nav.playTrussPresetSwap = true;
             }
             
@@ -271,16 +275,18 @@ namespace Fixtures
         {
             GameObject pool = new GameObject("PyroDronePool");
             pyroDronePool = new GameObject[pyroDroneSpawnCount];
-            PyroDrone drone;
+            PyroDrone fixture;
             int offset = (512 * 5) + 41 - 1; // 2600 is start for pyro drone.
 
             for (int i = 0; i < pyroDronePool.Length; i++)
             {
                 pyroDronePool[i] = Instantiate(dronePrefab, new Vector3(i * droneMargin, 2, 0), Quaternion.identity);
                 pyroDronePool[i].transform.SetParent(pool.transform);
-                drone = pyroDronePool[i].AddComponent<PyroDrone>();
-                drone.spawnManager = this;
-                drone.globalChannelStart = offset + (i * drone.GetDmxData().Length);
+                fixture = pyroDronePool[i].AddComponent<PyroDrone>();
+                fixture.fixtureIndex = i;
+                fixture.spawnManager = this;
+                fixture.globalChannelStart = offset + (i * fixture.GetDmxData().Length);
+                fixture.gameObject.name = "PyroDrone #" + fixture.fixtureIndex;
             }
             
             Debug.Log($"{pyroDronePool.Length} pyro drones are instanced");
@@ -315,17 +321,19 @@ namespace Fixtures
         {
             GameObject pool = new GameObject("LightingDronePool");
             lightingDronePool = new GameObject[lightingDroneSpawnCount];
-            LightingDrone lightingDrone;
+            LightingDrone fixture;
             int offset = (512 * 5) + 321 - 1; // 2880 is start for FX drone // Offset is probably correct (maybe?)
 
             for (int i = 0; i < lightingDronePool.Length; i++)
             {
                 lightingDronePool[i] = Instantiate(dronePrefab, new Vector3(i * droneMargin, 1, 0), Quaternion.identity);
                 lightingDronePool[i].transform.SetParent(pool.transform);
-                lightingDrone = lightingDronePool[i].AddComponent<LightingDrone>();
-                lightingDrone.spawnManager = this;
-                lightingDrone.globalChannelStart = offset + (i * lightingDrone.GetDmxData().Length);
-                lightingDrone.gameObject.AddComponent<DroneNavigation>();
+                fixture = lightingDronePool[i].AddComponent<LightingDrone>();
+                fixture.fixtureIndex = i;
+                fixture.spawnManager = this;
+                fixture.globalChannelStart = offset + (i * fixture.GetDmxData().Length);
+                fixture.gameObject.AddComponent<DroneNavigation>();
+                fixture.gameObject.name = "PyroDrone #" + fixture.fixtureIndex;
             }
             
             Debug.Log($"{lightingDronePool.Length} lighting drones are instanced");
