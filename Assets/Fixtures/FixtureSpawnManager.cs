@@ -2,6 +2,7 @@ using System;
 using Fixtures.Drones;
 using Fixtures.Lights;
 using Fixtures.Truss;
+using Unity_DMX.Scripts.Core;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
