@@ -56,11 +56,16 @@ public class TrussPreset
             Utility.GetValueFromCoarseFine(zPositionCoarse, zPositionFine, -50, 50));
     }
 
-    public Vector3 GetRotation()
+    public Quaternion GetRotation()
     {
-        return new Vector3(
-            Utility.GetValueFromCoarseFine(xRotationCoarse, xRotationFine, -270, 270),
-            Utility.GetValueFromCoarseFine(yRotationCoarse, yRotationFine, -270, 270),
-            Utility.GetValueFromCoarseFine(zRotationCoarse, zRotationFine, -270, 270));
+        // IT FUCKIN WORKS BUT ONLY IN UNITY, DMX DATA THAT SENT IS MESSED UP
+        //return new Vector3(
+        //    Utility.GetValueFromCoarseFine(xRotationCoarse, xRotationFine, -270, 270),
+        //    Utility.GetValueFromCoarseFine(yRotationCoarse, yRotationFine, -270, 270),
+        //    Utility.GetValueFromCoarseFine(zRotationCoarse, zRotationFine, -270, 270)) * 540;
+        return Quaternion.Euler(new Vector3(
+            Utility.GetValueFromCoarseFine(xRotationCoarse, xRotationFine),
+            Utility.GetValueFromCoarseFine(yRotationCoarse, yRotationFine),
+            Utility.GetValueFromCoarseFine(zRotationCoarse, zRotationFine)) * 540);
     }
 }

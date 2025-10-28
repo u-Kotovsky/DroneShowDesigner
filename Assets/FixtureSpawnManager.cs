@@ -71,8 +71,8 @@ public class FixtureSpawnManager : MonoBehaviour
     }
 
     private TrussState trussState = TrussState.WaitingForTimer;
-    private float trussSwapTimer = 0;
-    private int currentTrussPreset = 0;
+    private float trussSwapTimer;
+    private int currentTrussPreset;
     private int nextTrussPreset = 1;
 
     private void Update()
@@ -99,7 +99,7 @@ public class FixtureSpawnManager : MonoBehaviour
         {
             case TrussState.WaitingForTimer:
                 trussSwapTimer += Time.deltaTime;
-                if (trussSwapTimer >= 20)
+                if (trussSwapTimer >= 5)
                 {
                     trussSwapTimer = 0;
                     trussState = TrussState.Moving;
@@ -115,10 +115,15 @@ public class FixtureSpawnManager : MonoBehaviour
                         trussPresets[nextTrussPreset][i].GetPosition(), 
                         Utility.MapRange(trussSwapTimer, 0, 5, 0, 1));
                     
-                    mobileTrussPool[i].transform.localRotation = Quaternion.Lerp(
-                        Quaternion.Euler(trussPresets[currentTrussPreset][i].GetRotation()),
-                        Quaternion.Euler(trussPresets[nextTrussPreset][i].GetRotation()), 
+                    mobileTrussPool[i].transform.localRotation = Quaternion.Slerp(
+                        trussPresets[currentTrussPreset][i].GetRotation(),
+                        trussPresets[nextTrussPreset][i].GetRotation(), 
                         Utility.MapRange(trussSwapTimer, 0, 5, 0, 1));
+                    
+                    //mobileTrussPool[i].transform.localRotation = Quaternion.Slerp(
+                    //    Quaternion.Euler(trussPresets[currentTrussPreset][i].GetRotation()),
+                    //    Quaternion.Euler(trussPresets[nextTrussPreset][i].GetRotation()), 
+                    //    Utility.MapRange(trussSwapTimer, 0, 5, 0, 1));
                 }
                 
                 if (trussSwapTimer >= 7.5f)
@@ -276,11 +281,14 @@ public class FixtureSpawnManager : MonoBehaviour
         trussPresets[4] = preset5;
         
         SetTrussPreset(trussPresets[0]);
+
+        Debug.Log($"Mathf inverse lerp -270 270 70: {Mathf.InverseLerp(-270, 270, 70)}");
         
         // test case:
         // we have 5, 63
-        byte coarse1 = 5;
-        byte fine1 = 63;
+        
+        
+        
         Test1(5, 63);
         Test1(176, 38);
     }
@@ -291,7 +299,8 @@ public class FixtureSpawnManager : MonoBehaviour
         {
             GameObject truss1 = mobileTrussPool[i];
             truss1.transform.localPosition = preset[i].GetPosition();
-            truss1.transform.localRotation = Quaternion.Euler(preset[i].GetRotation());
+            truss1.transform.localRotation = preset[i].GetRotation();
+            //truss1.transform.localRotation = Quaternion.Euler(preset[i].GetRotation());
         }
     }
 

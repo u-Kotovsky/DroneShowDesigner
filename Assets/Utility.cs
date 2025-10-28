@@ -20,13 +20,13 @@ public class Utility
     public static byte GetCoarse(float input, float minValue = -800, float maxValue = 800)
     {
         // 1) clamp
-        input = Mathf.Clamp(input, minValue, maxValue);
+        //input = Mathf.Clamp(input, minValue, maxValue);
         // 2) normalize
-        float normalized = Mathf.InverseLerp(minValue, maxValue, input);
+        double normalized = Mathf.InverseLerp(minValue, maxValue, input);
         // 3) scale
         uint value = (uint)(normalized * ushort.MaxValue);
         // 4) get upper byte
-        float coarse = value >> 8;
+        double coarse = value >> 8;
         // 5) return byte value
         return (byte)coarse;
     }
@@ -34,13 +34,13 @@ public class Utility
     public static byte GetFine(float input, float minValue = -800, float maxValue = 800)
     {
         // 1) clamp
-        input = Mathf.Clamp(input, minValue, maxValue);
+        //input = Mathf.Clamp(input, minValue, maxValue);
         // 2) normalize
-        float normalized = Mathf.InverseLerp(minValue, maxValue, input);
+        double normalized = Mathf.InverseLerp(minValue, maxValue, input);
         // 3) scale
         uint value = (uint)(normalized * ushort.MaxValue);
         // 4) get upper byte
-        float fine = value & 0xFF;
+        double fine = value & 0xFF;
         // 5) return byte value
         return (byte)fine;
     }
@@ -52,11 +52,19 @@ public class Utility
         return Mathf.Lerp(minValue, maxValue, value); //MapRange(value, 0, 1, minValue, maxValue);
     }
     
-    public static float GetValueFromCoarseFine(byte coarse, byte fine, float minValue = -800, float maxValue = 800)
+    
+    public static float GetValueFromCoarseFine(byte coarse, byte fine, float minValue, float maxValue)
     {
         uint combinedValue = ((uint)coarse << 8) | fine;
         float normalized = combinedValue / (float)ushort.MaxValue;
         return Mathf.Lerp(minValue, maxValue, normalized);
+    }
+    
+    public static float GetValueFromCoarseFine(byte coarse, byte fine)
+    {
+        uint combinedValue = ((uint)coarse << 8) | fine;
+        float normalized = combinedValue / (float)ushort.MaxValue;
+        return normalized;
     }
 }
 
