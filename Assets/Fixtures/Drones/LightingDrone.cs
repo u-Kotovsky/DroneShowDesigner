@@ -65,8 +65,8 @@ namespace Fixtures.Drones
                 GUILayout.Space(10);
                 GUILayout.Label("Editor-only preview features");
                 
-                #region Collect data as [0, 0, 0 ... 0]
-                EditorGUILayout.LabelField($"Copy raw DMX data array");
+                #region Collect data in format [VALUE, ...]
+                EditorGUILayout.LabelField($"Copy DMX data in format [VALUE, ...]");
                 EditorGUILayout.BeginHorizontal();
                 
                 if (GUILayout.Button("Copy All"))
@@ -84,7 +84,7 @@ namespace Fixtures.Drones
                 GUILayout.Space(10);
                 
                 #region Collect data as UNIVERSE.CHANNEL_VALUE array
-                EditorGUILayout.LabelField($"Copy raw DMX position and data array in format UNIVERSE.CHANNEL_VALUE");
+                EditorGUILayout.LabelField($"Copy DMX data in format UNIVERSE.CHANNEL_VALUE");
                 EditorGUILayout.BeginHorizontal();
                 
                 if (GUILayout.Button("Copy All"))
