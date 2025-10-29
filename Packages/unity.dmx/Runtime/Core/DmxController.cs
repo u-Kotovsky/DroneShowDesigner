@@ -5,6 +5,7 @@ using System.Net;
 using System.Net.Sockets;
 using ArtNet.Packets;
 using ArtNet.Sockets;
+using ArtNet.Enums;
 using Unity_DMX.Device;
 using UnityEngine;
 
@@ -53,8 +54,6 @@ namespace Unity_DMX.Core
         {
             artnet.Close();
         }
-
-        public bool newPacket;
         
         private void Awake()
         {
@@ -64,30 +63,30 @@ namespace Unity_DMX.Core
             //なのだが、デバッグがめんどくさくなる
             dmxToSend ??= new ArtNetDmxPacket();
             dmxToSend.DmxData = new byte[512];
-
+            dmxDataMap = new Dictionary<int, byte[]>();
+            
             artnet.NewPacket += (object sender, NewPacketEventArgs<ArtNetPacket> e) =>
             {
-                newPacket = true;
-                if (e.Packet.OpCode == ArtNet.Enums.ArtNetOpCodes.Dmx)
+                if (e.Packet.OpCode != ArtNetOpCodes.Dmx) return;
+                
+                var packet = e.Packet as ArtNetDmxPacket;
+                
+                if (packet == null) throw new NullReferenceException();
+                
+                if (packet.DmxData != _dmxData) _dmxData = packet.DmxData;
+
+                var universe = packet.Universe;
+                
+                if (dmxDataMap.ContainsKey(universe))
                 {
-                    var packet //= latestReceivedDmx 
-                        = e.Packet as ArtNetDmxPacket;
-
-                    if (packet.DmxData != _dmxData)
-                        _dmxData = packet.DmxData;
-
-                    var universe = packet.Universe;
-                    if (dmxDataMap.ContainsKey(universe))
-                        dmxDataMap[universe] = packet.DmxData;
-                    else
-                        dmxDataMap.Add(universe, packet.DmxData);
+                    dmxDataMap[universe] = packet.DmxData;
+                    return;
                 }
+                
+                dmxDataMap.Add(universe, packet.DmxData);
             };
 
-            if (!useBroadcast || !isServer)
-                remote = new IPEndPoint(FindFromHostName(remoteIP), remotePort);
-
-            dmxDataMap = new Dictionary<int, byte[]>();
+            if (!useBroadcast || !isServer) remote = new IPEndPoint(FindFromHostName(remoteIP), remotePort);
         }
 
         private void Update()
