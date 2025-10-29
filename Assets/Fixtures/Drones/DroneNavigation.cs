@@ -13,11 +13,14 @@ namespace Fixtures.Drones
     public class DroneNavigation : MonoBehaviour
     {
         private BaseDrone drone;
-        private DroneNavigationState state = DroneNavigationState.None;
+        public DroneNavigationState state = DroneNavigationState.None;
         private float timer;
         
         private Vector3 lastPosition;
         private Vector3 nextPosition;
+
+        public Color waitColor = Color.red;
+        public Color moveColor = Color.green;
     
         private void Start()
         {
@@ -39,14 +42,7 @@ namespace Fixtures.Drones
                         timer = 0;
                         state = DroneNavigationState.UpdatingPosition;
                         nextPosition = NextRandomPosition();
-                        try
-                        {
-                            ((LightingDrone)drone).color = Color.red;
-                        }
-                        catch (Exception e)
-                        {
-                            Debug.LogException(e);
-                        }
+                        ((LightingDrone)drone).color = waitColor;
                     }
                     break;
                 case DroneNavigationState.UpdatingPosition:
@@ -60,14 +56,7 @@ namespace Fixtures.Drones
                         state = DroneNavigationState.WaitingForTimer;
                         transform.localPosition = nextPosition;
                         lastPosition = nextPosition;
-                        try
-                        {
-                            ((LightingDrone)drone).color = Color.green;
-                        }
-                        catch (Exception e)
-                        {
-                            Debug.LogException(e);
-                        }
+                        ((LightingDrone)drone).color = moveColor;
                     }
                     break;
                 

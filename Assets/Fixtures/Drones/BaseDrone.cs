@@ -18,9 +18,6 @@ namespace Fixtures.Drones
         
         private void Start()
         {
-            MinPosition = new Vector3(-800, -800, -800);
-            MaxPosition = new Vector3(800, 800, 800);
-            
             List<Renderer> renderers = new List<Renderer>();
             
             foreach (Transform childs in transform)
