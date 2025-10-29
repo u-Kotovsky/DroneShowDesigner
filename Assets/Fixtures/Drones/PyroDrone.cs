@@ -18,8 +18,8 @@ namespace Fixtures.Drones
             Buffer = new byte[10]; // (0 -> 6) Position Coarse + Fine, (7 -> 9) Pitch + Yaw + Roll, (10) Index
             MinAngle = -180;
             MaxAngle = 180;
-            MinPosition = -800;
-            MaxPosition = 800;
+            MinPosition = new Vector3(-800, -800, -800);
+            MaxPosition = new Vector3(800, 800, 800);
         }
 
         public void WriteDmxRotation(Vector3 eulerAngles)

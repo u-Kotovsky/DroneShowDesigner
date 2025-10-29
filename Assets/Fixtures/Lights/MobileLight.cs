@@ -10,9 +10,8 @@ namespace Fixtures.Lights
         {
             Buffer = new byte[6];
             
-            // TODO: MinXPosition, MinYPosition, MinZPosition as well Max values
-            MinPosition = -50;
-            MaxPosition = 50;
+            MinPosition = new Vector3(-50, -50, -50);
+            MaxPosition = new Vector3(50, 50, 50);
         }
         
         public new byte[] GetDmxData()
@@ -35,7 +34,7 @@ namespace Fixtures.Lights
                 
                 GUILayout.Space(10);
 
-                #region Collect data as [0, 0, 0 ... 0]
+                #region Collect data in format [VALUE, ...]
                 EditorGUILayout.LabelField($"Copy DMX data in format [VALUE, ...]");
                 
                 if (GUILayout.Button("Copy All"))

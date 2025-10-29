@@ -10,13 +10,13 @@ namespace Fixtures.Truss
         {
             Buffer = new byte[14];
 
-            MinPosition = -50;
-            MaxPosition = 50;
             MinAngle = -270;
             MaxAngle = 270;
+            MinPosition = new Vector3(-50, -50, -50);
+            MaxPosition = new Vector3(50, 50, 50);
         }
 
-        public float GetMaxPosition()
+        public Vector3 GetMaxPosition()
         {
             return MaxPosition;
         }
@@ -47,7 +47,7 @@ namespace Fixtures.Truss
                 
                 GUILayout.Space(10);
 
-                #region Collect data as [0, 0, 0 ... 0]
+                #region Collect data in format [VALUE, ...]
                 EditorGUILayout.LabelField($"Copy DMX data in format [VALUE, ...]");
                 
                 if (GUILayout.Button("Copy All"))

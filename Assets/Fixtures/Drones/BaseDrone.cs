@@ -18,8 +18,8 @@ namespace Fixtures.Drones
         
         private void Start()
         {
-            MinPosition = -800;
-            MaxPosition = 800;
+            MinPosition = new Vector3(-800, -800, -800);
+            MaxPosition = new Vector3(800, 800, 800);
             
             List<Renderer> renderers = new List<Renderer>();
             

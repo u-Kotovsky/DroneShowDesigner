@@ -25,19 +25,19 @@ namespace Fixtures
         private byte zPositionCoarse;
         private byte zPositionFine;
 
-        protected float MinPosition = -50;
-        protected float MaxPosition = 50;
+        protected Vector3 MinPosition = new Vector3(-50, -50, -50);
+        protected Vector3 MaxPosition = new Vector3(50, 50, 50);
     
         public void WriteDmxPosition(int offset, Vector3 position, bool flipYtoZ = false)
         {
-            xPositionCoarse = Utility.GetCoarse(position.x, MinPosition, MaxPosition);
-            xPositionFine = Utility.GetFine(position.x, MinPosition, MaxPosition);
+            xPositionCoarse = Utility.GetCoarse(position.x, MinPosition.x, MaxPosition.x);
+            xPositionFine = Utility.GetFine(position.x, MinPosition.x, MaxPosition.x);
         
-            yPositionCoarse = Utility.GetCoarse(position.y, MinPosition, MaxPosition);
-            yPositionFine = Utility.GetFine(position.y, MinPosition, MaxPosition);
+            yPositionCoarse = Utility.GetCoarse(position.y, MinPosition.y, MaxPosition.y);
+            yPositionFine = Utility.GetFine(position.y, MinPosition.y, MaxPosition.y);
         
-            zPositionCoarse = Utility.GetCoarse(position.z, MinPosition, MaxPosition);
-            zPositionFine = Utility.GetFine(position.z, MinPosition, MaxPosition);
+            zPositionCoarse = Utility.GetCoarse(position.z, MinPosition.z, MaxPosition.z);
+            zPositionFine = Utility.GetFine(position.z, MinPosition.z, MaxPosition.z);
         
             Buffer[offset + 0] = xPositionCoarse;
             Buffer[offset + 1] = xPositionFine;

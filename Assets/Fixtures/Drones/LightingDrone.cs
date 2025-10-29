@@ -39,8 +39,8 @@ namespace Fixtures.Drones
         {
             Buffer = new byte[9]; // (0 -> 6) Position Coarse + Fine, (7 -> 9) Color
 
-            MinPosition = -800;
-            MaxPosition = 800;
+            MinPosition = new Vector3(-800, -800, -800);
+            MaxPosition = new Vector3(800, 800, 800);
         }
         
         public new byte[] GetDmxData()
