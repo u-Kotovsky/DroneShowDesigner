@@ -1,0 +1,14 @@
+{
+	"name" : "edmx.artnet",
+	"displayName" : "Unity Art-Net",
+	"version" : "1.0.0",
+	"description" : "",
+	"unity" : "2022.3",
+	"gitDependencies" : {},
+	"vpmDependencies" : {},
+	"dependencies" : {},
+	"legacyFolders" : {},
+	"legacyFiles" : {},
+	"legacyPackages" : []
+
+}

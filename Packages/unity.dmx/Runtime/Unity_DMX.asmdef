@@ -1,0 +1,16 @@
+{
+    "name": "Unity_DMX",
+    "rootNamespace": "Unity_DMX",
+    "references": [
+        "GUID:13ac8692b93915f40b691546413f0121"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
