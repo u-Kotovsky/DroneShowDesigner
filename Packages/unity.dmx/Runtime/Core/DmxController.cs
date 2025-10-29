@@ -59,7 +59,7 @@ namespace Unity_DMX.Core
         private void Awake()
         {
             artnet = new ArtNetSocket();
-            if (isServer) artnet.Open(FindFromHostName(remoteIP), null);
+            if (isServer) artnet.Open(FindFromHostName(remoteIP), remotePort, null);
             //サブネットマスクを設定すると、自分に送らないアドレスを設定してくれる（便利！）
             //なのだが、デバッグがめんどくさくなる
             dmxToSend ??= new ArtNetDmxPacket();

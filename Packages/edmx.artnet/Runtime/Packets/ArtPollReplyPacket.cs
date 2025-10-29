@@ -18,7 +18,10 @@ namespace ArtNet.Packets
     {
         public ArtPollReplyPacket() : base(ArtNetOpCodes.PollReply) { }
 
-        public ArtPollReplyPacket(ArtNetRecieveData data) : base(data) { }
+        public ArtPollReplyPacket(ArtNetRecieveData data, short port = 6454) : base(data)
+        {
+            Port = port;
+        }
 
         #region Packet Properties
 
@@ -36,7 +39,7 @@ namespace ArtNet.Packets
             }
         }
 
-        private short port = ArtNetSocket.Port;
+        private short port;// = ArtNetSocket.Port;
 
         public short Port
         {

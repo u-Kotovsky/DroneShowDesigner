@@ -78,14 +78,14 @@ namespace ArtNet.Packets
                 data.WriteNetwork(Version);
         }
 
-        public static ArtNetPacket Create(ArtNetRecieveData data)
+        public static ArtNetPacket Create(ArtNetRecieveData data, short port = 6454)
         {
             switch ((ArtNetOpCodes)data.OpCode)
             {
                 case ArtNetOpCodes.Poll:
                     return new ArtPollPacket(data);
                 case ArtNetOpCodes.PollReply:
-                    return new ArtPollReplyPacket(data);
+                    return new ArtPollReplyPacket(data, port);
                 case ArtNetOpCodes.Dmx:
                     return new ArtNetDmxPacket(data);
                 case ArtNetOpCodes.TodRequest:

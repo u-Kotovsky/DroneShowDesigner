@@ -8,13 +8,13 @@ namespace ArtNet.Sockets
 {
     public class ArtNetSocket : Socket
     {
-        public const int Port = 6454;
-
+        public ArtNetSocket() : base(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp) { }
+        
         public event UnhandledExceptionEventHandler UnhandledException;
         public event EventHandler<NewPacketEventArgs<ArtNetPacket>> NewPacket;
         
-        public ArtNetSocket() : base(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp) { }
-
+        public int Port = 6454;
+        
         #region Information
 
         private bool portOpen = false;
@@ -65,10 +65,11 @@ namespace ArtNet.Sockets
 
         #endregion
         
-        public void Open(IPAddress localIp, IPAddress localSubnetMask)
+        public void Open(IPAddress localIp, int remotePort, IPAddress localSubnetMask)
         {
             LocalIP = localIp;
             LocalSubnetMask = localSubnetMask;
+            Port = remotePort;
 
             SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
             Bind(new IPEndPoint(LocalIP, Port));
@@ -111,7 +112,7 @@ namespace ArtNet.Sockets
                         {
                             LastPacket = DateTime.Now;
 
-                            ProcessPacket((IPEndPoint)remoteEndPoint, ArtNetPacket.Create(recieveState));
+                            ProcessPacket((IPEndPoint)remoteEndPoint, ArtNetPacket.Create(recieveState, (short)Port));
                         }
                     }
                 }
