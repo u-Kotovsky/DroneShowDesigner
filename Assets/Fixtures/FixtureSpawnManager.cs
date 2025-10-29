@@ -44,6 +44,9 @@ namespace Fixtures
         {
             globalDmxBuffer = new byte[512 * 40]; // ~9000 channels
             
+            Application.targetFrameRate = 60;
+            Application.runInBackground = true;
+            
             if (usePyroDrone)
                 SpawnPyroDrones();
             if (useLightingDrone)
@@ -53,23 +56,23 @@ namespace Fixtures
             if (useMobileLight)
                 SpawnMobileLight();
 
-            Application.targetFrameRate = 60;
-            Application.runInBackground = true;
-        
-            lightingDronePool[0].transform.parent.localPosition = new Vector3(-15, 20, 50);
-        
-            int counter = 0;
-            for (var i = 0; i < 500; i++)
+            if (useLightingDrone)
             {
-                for (int j = 0; j < 32; j++)
+                lightingDronePool[0].transform.parent.localPosition = new Vector3(-15, 20, 50);
+            
+                int counter = 0;
+                for (var i = 0; i < 500; i++)
                 {
-                    if (lightingDronePool.Length <= counter) return;
-                    var drone = lightingDronePool[counter];
-                
-                    drone.transform.localPosition = new Vector3(j, i, 0);
-                    drone.GetComponent<LightingDrone>().color = Color.white;
-                
-                    counter++;
+                    for (int j = 0; j < 32; j++)
+                    {
+                        if (lightingDronePool.Length <= counter) return;
+                        var drone = lightingDronePool[counter];
+                    
+                        drone.transform.localPosition = new Vector3(j, i, 0);
+                        drone.GetComponent<LightingDrone>().color = Color.white;
+                    
+                        counter++;
+                    }
                 }
             }
         }
