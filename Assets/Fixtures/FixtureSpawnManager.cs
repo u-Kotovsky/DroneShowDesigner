@@ -20,13 +20,15 @@ namespace Fixtures
         
         [Header("Drone Spawn Settings")]
         public GameObject dronePrefab;
-        public GameObject[] lightingDronePool;
-        public GameObject[] pyroDronePool;
-
-        public int lightingDroneSpawnCount = 1000;
-        public int pyroDroneSpawnCount = 16;
         public float droneMargin = 1;
         
+        [Header("Pyro Drone Spawn Settings")]
+        public GameObject[] pyroDronePool;
+        public int pyroDroneSpawnCount = 16;
+        
+        [Header("Lighting Drone Spawn Settings")]
+        public GameObject[] lightingDronePool;
+        public int lightingDroneSpawnCount = 1000;
         
         [Header("Mobile Truss Spawn Settings")]
         public GameObject mobileTrussPrefab;
