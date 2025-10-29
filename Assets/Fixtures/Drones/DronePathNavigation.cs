@@ -3,6 +3,12 @@ using UnityEngine;
 
 namespace Fixtures.Drones
 {
+    public enum DronePathState
+    {
+        None,
+        WaitingBeforeStart,
+        Moving
+    }
     public class DronePathNavigation : MonoBehaviour
     {
         private BaseDrone drone;
@@ -16,6 +22,9 @@ namespace Fixtures.Drones
         public float time;
 
         public Vector3 position;
+        
+        public DronePathState state = DronePathState.WaitingBeforeStart;
+        public float waitBeforeStart = 0;
 
         private void Awake()
         {
@@ -26,8 +35,33 @@ namespace Fixtures.Drones
         private void Update()
         {
             if (targetPathway == null) return;
-            
+
+            switch (state)
+            {
+                case DronePathState.WaitingBeforeStart:
+                    WaitBeforeStart();
+                    break;
+                case DronePathState.Moving:
+                    CalculateMovement();
+                    break;
+            }
+        }
+
+        private void WaitBeforeStart()
+        {
             time += Time.deltaTime;
+
+            if (time >= waitBeforeStart)
+            {
+                time = 0;
+                state = DronePathState.Moving;
+            }
+        }
+
+        private void CalculateMovement()
+        {
+            time += Time.deltaTime;
+            
             if (time >= speed)
             {
                 time = 0;
@@ -40,7 +74,6 @@ namespace Fixtures.Drones
             
             position = Vector3.Slerp(targetPathway.GetChild(currentPathwayIndex).position,
                 targetPathway.GetChild(nextPathwayIndex).position, Utility.MapRange(time, 0, speed, 0, 1));
-            
             
             transform.position = position;
         }
