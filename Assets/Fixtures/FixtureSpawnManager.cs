@@ -49,6 +49,45 @@ namespace Fixtures
             Application.targetFrameRate = 60;
             Application.runInBackground = true;
             
+            byte[][] dronePos = new byte[][]
+            {
+                new byte[] { 131, 183, 127, 67, 128, 28 },
+                new byte[] { 131, 38, 125, 228, 128, 28 },
+                new byte[] { 130, 26, 124, 218, 128, 28 },
+                new byte[] { 128, 189, 124, 73, 128, 28 },
+                new byte[] { 127, 65, 124, 73, 128, 28 },
+                new byte[] { 125, 228, 124, 218, 128, 28 },
+                new byte[] { 124, 216, 125, 228, 128, 28 },
+                new byte[] { 124, 71, 127, 67, 128, 28 },
+                new byte[] { 124, 71, 128, 187, 128, 28 },
+                new byte[] { 124, 216, 130, 26, 128, 28 },
+                new byte[] { 125, 228, 131, 36, 128, 28 },
+                new byte[] { 127, 65, 131, 181, 128, 28 },
+                new byte[] { 128, 189, 131, 181, 128, 28 },
+                new byte[] { 130, 26, 131, 36, 128, 28 },
+                new byte[] { 131, 38, 130, 26, 128, 28 },
+                new byte[] { 131, 183, 128, 187, 128, 28 }
+            };
+            
+            string[] output = new string[dronePos.Length];
+            
+            for (var i = 0; i < dronePos.Length; i++)
+            {
+                var position = dronePos[i];
+                byte[] bytes = new byte[position.Length];
+
+                bytes[0] = position[0];
+                bytes[1] = position[1];
+                bytes[2] = position[4];
+                bytes[3] = position[5];
+                bytes[4] = position[2];
+                bytes[5] = position[3];
+                
+                output[i] = "new PyroDronePreset(" + string.Join(", ", bytes) + ")";
+            }
+            
+            Debug.Log(string.Join(",\n", output));
+            
             if (usePyroDrone)
                 SpawnPyroDrones();
             if (useLightingDrone)
@@ -348,8 +387,9 @@ namespace Fixtures
                 fixture.fixtureIndex = i;
                 fixture.spawnManager = this;
                 fixture.globalChannelStart = offset + (i * fixture.GetDmxData().Length);
-                fixture.gameObject.AddComponent<DroneNavigation>();
                 fixture.gameObject.name = "LightingDrone #" + fixture.fixtureIndex;
+                //fixture.gameObject.AddComponent<DroneNavigation>();
+                if (i == 0) fixture.gameObject.AddComponent<DronePathNavigation>();
             }
             
             Debug.Log($"{lightingDronePool.Length} lighting drones are instanced");
