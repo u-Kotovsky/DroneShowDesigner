@@ -118,18 +118,17 @@ namespace Fixtures
         public static void CopyDmxValuesWithOffsetAsMa3Representation(byte[] dmxData, int globalChannelStart, int offset, int size)
         {
             byte[] bytes = new byte[size];
-                    
+            
             System.Buffer.BlockCopy(dmxData, offset, bytes, 0, size);
             
             int universe = (int)Mathf.Floor(globalChannelStart / 512) + 1;
             int addressStart = (globalChannelStart % 512) + 1;
             string[] values = new string[bytes.Length];
                     
-            for (var i = offset; i < values.Length; i++)
+            for (var i = 0; i < values.Length; i++)
                 values[i] = $"{universe}.{addressStart + i} {bytes[i]}";
 
             CopyValuesAsArray(values);
-            
         }
     }
 }
