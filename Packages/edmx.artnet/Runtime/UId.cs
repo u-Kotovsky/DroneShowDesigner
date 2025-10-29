@@ -1,15 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace ArtNet.Rdm
 {
     public class UId:IComparable
     {
-        protected UId()
-        {
-        }
+        protected UId() { }
 
         public UId(ushort manufacturerId,uint deviceId)
         {
@@ -31,9 +26,7 @@ namespace ArtNet.Rdm
         /// <param name="productId">The product identifier, stored in the high byte of the <see cref="DeviceId"/>.</param>
         /// <param name="deviceCode">The device code, stored in the other 3 bytes of the <see cref="DeviceId"/>.</param>
         public UId(ushort manufacturerId, byte productId, uint deviceCode)
-            : this(manufacturerId, (uint)((productId << 24) + (deviceCode & 0x00FFFFFF)))
-        {
-        }
+            : this(manufacturerId, (uint)((productId << 24) + (deviceCode & 0x00FFFFFF))) { }
 
         public ushort ManufacturerId { get; protected set; }
 
@@ -82,7 +75,6 @@ namespace ArtNet.Rdm
 
         #endregion
         
-
         public override string ToString()
         {
             return string.Format("{0}:{1}", ManufacturerId.ToString("X4"), DeviceId.ToString("X8"));

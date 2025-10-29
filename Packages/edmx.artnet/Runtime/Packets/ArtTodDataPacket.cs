@@ -7,18 +7,13 @@ namespace ArtNet.Packets
 {
     public class ArtTodDataPacket : ArtNetPacket
     {
-        public ArtTodDataPacket()
-            : base(ArtNetOpCodes.TodData)
+        public ArtTodDataPacket() : base(ArtNetOpCodes.TodData)
         {
             RdmVersion = 1;
             Devices = new List<UId>();
         }
 
-        public ArtTodDataPacket(ArtNetRecieveData data)
-            : base(data)
-        {
-
-        }
+        public ArtTodDataPacket(ArtNetRecieveData data) : base(data) { }
 
         #region Packet Properties
 
@@ -37,8 +32,7 @@ namespace ArtNet.Packets
         public byte BlockCount { get; set; }
 
         public List<UId> Devices { get; set; }
-
-
+        
         #endregion
 
         public override void ReadData(ArtNetBinaryReader data)
@@ -81,7 +75,5 @@ namespace ArtNet.Packets
             foreach (UId id in Devices)
                 writer.Write(id);
         }
-
-
     }
 }

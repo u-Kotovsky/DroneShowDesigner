@@ -5,16 +5,9 @@ namespace ArtNet.Packets
 {
     public class ArtTodControlPacket : ArtNetPacket
     {
-        public ArtTodControlPacket()
-            : base(ArtNetOpCodes.TodControl)
-        {
-        }
+        public ArtTodControlPacket() : base(ArtNetOpCodes.TodControl) { }
 
-        public ArtTodControlPacket(ArtNetRecieveData data)
-            : base(data)
-        {
-
-        }
+        public ArtTodControlPacket(ArtNetRecieveData data) : base(data) { }
 
         #region Packet Properties
 
@@ -23,7 +16,6 @@ namespace ArtNet.Packets
         public ArtTodControlCommand Command { get; set; }
 
         public byte Address { get; set; }
-
 
         #endregion
 

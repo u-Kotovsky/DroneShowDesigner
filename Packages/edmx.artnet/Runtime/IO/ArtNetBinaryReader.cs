@@ -7,10 +7,7 @@ namespace ArtNet.IO
 {
     public class ArtNetBinaryReader : BinaryReader
     {
-        public ArtNetBinaryReader(Stream input)
-            : base(input)
-        {
-        }
+        public ArtNetBinaryReader(Stream input) : base(input) { }
 
         public short ReadNetwork16()
         {

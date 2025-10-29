@@ -9,15 +9,14 @@ namespace Unity_DMX.Core
         public Slider channelSliderOrigin;
         public short universe;
         public int fps;
-
-
-        [SerializeField] DmxController controller;
-        [SerializeField] Slider[] channelSliders;
-        [SerializeField] byte[] dmxData;
-        Thread dmxSender;
+        
+        [SerializeField] private DmxController controller;
+        [SerializeField] private Slider[] channelSliders;
+        [SerializeField] private byte[] dmxData;
+        private Thread dmxSender;
 
         [ContextMenu("build GUI")]
-        void BuildGUI()
+        private void BuildGUI()
         {
             for (var i = 0; i < 512; i++)
             {
@@ -40,22 +39,24 @@ namespace Unity_DMX.Core
             else
                 dmxSender = null;
         }
+        
         public void SetUniverse(string str)
         {
             universe = short.Parse(str);
         }
+        
         public void SetFps(string str)
         {
             var fps = int.Parse(str);
             this.fps = Mathf.Max(1, fps);
         }
+        
         void SetDmxValue(int channel, float val)
         {
             dmxData[channel] = (byte)Mathf.FloorToInt(Mathf.Lerp(0, 255, val));
         }
 
-        // Use this for initialization
-        void Start()
+        private void Start()
         {
             dmxData = new byte[512];
             universe = 0;
@@ -73,7 +74,7 @@ namespace Unity_DMX.Core
                 dmxSender.Abort();
         }
 
-        void SendDmx()
+        private void SendDmx()
         {
             while (true)
             {

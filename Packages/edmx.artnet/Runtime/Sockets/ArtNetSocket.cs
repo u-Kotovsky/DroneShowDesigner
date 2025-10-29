@@ -3,7 +3,6 @@ using ArtNet.Packets;
 using System;
 using System.Net;
 using System.Net.Sockets;
-using UnityEngine;
 
 namespace ArtNet.Sockets
 {
@@ -13,12 +12,8 @@ namespace ArtNet.Sockets
 
         public event UnhandledExceptionEventHandler UnhandledException;
         public event EventHandler<NewPacketEventArgs<ArtNetPacket>> NewPacket;
-
-
-        public ArtNetSocket()
-            : base(System.Net.Sockets.AddressFamily.InterNetwork, System.Net.Sockets.SocketType.Dgram, System.Net.Sockets.ProtocolType.Udp)
-        {            
-        }
+        
+        public ArtNetSocket() : base(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp) { }
 
         #region Information
 
@@ -69,10 +64,7 @@ namespace ArtNet.Sockets
         }
 
         #endregion
-
-
-
-
+        
         public void Open(IPAddress localIp, IPAddress localSubnetMask)
         {
             LocalIP = localIp;
@@ -137,11 +129,9 @@ namespace ArtNet.Sockets
 
         private void ProcessPacket(IPEndPoint source, ArtNetPacket packet)
         {
-            if (packet != null)
-            {
-                if (NewPacket != null)
-                    NewPacket(this, new NewPacketEventArgs<ArtNetPacket>(source, packet));
-            }
+            if (packet == null) return;
+            if (NewPacket != null)
+                NewPacket(this, new NewPacketEventArgs<ArtNetPacket>(source, packet));
         }
 
         protected void OnUnhandledException(Exception ex)

@@ -90,7 +90,6 @@ namespace Unity_DMX.Core
             dmxDataMap = new Dictionary<int, byte[]>();
         }
 
-
         private void Update()
         {
             if (dmxToSend is null) return;
@@ -102,7 +101,7 @@ namespace Unity_DMX.Core
                 var dmxData = dmxDataMap[universe];
                 if (dmxData == null) continue;
 
-                var universeDevices = universes.Where(u => u.universe == universe).FirstOrDefault();
+                var universeDevices = universes.FirstOrDefault(u => u.universe == universe);
                 if (universeDevices != null)
                     foreach (var d in universeDevices.devices)
                         d.SetData(dmxData.Skip(d.startChannel).Take(d.NumChannels).ToArray());

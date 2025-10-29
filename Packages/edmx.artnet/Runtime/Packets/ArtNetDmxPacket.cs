@@ -1,5 +1,4 @@
-﻿
-using ArtNet.Enums;
+﻿using ArtNet.Enums;
 using ArtNet.IO;
 
 namespace ArtNet.Packets
@@ -7,16 +6,9 @@ namespace ArtNet.Packets
     [System.Serializable]
     public class ArtNetDmxPacket : ArtNetPacket
     {
-        public ArtNetDmxPacket()
-            : base(ArtNetOpCodes.Dmx)
-        {
-        }
+        public ArtNetDmxPacket() : base(ArtNetOpCodes.Dmx) { }
 
-        public ArtNetDmxPacket(ArtNetRecieveData data)
-            : base(data)
-        {
-
-        }
+        public ArtNetDmxPacket(ArtNetRecieveData data) : base(data) { }
 
         #region Packet Properties
         

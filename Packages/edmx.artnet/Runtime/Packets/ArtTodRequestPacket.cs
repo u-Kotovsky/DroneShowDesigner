@@ -6,17 +6,12 @@ namespace ArtNet.Packets
 {
     public class ArtTodRequestPacket : ArtNetPacket
     {
-        public ArtTodRequestPacket()
-            : base(ArtNetOpCodes.TodRequest)
+        public ArtTodRequestPacket() : base(ArtNetOpCodes.TodRequest)
         {
             RequestedUniverses = new List<byte>();
         }
 
-        public ArtTodRequestPacket(ArtNetRecieveData data)
-            : base(data)
-        {
-
-        }
+        public ArtTodRequestPacket(ArtNetRecieveData data) : base(data) { }
 
         #region Packet Properties
 
@@ -25,7 +20,6 @@ namespace ArtNet.Packets
         public byte Command { get; set; }
 
         public List<byte> RequestedUniverses { get; set; }
-
 
         #endregion
 
@@ -50,7 +44,5 @@ namespace ArtNet.Packets
             data.Write((byte)RequestedUniverses.Count);
             data.Write(RequestedUniverses.ToArray());
         }
-
-
     }
 }

@@ -16,16 +16,9 @@ namespace ArtNet.Packets
 
     public class ArtPollReplyPacket : ArtNetPacket
     {
-        public ArtPollReplyPacket()
-            : base(ArtNetOpCodes.PollReply)
-        {
-        }
+        public ArtPollReplyPacket() : base(ArtNetOpCodes.PollReply) { }
 
-        public ArtPollReplyPacket(ArtNetRecieveData data)
-            : base(data)
-        {
-
-        }
+        public ArtPollReplyPacket(ArtNetRecieveData data) : base(data) { }
 
         #region Packet Properties
 
@@ -58,9 +51,7 @@ namespace ArtNet.Packets
             get { return firmwareVersion; }
             set { firmwareVersion = value; }
         }
-
-
-
+        
         private short subSwitch = 0;
 
         public short SubSwitch

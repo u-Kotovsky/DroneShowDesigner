@@ -4,7 +4,10 @@ namespace Unity_DMX.Device
 {
     public class MovingLight : DMXDevice
     {
-        public override int NumChannels { get { throw new System.NotImplementedException(); } }
+        public override int NumChannels
+        {
+            get { throw new System.NotImplementedException(); }
+        }
         public Transform panRotater;
         public Transform tiltRotater;
         new public Light light;
@@ -24,13 +27,14 @@ namespace Unity_DMX.Device
         public override void SetData(byte[] dmxData)
         {
             base.SetData(dmxData);
-
         }
-        void SetPan(byte panData, byte panFineData = 0)
+        
+        private void SetPan(byte panData, byte panFineData = 0)
         {
             panTarget = (panData - 127 + panFineData / 256f) * panMovement / 256f;
         }
-        void SetTilt(byte tiltData, byte tiltFineData = 0)
+        
+        private void SetTilt(byte tiltData, byte tiltFineData = 0)
         {
             tiltTarget = (tiltData - 127f + tiltFineData / 256f) * tiltMovement / 256f;
         }
@@ -39,32 +43,33 @@ namespace Unity_DMX.Device
         {
             UpdateRotation();
         }
-        void UpdateRotation()
+        
+        private void UpdateRotation()
         {
-            var dpan = (panTarget - pan);
-            var dtilt = (tiltTarget - tilt);
-            if(0 < dpan)
+            var dpan = panTarget - pan;
+            var dtilt = tiltTarget - tilt;
+            if (0 < dpan)
             {
                 dpan = Mathf.Min(Mathf.Abs(dpan), Time.deltaTime * rotSpeed) * Mathf.Sign(dpan);
                 pan += dpan;
                 panRotater.Rotate(0, 0, dpan);
             }
-            if(0 < dtilt)
+            if (0 < dtilt)
             {
                 dtilt = Mathf.Min(Mathf.Abs(dtilt), Time.deltaTime * rotSpeed) * Mathf.Sign(dtilt);
                 tilt += dtilt;
                 tiltRotater.Rotate(dtilt, 0, 0);
             }
         }
-        void UpdateStrobo()
+        private void UpdateStrobo()
         {
-
         }
-        void SetColor()
+        
+        private void SetColor()
         {
-
         }
-        float GetColor(byte val, byte fineVal = 0)
+        
+        private float GetColor(byte val, byte fineVal = 0)
         {
             return val / 256f + fineVal / (256f * 256f);
         }

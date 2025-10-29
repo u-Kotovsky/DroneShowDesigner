@@ -40,7 +40,6 @@ namespace ArtNet.Packets
             }
         }
 
-
         private short version = 14;
 
         public short Version
@@ -67,7 +66,6 @@ namespace ArtNet.Packets
             //For some reason the poll packet header does not include the version.
             if (OpCode != ArtNetOpCodes.PollReply)
                 Version = data.ReadNetwork16();
-
         }
 
         public virtual void WriteData(ArtNetBinaryWriter data)
@@ -78,7 +76,6 @@ namespace ArtNet.Packets
             //For some reason the poll packet header does not include the version.
             if (OpCode != ArtNetOpCodes.PollReply)
                 data.WriteNetwork(Version);
-
         }
 
         public static ArtNetPacket Create(ArtNetRecieveData data)

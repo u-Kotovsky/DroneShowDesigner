@@ -22,5 +22,4 @@
         StBackup = 0x04,
         StConfig = 0x05
     }
-
 }

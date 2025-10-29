@@ -5,7 +5,7 @@ namespace Unity_DMX.Device
     [RequireComponent(typeof(Light))]
     public class SimpleDMXLight : DMXDevice
     {
-        new Light light;
+        private new Light light;
 
         public override int NumChannels{ get { return 4; } }
 

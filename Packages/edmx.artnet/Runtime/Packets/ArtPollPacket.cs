@@ -5,16 +5,9 @@ namespace ArtNet.Packets
 {
     public class ArtPollPacket : ArtNetPacket
     {
-        public ArtPollPacket()
-            : base(ArtNetOpCodes.Poll)
-        {
-        }
+        public ArtPollPacket() : base(ArtNetOpCodes.Poll) { }
 
-        public ArtPollPacket(ArtNetRecieveData data)
-            : base(data)
-        {
-
-        }
+        public ArtPollPacket(ArtNetRecieveData data) : base(data) { }
 
         #region Packet Properties
 

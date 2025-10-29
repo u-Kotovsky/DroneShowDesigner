@@ -7,10 +7,7 @@ namespace ArtNet.IO
 {
     public class ArtNetBinaryWriter : BinaryWriter
     {
-        public ArtNetBinaryWriter(Stream output)
-            : base(output)
-        {
-        }
+        public ArtNetBinaryWriter(Stream output) : base(output) { }
 
         public void WriteNetwork(byte value)
         {
