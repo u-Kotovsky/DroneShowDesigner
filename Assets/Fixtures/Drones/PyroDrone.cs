@@ -7,11 +7,11 @@ namespace Fixtures.Drones
     // TODO: Boundary box visuals/limit for editor usage
     public class PyroDrone : BaseDrone
     {
-        protected byte pitch;
-        protected byte yaw;
-        protected byte roll;
+        public byte pitch;
+        public byte yaw;
+        public byte roll;
         
-        protected byte index;
+        public byte index;
         
         private void Awake()
         {

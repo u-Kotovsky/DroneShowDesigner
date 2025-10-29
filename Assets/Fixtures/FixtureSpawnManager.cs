@@ -295,6 +295,17 @@ namespace Fixtures
             }
             
             Debug.Log($"{pyroDronePool.Length} pyro drones are instanced");
+
+            SetPyroDronePreset(PyroDronePresetManager.presets[0]);
+        }
+        
+        private void SetPyroDronePreset(PyroDronePreset[] preset)
+        {
+            for (var i = 0; i < preset.Length; i++)
+            {
+                GameObject obj = pyroDronePool[i];
+                obj.transform.localPosition = preset[i].GetPosition();
+            }
         }
         
         public void WritePyroDroneDataToGlobalBuffer()
