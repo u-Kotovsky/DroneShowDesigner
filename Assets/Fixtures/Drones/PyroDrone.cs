@@ -15,9 +15,11 @@ namespace Fixtures.Drones
         
         private void Awake()
         {
-            Buffer = new byte[10];
+            Buffer = new byte[10]; // (0 -> 6) Position Coarse + Fine, (7 -> 9) Pitch + Yaw + Roll, (10) Index
             MinAngle = -180;
             MaxAngle = 180;
+            MinPosition = -800;
+            MaxPosition = 800;
         }
 
         public void WriteDmxRotation(Vector3 eulerAngles)
@@ -55,7 +57,7 @@ namespace Fixtures.Drones
             private int roll = 0;
             private int pyroIndex = 0;
 
-            private PyroDrone drone;
+            private PyroDrone fixture;
 
             private static string[] _elements = null;
 
@@ -63,7 +65,7 @@ namespace Fixtures.Drones
             {
                 base.OnInspectorGUI();
 
-                if (drone == null) drone = (PyroDrone)target;
+                if (fixture == null) fixture = (PyroDrone)target;
                 if (_elements == null) _elements = Enum.GetNames(typeof(PyroFXType));
 
                 GUILayout.Space(10);
@@ -83,14 +85,57 @@ namespace Fixtures.Drones
                 {
                     WriteDataToDrone();
                 }
+                
+                GUILayout.Space(10);
+                GUILayout.Label("Editor-only preview features");
+                
+                #region Collect data as [0, 0, 0 ... 0]
+                EditorGUILayout.LabelField($"Copy raw DMX data array");
+                EditorGUILayout.BeginHorizontal();
+                
+                if (GUILayout.Button("Copy All"))
+                    Utility.CopyDmxValuesAsArray(fixture.GetDmxData());
+                
+                if (GUILayout.Button("Copy Position"))
+                    Utility.CopyDmxValuesAsArray(fixture.GetDmxData(), 0, 6);
+                
+                if (GUILayout.Button("Copy Pitch Yaw Roll"))
+                    Utility.CopyDmxValuesAsArray(fixture.GetDmxData(), 6, 3);
+                
+                EditorGUILayout.EndHorizontal();
+                
+                if (GUILayout.Button("Copy Index"))
+                    Utility.CopyDmxValuesAsArray(fixture.GetDmxData(), 9, 1);
+                #endregion
+                
+                GUILayout.Space(10);
+                
+                #region Collect data as UNIVERSE.CHANNEL_VALUE array
+                EditorGUILayout.LabelField($"Copy raw DMX position and data array in format UNIVERSE.CHANNEL_VALUE");
+                EditorGUILayout.BeginHorizontal();
+                
+                if (GUILayout.Button("Copy All"))
+                    Utility.CopyAllDmxValuesAsMa3Representation(fixture.GetDmxData(), fixture.globalChannelStart);
+                
+                if (GUILayout.Button("Copy Position"))
+                    Utility.CopyDmxValuesWithOffsetAsMa3Representation(fixture.GetDmxData(), fixture.globalChannelStart, 0, 6);
+                
+                if (GUILayout.Button("Copy Pitch Yaw Roll"))
+                    Utility.CopyDmxValuesWithOffsetAsMa3Representation(fixture.GetDmxData(), fixture.globalChannelStart, 6, 3);
+                
+                EditorGUILayout.EndHorizontal();
+                
+                if (GUILayout.Button("Copy Index"))
+                    Utility.CopyDmxValuesWithOffsetAsMa3Representation(fixture.GetDmxData(), fixture.globalChannelStart, 9, 1);
+                #endregion
             }
 
             private void WriteDataToDrone()
             {
-                drone.index = (byte)pyroIndex;
-                drone.pitch = (byte)pitch;
-                drone.yaw = (byte)yaw;
-                drone.roll = (byte)roll;
+                fixture.index = (byte)pyroIndex;
+                fixture.pitch = (byte)pitch;
+                fixture.yaw = (byte)yaw;
+                fixture.roll = (byte)roll;
             }
         }
 

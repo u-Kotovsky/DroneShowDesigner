@@ -37,7 +37,10 @@ namespace Fixtures.Drones
         
         private void Awake()
         {
-            Buffer = new byte[9];
+            Buffer = new byte[9]; // (0 -> 6) Position Coarse + Fine, (7 -> 9) Color
+
+            MinPosition = -800;
+            MaxPosition = 800;
         }
         
         public new byte[] GetDmxData()
@@ -51,34 +54,50 @@ namespace Fixtures.Drones
         [CustomEditor(typeof(LightingDrone))]
         public class LightingDrone_Editor : Editor
         {
-            private bool updateOnValidate = true;
-            private Color color = Color.black;
-            private LightingDrone drone;
+            private LightingDrone fixture;
             
             public override void OnInspectorGUI()
             {
                 base.OnInspectorGUI();
                 
-                if (drone == null) drone = (LightingDrone)target;
+                if (fixture == null) fixture = (LightingDrone)target;
                 
+                GUILayout.Space(10);
                 GUILayout.Label("Editor-only preview features");
                 
-                updateOnValidate = EditorGUILayout.Toggle("Update on Validate", updateOnValidate);
+                #region Collect data as [0, 0, 0 ... 0]
+                EditorGUILayout.LabelField($"Copy raw DMX data array");
+                EditorGUILayout.BeginHorizontal();
                 
-                color = EditorGUILayout.ColorField("Color", color);
+                if (GUILayout.Button("Copy All"))
+                    Utility.CopyDmxValuesAsArray(fixture.GetDmxData());
                 
-                if (updateOnValidate)
-                    WriteDataToDrone();
-
-                if (GUILayout.Button("SetPyroEffect"))
-                {
-                    WriteDataToDrone();
-                }
-            }
-
-            private void WriteDataToDrone()
-            {
-                drone.color = color;
+                if (GUILayout.Button("Copy Position"))
+                    Utility.CopyDmxValuesAsArray(fixture.GetDmxData(), 0, 6);
+                
+                if (GUILayout.Button("Copy Color"))
+                    Utility.CopyDmxValuesAsArray(fixture.GetDmxData(), 6, 3);
+                
+                EditorGUILayout.EndHorizontal();
+                #endregion
+                
+                GUILayout.Space(10);
+                
+                #region Collect data as UNIVERSE.CHANNEL_VALUE array
+                EditorGUILayout.LabelField($"Copy raw DMX position and data array in format UNIVERSE.CHANNEL_VALUE");
+                EditorGUILayout.BeginHorizontal();
+                
+                if (GUILayout.Button("Copy All"))
+                    Utility.CopyAllDmxValuesAsMa3Representation(fixture.GetDmxData(), fixture.globalChannelStart);
+                
+                if (GUILayout.Button("Copy Position"))
+                    Utility.CopyDmxValuesWithOffsetAsMa3Representation(fixture.GetDmxData(), fixture.globalChannelStart, 0, 6);
+                
+                if (GUILayout.Button("Copy Color"))
+                    Utility.CopyDmxValuesWithOffsetAsMa3Representation(fixture.GetDmxData(), fixture.globalChannelStart, 6, 3);
+                
+                EditorGUILayout.EndHorizontal();
+                #endregion
             }
         }
     }
