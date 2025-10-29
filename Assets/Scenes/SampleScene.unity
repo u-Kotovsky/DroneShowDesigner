@@ -466,7 +466,6 @@ MonoBehaviour:
   remotePort: 6454
   universes: []
   isServer: 0
-  newPacket: 0
 --- !u!4 &896456585
 Transform:
   m_ObjectHideFlags: 0
@@ -675,15 +674,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dmxController: {fileID: 896456584}
   usePyroDrone: 1
-  useLightingDrone: 0
-  useMobileTruss: 1
+  useLightingDrone: 1
+  useMobileTruss: 0
   useMobileLight: 0
   dronePrefab: {fileID: 3962963460179205971, guid: 5239126f04167474e917a9ddac49a8f2, type: 3}
-  lightingDronePool: []
-  pyroDronePool: []
-  lightingDroneSpawnCount: 1000
-  pyroDroneSpawnCount: 16
   droneMargin: 1
+  pyroDronePool: []
+  pyroDroneSpawnCount: 16
+  lightingDronePool: []
+  lightingDroneSpawnCount: 1000
   mobileTrussPrefab: {fileID: 754546245766397386, guid: 530ff6db3877f4c4ba9e49fc34329193, type: 3}
   mobileTrussPool: []
   mobileTrussSpawnCount: 12

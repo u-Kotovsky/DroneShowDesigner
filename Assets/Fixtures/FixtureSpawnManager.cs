@@ -338,7 +338,7 @@ namespace Fixtures
                 fixture.spawnManager = this;
                 fixture.globalChannelStart = offset + (i * fixture.GetDmxData().Length);
                 fixture.gameObject.AddComponent<DroneNavigation>();
-                fixture.gameObject.name = "PyroDrone #" + fixture.fixtureIndex;
+                fixture.gameObject.name = "LightingDrone #" + fixture.fixtureIndex;
             }
             
             Debug.Log($"{lightingDronePool.Length} lighting drones are instanced");
