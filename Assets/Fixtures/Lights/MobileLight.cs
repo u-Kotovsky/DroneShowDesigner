@@ -9,14 +9,15 @@ namespace Fixtures.Lights
         private void Awake()
         {
             Buffer = new byte[6];
-            
-            MinPosition = new Vector3(-50, -50, -50);
-            MaxPosition = new Vector3(50, 50, 50);
+
+            Vector3 offset = new Vector3(0, 21f, 0);
+            MinPosition = new Vector3(-52.5f, -22.5f, -52.5f) + offset;
+            MaxPosition = new Vector3(52.5f, 22.5f, 52.5f) + offset;
         }
         
         public new byte[] GetDmxData()
         {
-            WriteDmxPosition(0, transform.localPosition);
+            WriteDmxPosition(0, transform.position);
             
             return Buffer;
         }

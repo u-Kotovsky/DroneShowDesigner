@@ -208,11 +208,11 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: 0.3
-  far clip plane: 1000
-  field of view: 20
+  near clip plane: 0.1
+  far clip plane: 5000
+  field of view: 40
   orthographic: 0
-  orthographic size: 5
+  orthographic size: 10
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -236,8 +236,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 330585543}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.26625863, y: 0.3664467, z: -0.11028792, w: 0.8846806}
-  m_LocalPosition: {x: -100, y: 100, z: -100}
+  m_LocalRotation: {x: -0.21773128, y: -0.33772117, z: 0.08060431, w: -0.9121626}
+  m_LocalPosition: {x: -95.27796, y: 92.98422, z: -112.48245}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -621,7 +621,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1050048007
 Transform:
   m_ObjectHideFlags: 0
@@ -882,10 +882,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dmxController: {fileID: 896456584}
-  usePyroDrone: 1
-  useLightingDrone: 1
-  useMobileTruss: 0
-  useMobileLight: 0
+  usePyroDrone: 0
+  useLightingDrone: 0
+  useMobileTruss: 1
+  useMobileLight: 1
   dronePrefab: {fileID: 3962963460179205971, guid: 5239126f04167474e917a9ddac49a8f2, type: 3}
   droneMargin: 1
   pyroDronePool: []
