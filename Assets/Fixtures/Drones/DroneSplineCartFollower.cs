@@ -1,4 +1,3 @@
-using System;
 using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.Splines;
@@ -20,8 +19,8 @@ namespace Fixtures.Drones
         public CinemachineDroneState state;
 
         public float time = 0;
-        public float maxTime = 30;
         public float waitBeforeStart = 0;
+        public float speed = 0.01f;
 
         private void Update()
         {
@@ -33,23 +32,9 @@ namespace Fixtures.Drones
                 {
                     time = 0;
                     state = CinemachineDroneState.Active;
-                    //InitializeSplineCartOnDrone();
                     cart.AutomaticDolly.Enabled = true;
                 }
-                //else
-                //{
-                    //return;
-                //}
             }
-
-            //if (state == CinemachineDroneState.Active)
-            //{
-                //if (time > maxTime) time = 0;
-                
-                //if (cart == null) return;
-                //cart.SplinePosition = Mathf.InverseLerp(0, maxTime, time);
-            //}
-            
         }
 
         private void InitializeSplineCartOnDrone(SplineContainer container)
@@ -62,7 +47,7 @@ namespace Fixtures.Drones
             {
                 Method = new SplineAutoDolly.FixedSpeed
                 {
-                    Speed = 0.01f
+                    Speed = speed
                 },
                 Enabled = false
             };

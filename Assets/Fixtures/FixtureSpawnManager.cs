@@ -56,7 +56,7 @@ namespace Fixtures
             Application.targetFrameRate = 60;
             Application.runInBackground = true;
             
-            byte[][] dronePos = new byte[][]
+            byte[][] dronePos =
             {
                 new byte[] { 131, 183, 127, 67, 128, 28 },
                 new byte[] { 131, 38, 125, 228, 128, 28 },
@@ -399,8 +399,6 @@ namespace Fixtures
                 //var pathNav = fixture.gameObject.AddComponent<DronePathNavigation>();
                 //pathNav.waitBeforeStart = i * 0.25f;
                 var cartFollower = fixture.gameObject.AddComponent<DroneSplineCartFollower>();
-                //cartFollower.cart = cinemachineSplineCart;
-                //cartFollower.splineContainer = SplineContainer;
                 cartFollower.StartWithDelay(i * 0.2f, SplineContainer);
             }
             
