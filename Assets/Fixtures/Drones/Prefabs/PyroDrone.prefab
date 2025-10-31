@@ -96,7 +96,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6178977918060480818}
   m_Layer: 0
-  m_Name: DroneTemplate
+  m_Name: PyroDrone
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -3,7 +3,9 @@ using Fixtures.Drones;
 using Fixtures.Lights;
 using Fixtures.Truss;
 using Unity_DMX.Core;
+using Unity.Cinemachine;
 using UnityEngine;
+using UnityEngine.Splines;
 using Random = UnityEngine.Random;
 
 namespace Fixtures
@@ -11,6 +13,10 @@ namespace Fixtures
     public class FixtureSpawnManager : MonoBehaviour
     {
         public DmxController dmxController;
+
+        [Header("Cinemachine")] 
+        public CinemachineSplineCart cinemachineSplineCart;
+        public SplineContainer SplineContainer;
         
         [Header("Fixtures to enable on start")]
         public bool usePyroDrone = false;
@@ -19,26 +25,27 @@ namespace Fixtures
         public bool useMobileLight = true;
         
         [Header("Drone Spawn Settings")]
-        public GameObject dronePrefab;
         public float droneMargin = 1;
         
         [Header("Pyro Drone Spawn Settings")]
-        public GameObject[] pyroDronePool;
+        public GameObject pyroDronePrefab;
         public int pyroDroneSpawnCount = 16;
+        public GameObject[] pyroDronePool;
         
         [Header("Lighting Drone Spawn Settings")]
-        public GameObject[] lightingDronePool;
+        public GameObject lightingDronePrefab;
         public int lightingDroneSpawnCount = 1000;
+        public GameObject[] lightingDronePool;
         
         [Header("Mobile Truss Spawn Settings")]
         public GameObject mobileTrussPrefab;
-        public GameObject[] mobileTrussPool;
         public int mobileTrussSpawnCount = 12;
+        public GameObject[] mobileTrussPool;
 
         [Header("Mobile Light Spawn Settings")]
         public GameObject mobileLightPrefab;
-        public GameObject[] mobileLightPool;
         public int mobileLightSpawnCount = 8;
+        public GameObject[] mobileLightPool;
     
         private byte[] globalDmxBuffer;
     
@@ -324,7 +331,7 @@ namespace Fixtures
 
             for (int i = 0; i < pyroDronePool.Length; i++)
             {
-                pyroDronePool[i] = Instantiate(dronePrefab, new Vector3(i * droneMargin, 2, 0), Quaternion.identity);
+                pyroDronePool[i] = Instantiate(pyroDronePrefab, new Vector3(i * droneMargin, 2, 0), Quaternion.identity);
                 pyroDronePool[i].transform.SetParent(pool.transform);
                 fixture = pyroDronePool[i].AddComponent<PyroDrone>();
                 fixture.fixtureIndex = i;
@@ -381,7 +388,7 @@ namespace Fixtures
 
             for (int i = 0; i < lightingDronePool.Length; i++)
             {
-                lightingDronePool[i] = Instantiate(dronePrefab, new Vector3(i * droneMargin, 1, 0), Quaternion.identity);
+                lightingDronePool[i] = Instantiate(lightingDronePrefab, new Vector3(i * droneMargin, 1, 0), Quaternion.identity);
                 lightingDronePool[i].transform.SetParent(pool.transform);
                 fixture = lightingDronePool[i].AddComponent<LightingDrone>();
                 fixture.fixtureIndex = i;
@@ -389,8 +396,12 @@ namespace Fixtures
                 fixture.globalChannelStart = offset + (i * fixture.GetDmxData().Length);
                 fixture.gameObject.name = "LightingDrone #" + fixture.fixtureIndex;
                 //fixture.gameObject.AddComponent<DroneNavigation>();
-                var pathNav = fixture.gameObject.AddComponent<DronePathNavigation>();
-                pathNav.waitBeforeStart = i * 0.25f;
+                //var pathNav = fixture.gameObject.AddComponent<DronePathNavigation>();
+                //pathNav.waitBeforeStart = i * 0.25f;
+                var cartFollower = fixture.gameObject.AddComponent<DroneSplineCartFollower>();
+                //cartFollower.cart = cinemachineSplineCart;
+                //cartFollower.splineContainer = SplineContainer;
+                cartFollower.StartWithDelay(i * 0.2f, SplineContainer);
             }
             
             Debug.Log($"{lightingDronePool.Length} lighting drones are instanced");
