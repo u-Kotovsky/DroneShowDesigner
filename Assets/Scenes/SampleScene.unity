@@ -1481,10 +1481,10 @@ MonoBehaviour:
         z: 35.3946
       Rotation:
         value:
-          x: 0.15575662
-          y: 0.35011244
-          z: 0.43074617
-          w: 0.8170794
+          x: 0.1557566
+          y: 0.35011235
+          z: 0.4307462
+          w: 0.81707954
     - Position:
         x: 50
         y: 60
@@ -1519,7 +1519,7 @@ MonoBehaviour:
         value:
           x: 0.4433209
           y: 0.8103257
-          z: -0.16114813
+          z: -0.16114812
           w: -0.34766382
     - Position:
         x: -50
@@ -1644,7 +1644,7 @@ MonoBehaviour:
       Rotation:
         value:
           x: -0.22931904
-          y: -0.3070912
+          y: -0.30709118
           z: 0.5023682
           w: 0.7750703
     - Position:
@@ -1933,7 +1933,7 @@ GameObject:
   - component: {fileID: 896456585}
   - component: {fileID: 896456584}
   m_Layer: 0
-  m_Name: DmxController
+  m_Name: DmxController (Sender)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1952,10 +1952,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   useBroadcast: 0
-  remoteIP: localhost
-  remotePort: 6454
-  universes: []
+  remoteIP: 127.0.0.1
+  remotePort: 6455
   isServer: 0
+  redirectPackets: 0
+  redirectTo: {fileID: 0}
+  writeDmxPacketToBuffer: 1
+  globalDmxBuffer: 
 --- !u!4 &896456585
 Transform:
   m_ObjectHideFlags: 0
@@ -1963,6 +1966,58 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 896456583}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &902629286
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 902629288}
+  - component: {fileID: 902629287}
+  m_Layer: 0
+  m_Name: DmxController (Receiver)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &902629287
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 902629286}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bc4cd898abaace44a8925210df4d2363, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  useBroadcast: 0
+  remoteIP: 2.0.0.1
+  remotePort: 6454
+  isServer: 1
+  redirectPackets: 1
+  redirectTo: {fileID: 896456584}
+  writeDmxPacketToBuffer: 1
+  globalDmxBuffer: 
+--- !u!4 &902629288
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 902629286}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
@@ -2162,26 +2217,30 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 01d851b70cbfa594db1dc3a4c28eba54, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dmxController: {fileID: 896456584}
+  dmxController: {fileID: 902629287}
   cinemachineSplineCart: {fileID: 336705505}
   SplineContainer: {fileID: 717603561}
-  usePyroDrone: 1
-  useLightingDrone: 1
+  usePyroDrone: 0
+  useLightingDrone: 0
   useMobileTruss: 1
-  useMobileLight: 1
+  useMobileLight: 0
   droneMargin: 1
   pyroDronePrefab: {fileID: 3962963460179205971, guid: d1dc7b43b0747924aa325792277db8dd, type: 3}
   pyroDroneSpawnCount: 16
   pyroDronePool: []
+  pyroDronePool2: []
   lightingDronePrefab: {fileID: 3962963460179205971, guid: 5239126f04167474e917a9ddac49a8f2, type: 3}
   lightingDroneSpawnCount: 1000
   lightingDronePool: []
+  lightingDronePool2: []
   mobileTrussPrefab: {fileID: 754546245766397386, guid: 530ff6db3877f4c4ba9e49fc34329193, type: 3}
   mobileTrussSpawnCount: 12
   mobileTrussPool: []
+  mobileTrussPool2: []
   mobileLightPrefab: {fileID: 4905957647556327293, guid: 99fbdb3e035c689439ca80eeb58cd37f, type: 3}
   mobileLightSpawnCount: 8
   mobileLightPool: []
+  mobileLightPool2: []
 --- !u!1 &1567611396
 GameObject:
   m_ObjectHideFlags: 0
@@ -2787,6 +2846,7 @@ SceneRoots:
   m_Roots:
   - {fileID: 1328018629}
   - {fileID: 896456585}
+  - {fileID: 902629288}
   - {fileID: 1411168930}
   - {fileID: 145548090}
   - {fileID: 1608746340}

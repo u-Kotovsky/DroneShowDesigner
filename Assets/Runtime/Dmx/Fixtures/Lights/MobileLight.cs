@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace Runtime.Dmx.Fixtures.Lights
@@ -13,20 +14,25 @@ namespace Runtime.Dmx.Fixtures.Lights
             MinPosition = new Vector3(-52.5f, -22.5f, -52.5f) + offset;
             MaxPosition = new Vector3(52.5f, 22.5f, 52.5f) + offset;
         }
+        
+        private void Update()
+        {
+            WriteDmxPosition(0, transform.position);
+        }
 
         public override void WriteDmxData()
         {
-            WriteDmxPosition(0, transform.position);
+            //WriteDmxPosition(0, transform.position); // requires mainthread
         }
 
         #region Static
         public static GameObject mobileLightPrefab = Resources.Load<GameObject>("MobileLight");
         private static GameObject internalPool;
         
-        public static void Spawn(FixtureSpawnManager spawnManager, ref GameObject[] pool, ref int count)
+        public static void Spawn(FixtureSpawnManager spawnManager, ref MobileLight[] pool, ref int count)
         {
             if (internalPool == null) internalPool = new GameObject("MobileLightPool");
-            pool = new GameObject[count];
+            pool = new MobileLight[count];
             MobileLight fixture = null;
             int offset = 1077; // Start for mobile light.
 
@@ -39,21 +45,21 @@ namespace Runtime.Dmx.Fixtures.Lights
             Debug.Log($"{pool.Length} mobile lights are instanced");
         }
 
-        private static void Spawn(ref GameObject[] pool, ref int index, ref int offset, ref MobileLight fixture)
+        private static void Spawn(ref MobileLight[] pool, ref int index, ref int offset, ref MobileLight fixture)
         {
-            pool[index] = Instantiate(mobileLightPrefab, new Vector3(index, 2, 0), Quaternion.identity);
-            pool[index].transform.SetParent(internalPool.transform);
-            fixture = pool[index].AddComponent<MobileLight>();
+            var instance = Instantiate(mobileLightPrefab, new Vector3(index, 2, 0), Quaternion.identity);
+            instance.transform.SetParent(internalPool.transform);
+            fixture = instance.AddComponent<MobileLight>();
             fixture.fixtureIndex = index;
             fixture.globalChannelStart = offset + (index * fixture.GetDmxData().Length);
             fixture.gameObject.name = "MobileLight #" + fixture.fixtureIndex;
+            pool[index] = fixture;
         }
         
-        public static void WriteDataToGlobalBuffer(ref GameObject[] pool, ref byte[] globalDmxBuffer)
+        public static void WriteDataToGlobalBuffer(ref MobileLight[] pool, ref byte[] globalDmxBuffer)
         {
-            foreach (var obj in pool)
+            foreach (var fixture in pool)
             {
-                var fixture = obj.GetComponent<MobileLight>();
                 byte[] data = fixture.GetDmxData();
                 
                 System.Buffer.BlockCopy(data, 0, 
@@ -70,42 +76,42 @@ namespace Runtime.Dmx.Fixtures.Lights
             // 6 8 9 10
         
             // This is basically for debugging in World. Will make dim 100, color white.
-            buffer[1125 + 6 - 1] = 255;
+            buffer[1125 + 6 - 1] = 75;
             buffer[1125 + 8 - 1] = 255;
             buffer[1125 + 9 - 1] = 255;
             buffer[1125 + 10 - 1] = 255;
         
-            buffer[1138 + 6 - 1] = 255;
+            buffer[1138 + 6 - 1] = 75;
             buffer[1138 + 8 - 1] = 255;
             buffer[1138 + 9 - 1] = 255;
             buffer[1138 + 10 - 1] = 255;
         
-            buffer[1151 + 6 - 1] = 255;
+            buffer[1151 + 6 - 1] = 75;
             buffer[1151 + 8 - 1] = 255;
             buffer[1151 + 9 - 1] = 255;
             buffer[1151 + 10 - 1] = 255;
         
-            buffer[1164 + 6 - 1] = 255;
+            buffer[1164 + 6 - 1] = 75;
             buffer[1164 + 8 - 1] = 255;
             buffer[1164 + 9 - 1] = 255;
             buffer[1164 + 10 - 1] = 255;
         
-            buffer[1177 + 6 - 1] = 255;
+            buffer[1177 + 6 - 1] = 75;
             buffer[1177 + 8 - 1] = 255;
             buffer[1177 + 9 - 1] = 255;
             buffer[1177 + 10 - 1] = 255;
         
-            buffer[1190 + 6 - 1] = 255;
+            buffer[1190 + 6 - 1] = 75;
             buffer[1190 + 8 - 1] = 255;
             buffer[1190 + 9 - 1] = 255;
             buffer[1190 + 10 - 1] = 255;
         
-            buffer[1203 + 6 - 1] = 255;
+            buffer[1203 + 6 - 1] = 75;
             buffer[1203 + 8 - 1] = 255;
             buffer[1203 + 9 - 1] = 255;
             buffer[1203 + 10 - 1] = 255;
         
-            buffer[1216 + 6 - 1] = 255;
+            buffer[1216 + 6 - 1] = 75;
             buffer[1216 + 8 - 1] = 255;
             buffer[1216 + 9 - 1] = 255;
             buffer[1216 + 10 - 1] = 255;

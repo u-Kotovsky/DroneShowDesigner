@@ -1,47 +1,49 @@
 ﻿using ArtNet.IO;
 using ArtNet.Packets;
 using System;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
+using UnityEngine;
 
 namespace ArtNet.Sockets
 {
     public class ArtNetSocket : Socket
     {
-        public ArtNetSocket() : base(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp) { }
+        public ArtNetSocket(int port = 6454) : base(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp)
+        {
+            Port = port;
+        }
         
         public event UnhandledExceptionEventHandler UnhandledException;
-        public event EventHandler<NewPacketEventArgs<ArtNetPacket>> NewPacket;
+        public event EventHandler<NewPacketEventArgs<ArtNetPacket>> NewPacket = delegate { };
         
-        public int Port = 6454;
+        public int Port;
         
         #region Information
+        public IPAddress LocalIP { get; protected set; }
 
+        public IPAddress LocalSubnetMask { get; protected set; }
         private bool portOpen = false;
 
         public bool PortOpen
         {
-            get { return portOpen; }
+            get => portOpen;
             set { portOpen = value; }
         }
-
-        public IPAddress LocalIP { get; protected set; }
-
-        public IPAddress LocalSubnetMask { get; protected set; }
-
+        
         private static IPAddress GetBroadcastAddress(IPAddress address, IPAddress subnetMask)
         {
-            byte[] ipAdressBytes = address.GetAddressBytes();
+            byte[] ipAddressBytes = address.GetAddressBytes();
             byte[] subnetMaskBytes = subnetMask.GetAddressBytes();
 
-            if (ipAdressBytes.Length != subnetMaskBytes.Length)
+            if (ipAddressBytes.Length != subnetMaskBytes.Length)
                 throw new ArgumentException("Lengths of IP address and subnet mask do not match.");
 
-            byte[] broadcastAddress = new byte[ipAdressBytes.Length];
+            byte[] broadcastAddress = new byte[ipAddressBytes.Length];
             for (int i = 0; i < broadcastAddress.Length; i++)
-            {
-                broadcastAddress[i] = (byte)(ipAdressBytes[i] | (subnetMaskBytes[i] ^ 255));
-            }
+                broadcastAddress[i] = (byte)(ipAddressBytes[i] | (subnetMaskBytes[i] ^ 255));
+            
             return new IPAddress(broadcastAddress);
         }
 
@@ -55,6 +57,7 @@ namespace ArtNet.Sockets
             }
         }
 
+        #region Last Packet
         private DateTime? lastPacket = null;
 
         public DateTime? LastPacket
@@ -62,7 +65,7 @@ namespace ArtNet.Sockets
             get { return lastPacket; }
             protected set { lastPacket = value; }
         }
-
+        #endregion
         #endregion
         
         public void Open(IPAddress localIp, int remotePort, IPAddress localSubnetMask)
@@ -76,63 +79,89 @@ namespace ArtNet.Sockets
             SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.Broadcast, 1);
             PortOpen = true;
 
-            StartRecieve();
+            Debug.Log($"Open: start receive from {LocalIP}:{Port}");
+            StartReceive();
         }
 
-        public void StartRecieve()
+        public void StartReceive() // This could have an issue with something?
         {
             try
             {
                 EndPoint localPort = new IPEndPoint(IPAddress.Any, Port);
-                ArtNetRecieveData recieveState = new ArtNetRecieveData();
-                BeginReceiveFrom(recieveState.buffer, 0, recieveState.bufferSize, SocketFlags.None, ref localPort, new AsyncCallback(OnRecieve), recieveState);
+                ArtNetRecieveData data = new ArtNetRecieveData();
+                
+                BeginReceiveFrom(data.buffer, 0, data.bufferSize, SocketFlags.None, ref localPort, OnReceive, data); // new AsyncCallback
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                OnUnhandledException(new ApplicationException("An error ocurred while trying to start recieving ArtNet.", ex));
+                Debug.LogException(e);
+                OnUnhandledException(new ApplicationException("An error occurred while trying to start receiving ArtNet.", e));
             }
         }
 
-        private void OnRecieve(IAsyncResult state)
+        private void OnReceive(IAsyncResult state)
         {
             EndPoint remoteEndPoint = new IPEndPoint(IPAddress.Any, 0);
 
-            if (PortOpen)
+            if (!PortOpen)
             {
-                try
+                Debug.LogError("OnReceive: port is closed");
+                return;
+            }
+            
+            try
+            {
+                ArtNetRecieveData data = (ArtNetRecieveData)state.AsyncState;
+
+                if (data != null)
                 {
-                    ArtNetRecieveData recieveState = (ArtNetRecieveData)(state.AsyncState);
+                    data.DataLength = EndReceiveFrom(state, ref remoteEndPoint);
 
-                    if (recieveState != null)
+                    // Protect against UDP loopback where we receive our own packets.
+                    // Could be fucked up?
+                    if (LocalEndPoint != remoteEndPoint && data.Valid)
                     {
-                        recieveState.DataLength = EndReceiveFrom(state, ref remoteEndPoint);
+                        LastPacket = DateTime.Now;
 
-                        //Protect against UDP loopback where we recieve our own packets.
-                        if (LocalEndPoint != remoteEndPoint && recieveState.Valid)
-                        {
-                            LastPacket = DateTime.Now;
-
-                            ProcessPacket((IPEndPoint)remoteEndPoint, ArtNetPacket.Create(recieveState, (short)Port));
-                        }
+                        ProcessPacket((IPEndPoint)remoteEndPoint, ArtNetPacket.Create(data, (short)Port));
+                    }
+                    else
+                    {
+                        Debug.LogError("Ignore packet due to loopback fix");
                     }
                 }
-                catch (Exception ex)
+                else
                 {
-                    OnUnhandledException(ex);
+                    Debug.LogError("receive sate is null");
                 }
-                finally
-                {
-                    //Attempt to recieve another packet.
-                    StartRecieve();
-                }
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+                OnUnhandledException(e);
+            }
+            finally
+            {
+                // Attempt to receive another packet.
+                StartReceive();
             }
         }
 
         private void ProcessPacket(IPEndPoint source, ArtNetPacket packet)
         {
-            if (packet == null) return;
-            if (NewPacket != null)
-                NewPacket(this, new NewPacketEventArgs<ArtNetPacket>(source, packet));
+            if (packet == null)
+            {
+                Debug.LogError($"Packet is null");
+                return;
+            }
+            
+            if (NewPacket == null)
+            {
+                Debug.LogError($"NewPacket event is null");
+                return;
+            }
+            
+            NewPacket(this, new NewPacketEventArgs<ArtNetPacket>(source, packet));
         }
 
         protected void OnUnhandledException(Exception ex)
@@ -141,7 +170,6 @@ namespace ArtNet.Sockets
         }
 
         #region Sending
-
         public void Send(ArtNetPacket packet)
         {
             Send(packet, new IPEndPoint(BroadcastAddress, Port));
@@ -151,7 +179,6 @@ namespace ArtNet.Sockets
         {
             SendTo(packet.ToArray(), remote);
         }
-      
         #endregion
 
         protected override void Dispose(bool disposing)

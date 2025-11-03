@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace Runtime.Dmx.Fixtures.Drones
@@ -20,6 +21,12 @@ namespace Runtime.Dmx.Fixtures.Drones
             MaxPosition = new Vector3(800, 800, 800);
         }
 
+        private void Update()
+        {
+            WriteDmxPosition(0, transform.position, true);
+            WriteDmxRotation(transform.rotation.eulerAngles);
+        }
+
         private void WriteDmxRotation(Vector3 eulerAngles)
         {
             pitch = (byte)Utility.MapRange(eulerAngles.x, MinAngle, MaxAngle, 0, 255);
@@ -38,8 +45,8 @@ namespace Runtime.Dmx.Fixtures.Drones
 
         public override void WriteDmxData()
         {
-            WriteDmxPosition(0, transform.position, true);
-            WriteDmxRotation(transform.rotation.eulerAngles);
+            //WriteDmxPosition(0, transform.position, true); // requires main thread
+            //WriteDmxRotation(transform.rotation.eulerAngles);
             WriteDmxIndex(index);
         }
 
@@ -47,10 +54,10 @@ namespace Runtime.Dmx.Fixtures.Drones
         public static GameObject pyroDronePrefab = Resources.Load<GameObject>("PyroDrone");
         private static GameObject internalPool;
         
-        public static void Spawn(FixtureSpawnManager spawnManager, ref GameObject[] pool, ref int count)
+        public static void Spawn(FixtureSpawnManager spawnManager, ref PyroDrone[] pool, ref int count)
         {
             if (internalPool == null) internalPool = new GameObject("PyroDronePool");
-            pool = new GameObject[count];
+            pool = new PyroDrone[count];
             PyroDrone fixture = null;
             int offset = (512 * 5) + 41 - 1; // 2600 is start for pyro drone.
 
@@ -65,30 +72,46 @@ namespace Runtime.Dmx.Fixtures.Drones
             SetPyroDronePreset(pool, PyroDronePresetManager.presets[0]);
         }
 
-        private static void Spawn(ref GameObject[] pool, ref int index, ref int offset, ref PyroDrone fixture)
+        private static void Spawn(ref PyroDrone[] pool, ref int index, ref int offset, ref PyroDrone fixture)
         {
-            pool[index] = Instantiate(pyroDronePrefab, new Vector3(index, 2, 0), Quaternion.identity);
-            pool[index].transform.SetParent(internalPool.transform);
-            fixture = pool[index].AddComponent<PyroDrone>();
+            var instance = Instantiate(pyroDronePrefab, new Vector3(index, 2, 0), Quaternion.identity);
+            instance.transform.SetParent(internalPool.transform);
+            fixture = instance.AddComponent<PyroDrone>();
             fixture.fixtureIndex = index;
             fixture.globalChannelStart = offset + (index * fixture.GetDmxData().Length);
             fixture.gameObject.name = "PyroDrone #" + fixture.fixtureIndex;
+            
+            pool[index] = fixture;
         }
 
-        private static void SetPyroDronePreset(GameObject[] pool, PyroDronePreset[] preset)
+        private static void SetPyroDronePreset(PyroDrone[] pool, PyroDronePreset[] preset)
         {
             for (var i = 0; i < preset.Length; i++)
             {
-                GameObject obj = pool[i];
+                var obj = pool[i];
                 obj.transform.localPosition = preset[i].GetPosition();
             }
         }
         
+        [Obsolete("Use PyroDrone instead", true)]
         public static void WriteDataToGlobalBuffer(ref GameObject[] pool, ref byte[] globalDmxBuffer)
         {
             foreach (var drone in pool)
             {
-                var pyroDrone = drone.GetComponent<PyroDrone>();
+                var pyroDrone = drone.GetComponent<PyroDrone>(); // cannot do that
+                byte[] droneData = pyroDrone.GetDmxData();
+                
+                System.Buffer.BlockCopy(droneData, 0, 
+                    globalDmxBuffer, pyroDrone.globalChannelStart, droneData.Length);
+            }
+
+            WriteSpecialData(globalDmxBuffer);
+        }
+        
+        public static void WriteDataToGlobalBuffer(ref PyroDrone[] pool, ref byte[] globalDmxBuffer)
+        {
+            foreach (var pyroDrone in pool)
+            {
                 byte[] droneData = pyroDrone.GetDmxData();
                 
                 System.Buffer.BlockCopy(droneData, 0, 

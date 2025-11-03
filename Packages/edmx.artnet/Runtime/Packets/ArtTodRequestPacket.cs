@@ -14,13 +14,11 @@ namespace ArtNet.Packets
         public ArtTodRequestPacket(ArtNetRecieveData data) : base(data) { }
 
         #region Packet Properties
-
         public byte Net { get; set; }
 
         public byte Command { get; set; }
 
         public List<byte> RequestedUniverses { get; set; }
-
         #endregion
 
         public override void ReadData(ArtNetBinaryReader data)

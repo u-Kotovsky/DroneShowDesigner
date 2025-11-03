@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.Splines;
 
@@ -43,9 +44,14 @@ namespace Runtime.Dmx.Fixtures.Drones
             MaxPosition = new Vector3(800, 800, 800);
         }
 
-        public override void WriteDmxData()
+        private void Update()
         {
             WriteDmxPosition(0, transform.position, true);
+        }
+
+        public override void WriteDmxData()
+        {
+            //WriteDmxPosition(0, transform.position, true); // requires to be run from mainthread
             WriteDmxColor(color);
         }
         
@@ -53,10 +59,10 @@ namespace Runtime.Dmx.Fixtures.Drones
         public static GameObject lightingDronePrefab = Resources.Load<GameObject>("LightingDrone");
         private static GameObject internalPool;
         
-        public static void Spawn(FixtureSpawnManager spawnManager, ref GameObject[] pool, ref int count, ref SplineContainer splineContainer)
+        public static void Spawn(FixtureSpawnManager spawnManager, ref LightingDrone[] pool, ref int count, ref SplineContainer splineContainer)
         {
             if (internalPool == null) internalPool = new GameObject("LightingDronePool");
-            pool = new GameObject[count];
+            pool = new LightingDrone[count];
             LightingDrone fixture = null;
             int offset = (512 * 5) + 321 - 1; // 2880 is start for FX drone // Offset is probably correct (maybe?)
 
@@ -74,21 +80,21 @@ namespace Runtime.Dmx.Fixtures.Drones
             Debug.Log($"{pool.Length} lighting drones are instanced");
         }
 
-        private static void Spawn(ref GameObject[] pool, ref int index, ref int offset, ref LightingDrone fixture)
+        private static void Spawn(ref LightingDrone[] pool, ref int index, ref int offset, ref LightingDrone fixture)
         {
-            pool[index] = Instantiate(lightingDronePrefab, new Vector3(index, 1, 0), Quaternion.identity);
-            pool[index].transform.SetParent(internalPool.transform);
-            fixture = pool[index].AddComponent<LightingDrone>();
+            var instance = Instantiate(lightingDronePrefab, new Vector3(index, 1, 0), Quaternion.identity);
+            instance.transform.SetParent(internalPool.transform);
+            fixture = instance.AddComponent<LightingDrone>();
             fixture.fixtureIndex = index;
             fixture.globalChannelStart = offset + (index * fixture.GetDmxData().Length);
             fixture.gameObject.name = "LightingDrone #" + fixture.fixtureIndex;
+            pool[index] = fixture;
         }
         
-        public static void WriteDataToGlobalBuffer(ref GameObject[] pool, ref byte[] globalDmxBuffer)
+        public static void WriteDataToGlobalBuffer(ref LightingDrone[] pool, ref byte[] globalDmxBuffer)
         {
-            foreach (var drone in pool)
+            foreach (var lightingDrone in pool)
             {
-                var lightingDrone = drone.GetComponent<LightingDrone>();
                 byte[] droneData = lightingDrone.GetDmxData();
 
                 System.Buffer.BlockCopy(droneData, 0, 

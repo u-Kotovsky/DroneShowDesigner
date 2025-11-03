@@ -18,6 +18,5 @@
                 return buffer[9] + (buffer[8] << 8);
             }
         }
-
     }
 }

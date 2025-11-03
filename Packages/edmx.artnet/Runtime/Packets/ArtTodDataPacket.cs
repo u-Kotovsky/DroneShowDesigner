@@ -16,7 +16,6 @@ namespace ArtNet.Packets
         public ArtTodDataPacket(ArtNetRecieveData data) : base(data) { }
 
         #region Packet Properties
-
         public byte RdmVersion { get; set; }
 
         public byte Port { get; set; }
@@ -32,7 +31,6 @@ namespace ArtNet.Packets
         public byte BlockCount { get; set; }
 
         public List<UId> Devices { get; set; }
-        
         #endregion
 
         public override void ReadData(ArtNetBinaryReader data)

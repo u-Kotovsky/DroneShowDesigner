@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace Runtime.Dmx.Fixtures.Truss
@@ -16,6 +17,12 @@ namespace Runtime.Dmx.Fixtures.Truss
             MaxPosition = new Vector3(50, 50, 50);
         }
 
+        private void Update()
+        {
+            WriteDmxPosition(0, transform.localPosition);
+            WriteDmxRotation(6, transform.localRotation.eulerAngles);
+        }
+
         public Vector3 GetMaxPosition()
         {
             return MaxPosition;
@@ -28,18 +35,18 @@ namespace Runtime.Dmx.Fixtures.Truss
 
         public override void WriteDmxData()
         {
-            WriteDmxPosition(0, transform.localPosition);
-            WriteDmxRotation(6, transform.localRotation.eulerAngles);
+            //WriteDmxPosition(0, transform.localPosition); // requires mainthread
+            //WriteDmxRotation(6, transform.localRotation.eulerAngles);
         }
 
         #region Static
         public static GameObject trussPrefab = Resources.Load<GameObject>("MobileTruss");
         private static GameObject internalPool;
 
-        public static void Spawn(FixtureSpawnManager spawnManager, ref GameObject[] pool, ref int count)
+        public static void Spawn(FixtureSpawnManager spawnManager, ref MobileTruss[] pool, ref int count)
         {
             if (internalPool == null) internalPool = new GameObject("MobileTrussPool");
-            pool = new GameObject[count];
+            pool = new MobileTruss[count];
             MobileTruss fixture = null;
             int offset = 6; // Start for mobile truss.
 
@@ -57,31 +64,31 @@ namespace Runtime.Dmx.Fixtures.Truss
             SetTrussPreset(pool, MobileTrussPresetManager.trussPresets[0]);
         }
 
-        private static void Spawn(ref GameObject[] pool, ref int index, ref int offset, ref MobileTruss fixture)
+        private static void Spawn(ref MobileTruss[] pool, ref int index, ref int offset, ref MobileTruss fixture)
         {
-            pool[index] = Instantiate(trussPrefab, new Vector3(index * 9, 2, 0), Quaternion.identity);
-            pool[index].transform.SetParent(internalPool.transform);
-            fixture = pool[index].AddComponent<MobileTruss>();
+            var instance = Instantiate(trussPrefab, new Vector3(index * 9, 2, 0), Quaternion.identity);
+            instance.transform.SetParent(internalPool.transform);
+            fixture = instance.AddComponent<MobileTruss>();
             fixture.fixtureIndex = index;
             fixture.globalChannelStart = offset + (index * fixture.GetDmxData().Length);
             fixture.gameObject.name = "MobileTruss #" + fixture.fixtureIndex;
+            pool[index] = fixture;
         }
 
-    private static void SetTrussPreset(GameObject[] pool, TrussPreset[] preset)
+        private static void SetTrussPreset(MobileTruss[] pool, TrussPreset[] preset)
         {
             for (var i = 0; i < preset.Length; i++)
             {
-                GameObject truss1 = pool[i];
+                var truss1 = pool[i];
                 truss1.transform.localPosition = preset[i].GetPosition();
                 truss1.transform.localRotation = preset[i].GetRotation();
             }
         }
         
-        public static void WriteDataToGlobalBuffer(ref GameObject[] pool, ref byte[] globalDmxBuffer)
+        public static void WriteDataToGlobalBuffer(ref MobileTruss[] pool, ref byte[] globalDmxBuffer)
         {
-            foreach (var drone in pool)
+            foreach (var truss in pool)
             {
-                var truss = drone.GetComponent<MobileTruss>();
                 byte[] trussData = truss.GetDmxData();
                 
                 System.Buffer.BlockCopy(trussData, 0, 

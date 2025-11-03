@@ -24,7 +24,6 @@ namespace ArtNet.Packets
         }
 
         #region Packet Properties
-
         private byte[] ipAddress = new byte[4];
 
         public byte[] IpAddress

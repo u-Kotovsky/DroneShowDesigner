@@ -10,13 +10,11 @@ namespace ArtNet.Packets
         public ArtTodControlPacket(ArtNetRecieveData data) : base(data) { }
 
         #region Packet Properties
-
         public byte Net { get; set; }
 
         public ArtTodControlCommand Command { get; set; }
 
         public byte Address { get; set; }
-
         #endregion
 
         public override void ReadData(ArtNetBinaryReader data)

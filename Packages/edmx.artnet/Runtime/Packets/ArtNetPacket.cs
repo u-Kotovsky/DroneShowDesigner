@@ -25,7 +25,6 @@ namespace ArtNet.Packets
         }
 
         #region Packet Properties
-
         private string protocol = "Art-Net";
 
         public string Protocol
@@ -55,7 +54,6 @@ namespace ArtNet.Packets
             get { return opCode; }
             protected set { opCode = value; }
         }
-
         #endregion
 
         public virtual void ReadData(ArtNetBinaryReader data)
@@ -97,7 +95,6 @@ namespace ArtNet.Packets
             }
 
             return null;
-
         }
     }
 }

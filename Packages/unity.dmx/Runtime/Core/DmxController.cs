@@ -1,161 +1,129 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Net.Sockets;
 using ArtNet.Packets;
 using ArtNet.Sockets;
 using ArtNet.Enums;
-using Unity_DMX.Device;
 using UnityEngine;
 
 namespace Unity_DMX.Core
 {
     public class DmxController : MonoBehaviour
     {
-        [Header("Send dmx")]
+        [Header("Configuration")]
         public bool useBroadcast;
-        public string remoteIP = "localhost";
-        private IPEndPoint remote;
+        public string remoteIP = "127.0.0.1";
+        private IPEndPoint remote; // For sending packets?
         public int remotePort = 6454;
-
-        [Header("DMX devices")]
-        public UniverseDevices[] universes;
         public bool isServer;
 
-        private ArtNetSocket artnet;
-        [Header("Send/Recieve DMX data for debug")]
-        //[SerializeField] 
-        //private ArtNetDmxPacket latestReceivedDmx;
-        //[SerializeField] 
+        [Header("Redirect")]
+        public bool redirectPackets;
+        public DmxController redirectTo;
+
+        private ArtNetSocket socket;
         private ArtNetDmxPacket dmxToSend;
-        private byte[] _dmxData;
         private Dictionary<int, byte[]> dmxDataMap;
-    
-        public void Send(short universe, byte[] dmxData)
-        {
-            dmxToSend.Universe = universe;
+
+        public bool writeDmxPacketToBuffer;
+        [HideInInspector]
+        public byte[] globalDmxBuffer; // Channels 0 ... 
         
-            Buffer.BlockCopy(dmxData, 0, dmxToSend.DmxData, 0, dmxData.Length);
-
-            if (useBroadcast && isServer)
-                artnet.Send(dmxToSend);
-            else
-                artnet.Send(dmxToSend, remote);
-        }
-
-        private void OnValidate()
+        public event Action<short, byte[], byte[]> OnDmxDataChanged = delegate { };
+        private string prefix;
+        
+        private void Awake()
         {
-            foreach (var u in universes)
-                u.Initialize();
+            globalDmxBuffer = new byte[512 * 40];
+            
+            prefix = gameObject.name;
+            Debug.Log($"'{prefix}' '{remotePort}' is " + (isServer ? "server" : "client"));
+            socket = new ArtNetSocket(remotePort);
+            socket.NewPacket += OnNewPacketReceived;
+            
+            if (isServer) // !useBroadcast || !isServer
+            {
+                // When you set the subnet mask, it will set the address you do not send to yourself (Convenient!）
+                // However, debugging becomes troublesome
+                socket.Open(NetworkUtility.FindFromHostName(remoteIP), remotePort, NetworkUtility.FindFromHostName(remoteIP));
+            }
+            else
+            {
+                remote = new IPEndPoint(NetworkUtility.FindFromHostName(remoteIP), remotePort);
+            }
+            
+            dmxToSend ??= new ArtNetDmxPacket();
+            dmxToSend.DmxData ??= new byte[512];
+            dmxDataMap = new Dictionary<int, byte[]>();
         }
         
         private void OnDestroy()
         {
-            artnet.Close();
+            socket.Close();
         }
         
-        private void Awake()
+        private void OnNewPacketReceived(object sender, NewPacketEventArgs<ArtNetPacket> e)
         {
-            artnet = new ArtNetSocket();
-            if (isServer) artnet.Open(FindFromHostName(remoteIP), remotePort, null);
-            //サブネットマスクを設定すると、自分に送らないアドレスを設定してくれる（便利！）
-            //なのだが、デバッグがめんどくさくなる
-            dmxToSend ??= new ArtNetDmxPacket();
-            dmxToSend.DmxData = new byte[512];
-            dmxDataMap = new Dictionary<int, byte[]>();
-            
-            artnet.NewPacket += (object sender, NewPacketEventArgs<ArtNetPacket> e) =>
+            try
             {
                 if (e.Packet.OpCode != ArtNetOpCodes.Dmx) return;
                 
                 var packet = e.Packet as ArtNetDmxPacket;
-                
                 if (packet == null) throw new NullReferenceException();
                 
-                if (packet.DmxData != _dmxData) _dmxData = packet.DmxData;
-
-                var universe = packet.Universe;
+                if (dmxDataMap.ContainsKey(packet.Universe) && dmxDataMap[packet.Universe] == packet.DmxData) return;
                 
-                if (dmxDataMap.ContainsKey(universe))
+                if (dmxDataMap.Count < packet.Universe)
                 {
-                    dmxDataMap[universe] = packet.DmxData;
-                    return;
+                    for (int i = dmxDataMap.Count; i <= packet.Universe; i++)
+                        dmxDataMap.Add(i, i == packet.Universe ? packet.DmxData : new byte[512]);
                 }
-                
-                dmxDataMap.Add(universe, packet.DmxData);
-            };
-
-            if (!useBroadcast || !isServer) remote = new IPEndPoint(FindFromHostName(remoteIP), remotePort);
-        }
-
-        private void Update()
-        {
-            if (dmxToSend is null) return;
-            var keys = dmxDataMap.Keys.ToArray();
-
-            for (var i = 0; i < keys.Length; i++)
-            {
-                var universe = keys[i];
-                var dmxData = dmxDataMap[universe];
-                if (dmxData == null) continue;
-
-                var universeDevices = universes.FirstOrDefault(u => u.universe == universe);
-                if (universeDevices != null)
-                    foreach (var d in universeDevices.devices)
-                        d.SetData(dmxData.Skip(d.startChannel).Take(d.NumChannels).ToArray());
-
-                dmxDataMap[universe] = null;
-            }
-        }
-
-        private static IPAddress FindFromHostName(string hostname)
-        {
-            var address = IPAddress.None;
-            try
-            {
-                if (IPAddress.TryParse(hostname, out address)) return address;
-
-                var addresses = Dns.GetHostAddresses(hostname);
-                foreach (var t in addresses)
+                else
                 {
-                    if (t.AddressFamily == AddressFamily.InterNetwork)
+                    dmxDataMap[packet.Universe] = packet.DmxData;
+                }
+
+                dmxDataMap[packet.Universe] = packet.DmxData;
+            
+                // Server only?
+                BufferUtility.WriteDmxToGlobalBuffer(ref globalDmxBuffer, ref packet, (universe, data) =>
+                {
+                    try
                     {
-                        address = t;
-                        break;
+                        if (OnDmxDataChanged == null) throw new NullReferenceException();
+                        
+                        OnDmxDataChanged?.Invoke(universe, data, globalDmxBuffer);
+                        
+                        if (redirectPackets && redirectTo != null)
+                            BufferUtility.SendUniverseFromGlobalBuffer(redirectTo, universe, globalDmxBuffer);
                     }
-                }
+                    catch (Exception exception)
+                    {
+                        Debug.LogException(exception);
+                    }
+                });
             }
-            catch (Exception e)
+            catch (Exception exception)
             {
-                Debug.LogErrorFormat("Failed to find IP for :\n host name = {0}\n exception={1}", hostname, e);
+                Debug.LogException(exception);
             }
-            return address;
         }
-
-        [Serializable]
-        public class UniverseDevices
+        
+        public void Send(short universe, byte[] dmxData)
         {
-            public string universeName;
-            public int universe;
-            public DMXDevice[] devices;
+            dmxToSend.Universe = universe;
 
-            public void Initialize()
-            {
-                var startChannel = 0;
-                foreach (var d in devices)
-                {
-                    if (d == null) continue;
-                    d.startChannel = startChannel;
-                    startChannel += d.NumChannels;
-                    d.name = $"{d.GetType()}:({universe},{d.startChannel:d3}-{startChannel - 1:d3})";
-                }
+            if (dmxData == null) throw new Exception("Dmx data is null");
+            if (dmxData.Length != 512) throw new Exception("Dmx data length is not 512");
+            if (dmxToSend == null) throw new Exception("Dmx to send is null");
+            if (dmxToSend.DmxData == null) throw new Exception("Dmx data to send is null"); // fail
+        
+            Buffer.BlockCopy(dmxData, 0, dmxToSend.DmxData, 0, dmxData.Length); // Something is null here
 
-                if (512 < startChannel)
-                {
-                    Debug.LogErrorFormat("The number({0}) of channels of the universe {1} exceeds the upper limit(512 channels)!", startChannel, universe);
-                }
-            }
-        }
+            if (useBroadcast && isServer)
+                socket.Send(dmxToSend);
+            else
+                socket.Send(dmxToSend, remote);
+        } 
     }
 }

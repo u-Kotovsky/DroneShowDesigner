@@ -11,7 +11,6 @@ namespace ArtNet.Packets
         public ArtNetDmxPacket(ArtNetRecieveData data) : base(data) { }
 
         #region Packet Properties
-        
         private byte sequence = 0;
 
         public byte Sequence
@@ -41,8 +40,7 @@ namespace ArtNet.Packets
         {
             get
             {
-                if (dmxData == null)
-                    return 0;
+                if (dmxData == null) return 0;
                 return (short)dmxData.Length;
             }
         }
@@ -79,6 +77,5 @@ namespace ArtNet.Packets
             data.WriteNetwork(Length);
             data.Write(DmxData);
         }
-
     }
 }
