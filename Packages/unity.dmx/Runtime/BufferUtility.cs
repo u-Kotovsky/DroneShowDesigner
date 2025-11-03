@@ -5,7 +5,7 @@ using Unity_DMX.Core;
 
 namespace Unity_DMX
 {
-    public class BufferUtility
+    public abstract class BufferUtility
     {
         /// <summary>
         /// This will send whole global buffer to the target.

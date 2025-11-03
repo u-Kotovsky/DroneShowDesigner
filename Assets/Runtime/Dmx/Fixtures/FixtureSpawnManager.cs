@@ -5,6 +5,7 @@ using Runtime.Dmx.Fixtures.Truss;
 using Unity_DMX.Core;
 using Unity.Cinemachine;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.Splines;
 
 namespace Runtime.Dmx.Fixtures
@@ -29,26 +30,22 @@ namespace Runtime.Dmx.Fixtures
         [Header("Pyro Drone Spawn Settings")]
         public GameObject pyroDronePrefab;
         public int pyroDroneSpawnCount = 16;
-        public GameObject[] pyroDronePool;
-        public PyroDrone[] pyroDronePool2;
+        public PyroDrone[] pyroDronePool;
         
         [Header("Lighting Drone Spawn Settings")]
         public GameObject lightingDronePrefab;
         public int lightingDroneSpawnCount = 1000;
-        public GameObject[] lightingDronePool;
-        public LightingDrone[] lightingDronePool2;
+        public LightingDrone[] lightingDronePool;
         
         [Header("Mobile Truss Spawn Settings")]
         public GameObject mobileTrussPrefab;
         public int mobileTrussSpawnCount = 12;
-        public GameObject[] mobileTrussPool;
-        public MobileTruss[] mobileTrussPool2;
+        public MobileTruss[] mobileTrussPool;
 
         [Header("Mobile Light Spawn Settings")]
         public GameObject mobileLightPrefab;
         public int mobileLightSpawnCount = 8;
-        public GameObject[] mobileLightPool;
-        public MobileLight[] mobileLightPool2;
+        public MobileLight[] mobileLightPool;
     
         private void Awake()
         {
@@ -60,13 +57,13 @@ namespace Runtime.Dmx.Fixtures
                 dmxController.OnDmxDataChanged += OnDmxDataChanged;
                 
                 if (usePyroDrone)
-                    PyroDrone.Spawn(this, ref pyroDronePool2, ref pyroDroneSpawnCount);
+                    PyroDrone.Spawn(this, ref pyroDronePool, ref pyroDroneSpawnCount);
                 if (useLightingDrone)
-                    LightingDrone.Spawn(this, ref lightingDronePool2, ref lightingDroneSpawnCount, ref SplineContainer);
+                    LightingDrone.Spawn(this, ref lightingDronePool, ref lightingDroneSpawnCount, ref SplineContainer);
                 if (useMobileTruss)
-                    MobileTruss.Spawn(this, ref mobileTrussPool2, ref mobileTrussSpawnCount);
+                    MobileTruss.Spawn(this, ref mobileTrussPool, ref mobileTrussSpawnCount);
                 if (useMobileLight)
-                    MobileLight.Spawn(this, ref mobileLightPool2, ref mobileLightSpawnCount);
+                    MobileLight.Spawn(this, ref mobileLightPool, ref mobileLightSpawnCount);
 
                 if (useLightingDrone)
                 {
@@ -103,22 +100,22 @@ namespace Runtime.Dmx.Fixtures
         {
             if (usePyroDrone)
             {
-                PyroDrone.WriteDataToGlobalBuffer(ref pyroDronePool2, ref buffer);
+                PyroDrone.WriteDataToGlobalBuffer(ref pyroDronePool, ref buffer);
             }
 
             if (useLightingDrone)
             {
-                LightingDrone.WriteDataToGlobalBuffer(ref lightingDronePool2, ref buffer);
+                LightingDrone.WriteDataToGlobalBuffer(ref lightingDronePool, ref buffer);
             }
 
             if (useMobileTruss)
             {
-                MobileTruss.WriteDataToGlobalBuffer(ref mobileTrussPool2, ref buffer);
+                MobileTruss.WriteDataToGlobalBuffer(ref mobileTrussPool, ref buffer);
             }
 
             if (useMobileLight)
             {
-                MobileLight.WriteDataToGlobalBuffer(ref mobileLightPool2, ref buffer);
+                MobileLight.WriteDataToGlobalBuffer(ref mobileLightPool, ref buffer);
             }
         }
     }

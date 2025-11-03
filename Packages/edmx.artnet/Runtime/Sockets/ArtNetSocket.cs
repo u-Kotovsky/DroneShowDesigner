@@ -1,7 +1,6 @@
 ﻿using ArtNet.IO;
 using ArtNet.Packets;
 using System;
-using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using UnityEngine;
@@ -103,11 +102,7 @@ namespace ArtNet.Sockets
         {
             EndPoint remoteEndPoint = new IPEndPoint(IPAddress.Any, 0);
 
-            if (!PortOpen)
-            {
-                Debug.LogError("OnReceive: port is closed");
-                return;
-            }
+            if (!PortOpen) return;
             
             try
             {
@@ -118,7 +113,6 @@ namespace ArtNet.Sockets
                     data.DataLength = EndReceiveFrom(state, ref remoteEndPoint);
 
                     // Protect against UDP loopback where we receive our own packets.
-                    // Could be fucked up?
                     if (LocalEndPoint != remoteEndPoint && data.Valid)
                     {
                         LastPacket = DateTime.Now;

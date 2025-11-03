@@ -1,4 +1,3 @@
-using System;
 using Runtime.Dmx.Fixtures.Shared;
 using UnityEngine;
 
@@ -106,7 +105,7 @@ namespace Runtime.Dmx.Fixtures.Truss
         #endregion
     }
     
-    public class MobileTrussPresetManager
+    public abstract class MobileTrussPresetManager
     {
         public static TrussPreset[][] trussPresets;
         

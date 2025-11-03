@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Unity_DMX
 {
-    public class NetworkUtility
+    public abstract class NetworkUtility
     {
         public static IPAddress FindFromHostName(string hostname)
         {
