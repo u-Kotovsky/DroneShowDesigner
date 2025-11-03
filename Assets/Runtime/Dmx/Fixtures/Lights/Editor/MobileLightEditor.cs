@@ -1,3 +1,4 @@
+using Runtime.Dmx.Fixtures.Shared;
 using UnityEditor;
 using UnityEngine;
 

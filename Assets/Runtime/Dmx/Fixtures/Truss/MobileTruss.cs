@@ -1,4 +1,5 @@
 using System;
+using Runtime.Dmx.Fixtures.Shared;
 using UnityEngine;
 
 namespace Runtime.Dmx.Fixtures.Truss

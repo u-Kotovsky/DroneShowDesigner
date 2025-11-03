@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Runtime.Dmx.Fixtures.Shared;
 using UnityEngine;
 
 namespace Runtime.Dmx.Fixtures.Drones

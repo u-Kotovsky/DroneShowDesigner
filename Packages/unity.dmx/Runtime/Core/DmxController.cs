@@ -88,19 +88,10 @@ namespace Unity_DMX.Core
                 // Server only?
                 BufferUtility.WriteDmxToGlobalBuffer(ref globalDmxBuffer, ref packet, (universe, data) =>
                 {
-                    try
-                    {
-                        if (OnDmxDataChanged == null) throw new NullReferenceException();
-                        
-                        OnDmxDataChanged?.Invoke(universe, data, globalDmxBuffer);
-                        
-                        if (redirectPackets && redirectTo != null)
-                            BufferUtility.SendUniverseFromGlobalBuffer(redirectTo, universe, globalDmxBuffer);
-                    }
-                    catch (Exception exception)
-                    {
-                        Debug.LogException(exception);
-                    }
+                    OnDmxDataChanged?.Invoke(universe, data, globalDmxBuffer);
+                    
+                    if (redirectPackets && redirectTo != null)
+                        BufferUtility.SendUniverseFromGlobalBuffer(redirectTo, universe, globalDmxBuffer);
                 });
             }
             catch (Exception exception)
@@ -116,9 +107,9 @@ namespace Unity_DMX.Core
             if (dmxData == null) throw new Exception("Dmx data is null");
             if (dmxData.Length != 512) throw new Exception("Dmx data length is not 512");
             if (dmxToSend == null) throw new Exception("Dmx to send is null");
-            if (dmxToSend.DmxData == null) throw new Exception("Dmx data to send is null"); // fail
+            if (dmxToSend.DmxData == null) throw new Exception("Dmx data to send is null");
         
-            Buffer.BlockCopy(dmxData, 0, dmxToSend.DmxData, 0, dmxData.Length); // Something is null here
+            Buffer.BlockCopy(dmxData, 0, dmxToSend.DmxData, 0, dmxData.Length);
 
             if (useBroadcast && isServer)
                 socket.Send(dmxToSend);
