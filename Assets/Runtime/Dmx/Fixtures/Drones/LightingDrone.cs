@@ -92,13 +92,13 @@ namespace Runtime.Dmx.Fixtures.Drones
         
         public static void WriteDataToGlobalBuffer(ref LightingDrone[] pool, ref byte[] globalDmxBuffer)
         {
-            foreach (var lightingDrone in pool)
+            foreach (var fixture in pool)
             {
-                if (lightingDrone == null) continue;
-                byte[] droneData = lightingDrone.GetDmxData();
+                if (fixture == null) continue; // TODO: check if drones are ready instead.
+                byte[] droneData = fixture.GetDmxData();
 
                 System.Buffer.BlockCopy(droneData, 0, 
-                    globalDmxBuffer, lightingDrone.globalChannelStart, droneData.Length);
+                    globalDmxBuffer, fixture.globalChannelStart, droneData.Length);
             }
 
             WriteSpecialData(globalDmxBuffer);

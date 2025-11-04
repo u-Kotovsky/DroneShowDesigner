@@ -69,7 +69,7 @@ namespace Runtime.Dmx.Fixtures.Drones
             
             Debug.Log($"{pool.Length} pyro drones are instanced");
 
-            SetPyroDronePreset(pool, PyroDronePresetManager.presets[0]);
+            SetPreset(pool, PyroDronePresetManager.presets[0]);
         }
 
         private static void Spawn(ref PyroDrone[] pool, ref int index, ref int offset, ref PyroDrone fixture)
@@ -84,38 +84,23 @@ namespace Runtime.Dmx.Fixtures.Drones
             pool[index] = fixture;
         }
 
-        private static void SetPyroDronePreset(PyroDrone[] pool, PyroDronePreset[] preset)
+        private static void SetPreset(PyroDrone[] pool, PyroDronePreset[] preset)
         {
             for (var i = 0; i < preset.Length; i++)
             {
-                var obj = pool[i];
-                obj.transform.localPosition = preset[i].GetPosition();
+                var fixture = pool[i];
+                fixture.transform.localPosition = preset[i].GetPosition();
             }
-        }
-        
-        [Obsolete("Use PyroDrone instead", true)]
-        public static void WriteDataToGlobalBuffer(ref GameObject[] pool, ref byte[] globalDmxBuffer)
-        {
-            foreach (var drone in pool)
-            {
-                var pyroDrone = drone.GetComponent<PyroDrone>(); // cannot do that
-                byte[] droneData = pyroDrone.GetDmxData();
-                
-                System.Buffer.BlockCopy(droneData, 0, 
-                    globalDmxBuffer, pyroDrone.globalChannelStart, droneData.Length);
-            }
-
-            WriteSpecialData(globalDmxBuffer);
         }
         
         public static void WriteDataToGlobalBuffer(ref PyroDrone[] pool, ref byte[] globalDmxBuffer)
         {
             foreach (var pyroDrone in pool)
             {
-                byte[] droneData = pyroDrone.GetDmxData();
+                byte[] dmxData = pyroDrone.GetDmxData();
                 
-                System.Buffer.BlockCopy(droneData, 0, 
-                    globalDmxBuffer, pyroDrone.globalChannelStart, droneData.Length);
+                System.Buffer.BlockCopy(dmxData, 0, 
+                    globalDmxBuffer, pyroDrone.globalChannelStart, dmxData.Length);
             }
 
             WriteSpecialData(globalDmxBuffer);

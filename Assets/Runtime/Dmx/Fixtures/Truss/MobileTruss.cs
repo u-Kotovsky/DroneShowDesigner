@@ -61,7 +61,7 @@ namespace Runtime.Dmx.Fixtures.Truss
 
             Debug.Log($"{pool.Length} mobile trusses are instanced");
 
-            SetTrussPreset(pool, MobileTrussPresetManager.trussPresets[0]);
+            SetPreset(pool, MobileTrussPresetManager.trussPresets[0]);
         }
 
         private static void Spawn(ref MobileTruss[] pool, ref int index, ref int offset, ref MobileTruss fixture)
@@ -75,13 +75,13 @@ namespace Runtime.Dmx.Fixtures.Truss
             pool[index] = fixture;
         }
 
-        private static void SetTrussPreset(MobileTruss[] pool, TrussPreset[] preset)
+        private static void SetPreset(MobileTruss[] pool, TrussPreset[] preset)
         {
             for (var i = 0; i < preset.Length; i++)
             {
-                var truss1 = pool[i];
-                truss1.transform.localPosition = preset[i].GetPosition();
-                truss1.transform.localRotation = preset[i].GetRotation();
+                var fixture = pool[i];
+                fixture.transform.localPosition = preset[i].GetPosition();
+                fixture.transform.localRotation = preset[i].GetRotation();
             }
         }
         
