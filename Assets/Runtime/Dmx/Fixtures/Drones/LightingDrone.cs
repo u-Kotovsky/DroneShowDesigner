@@ -23,15 +23,6 @@ namespace Runtime.Dmx.Fixtures.Drones
             Buffer[6] = r;
             Buffer[7] = g;
             Buffer[8] = b;
-            
-            if (DroneRenderers == null) return;
-            foreach (var droneRenderer in DroneRenderers)
-            {
-                if (droneRenderer == null || droneRenderer.sharedMaterial == null)
-                    continue;
-                
-                droneRenderer.sharedMaterial.SetColor(BaseColor, color);
-            }
         }
         #endregion
         
@@ -46,6 +37,15 @@ namespace Runtime.Dmx.Fixtures.Drones
         private void Update()
         {
             WriteDmxPosition(0, transform.position, true);
+            
+            if (DroneRenderers == null) return;
+            foreach (var droneRenderer in DroneRenderers)
+            {
+                if (droneRenderer == null || droneRenderer.sharedMaterial == null)
+                    continue;
+
+                droneRenderer.sharedMaterial.SetColor(BaseColor, color); // can be called only from main thread.
+            }
         }
 
         public override void WriteDmxData()
