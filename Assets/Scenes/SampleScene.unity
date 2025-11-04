@@ -150,6 +150,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Runtime.UI.MainUIController
   hotbar: {fileID: 2053932572}
   pages: {fileID: 335345699}
+  page: {fileID: 0}
   hierarchy: {fileID: 363344260}
   inspector: {fileID: 2039407482}
   defaultUISprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
@@ -1302,9 +1303,9 @@ MonoBehaviour:
       Rotation:
         value:
           x: 0.7014867
-          y: -0.60341907
-          z: -0.30485898
-          w: 0.22552791
+          y: -0.6034191
+          z: -0.304859
+          w: 0.2255279
     - Position:
         x: -50
         y: 10
@@ -2222,8 +2223,8 @@ MonoBehaviour:
   SplineContainer: {fileID: 717603561}
   usePyroDrone: 0
   useLightingDrone: 0
-  useMobileTruss: 1
-  useMobileLight: 0
+  useMobileTruss: 0
+  useMobileLight: 1
   droneMargin: 1
   pyroDronePrefab: {fileID: 3962963460179205971, guid: d1dc7b43b0747924aa325792277db8dd, type: 3}
   pyroDroneSpawnCount: 16

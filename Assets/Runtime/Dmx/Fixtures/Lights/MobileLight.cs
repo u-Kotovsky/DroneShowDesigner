@@ -71,50 +71,8 @@ namespace Runtime.Dmx.Fixtures.Lights
 
         private static void WriteSpecialData(byte[] buffer)
         {
-            // 1125 1138 1151 1164 1177 1190 1203 1216
-            // 206 16 Way Selector. 0 = No Action; 1 = Hide Search Light mesh [lights can still function]; Rest undefined.
-            // 6 8 9 10
-        
-            // This is basically for debugging in World. Will make dim 100, color white.
-            buffer[1125 + 6 - 1] = 75;
-            buffer[1125 + 8 - 1] = 255;
-            buffer[1125 + 9 - 1] = 255;
-            buffer[1125 + 10 - 1] = 255;
-        
-            buffer[1138 + 6 - 1] = 75;
-            buffer[1138 + 8 - 1] = 255;
-            buffer[1138 + 9 - 1] = 255;
-            buffer[1138 + 10 - 1] = 255;
-        
-            buffer[1151 + 6 - 1] = 75;
-            buffer[1151 + 8 - 1] = 255;
-            buffer[1151 + 9 - 1] = 255;
-            buffer[1151 + 10 - 1] = 255;
-        
-            buffer[1164 + 6 - 1] = 75;
-            buffer[1164 + 8 - 1] = 255;
-            buffer[1164 + 9 - 1] = 255;
-            buffer[1164 + 10 - 1] = 255;
-        
-            buffer[1177 + 6 - 1] = 75;
-            buffer[1177 + 8 - 1] = 255;
-            buffer[1177 + 9 - 1] = 255;
-            buffer[1177 + 10 - 1] = 255;
-        
-            buffer[1190 + 6 - 1] = 75;
-            buffer[1190 + 8 - 1] = 255;
-            buffer[1190 + 9 - 1] = 255;
-            buffer[1190 + 10 - 1] = 255;
-        
-            buffer[1203 + 6 - 1] = 75;
-            buffer[1203 + 8 - 1] = 255;
-            buffer[1203 + 9 - 1] = 255;
-            buffer[1203 + 10 - 1] = 255;
-        
-            buffer[1216 + 6 - 1] = 75;
-            buffer[1216 + 8 - 1] = 255;
-            buffer[1216 + 9 - 1] = 255;
-            buffer[1216 + 10 - 1] = 255;
+            // 1229 206 16 Way Selector. 0 = No Action; 1 = Hide Search Light mesh [lights can still function]; Rest undefined.
+            buffer[1229] = 0;
         }
         #endregion
     }
