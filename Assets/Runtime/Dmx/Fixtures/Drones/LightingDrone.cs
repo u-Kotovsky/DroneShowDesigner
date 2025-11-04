@@ -94,6 +94,7 @@ namespace Runtime.Dmx.Fixtures.Drones
         {
             foreach (var lightingDrone in pool)
             {
+                if (lightingDrone == null) continue;
                 byte[] droneData = lightingDrone.GetDmxData();
 
                 System.Buffer.BlockCopy(droneData, 0, 
