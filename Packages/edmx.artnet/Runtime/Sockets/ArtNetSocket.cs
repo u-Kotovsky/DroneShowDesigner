@@ -87,7 +87,7 @@ namespace ArtNet.Sockets
             try
             {
                 EndPoint localPort = new IPEndPoint(IPAddress.Any, Port);
-                ArtNetRecieveData data = new ArtNetRecieveData();
+                var data = new ArtNetRecieveData();
                 
                 BeginReceiveFrom(data.buffer, 0, data.bufferSize, SocketFlags.None, ref localPort, OnReceive, data); // new AsyncCallback
             }
@@ -106,7 +106,7 @@ namespace ArtNet.Sockets
             
             try
             {
-                ArtNetRecieveData data = (ArtNetRecieveData)state.AsyncState;
+                var data = (ArtNetRecieveData)state.AsyncState;
 
                 if (data != null)
                 {
@@ -119,14 +119,6 @@ namespace ArtNet.Sockets
 
                         ProcessPacket((IPEndPoint)remoteEndPoint, ArtNetPacket.Create(data, (short)Port));
                     }
-                    else
-                    {
-                        Debug.LogError("Ignore packet due to loopback fix");
-                    }
-                }
-                else
-                {
-                    Debug.LogError("receive sate is null");
                 }
             }
             catch (Exception e)
@@ -145,13 +137,13 @@ namespace ArtNet.Sockets
         {
             if (packet == null)
             {
-                Debug.LogError($"Packet is null");
+                Debug.LogError("Packet is null");
                 return;
             }
             
             if (NewPacket == null)
             {
-                Debug.LogError($"NewPacket event is null");
+                Debug.LogError("NewPacket event is null");
                 return;
             }
             
