@@ -43,6 +43,8 @@ namespace Runtime.Dmx.Fixtures.Lights
             }
             
             Debug.Log($"{pool.Length} mobile lights are instanced");
+
+            SetPreset(pool, MobileLightPresetManager.presets[0]);
         }
 
         private static void Spawn(ref MobileLight[] pool, ref int index, ref int offset, ref MobileLight fixture)
@@ -73,6 +75,15 @@ namespace Runtime.Dmx.Fixtures.Lights
         {
             // 1229 206 16 Way Selector. 0 = No Action; 1 = Hide Search Light mesh [lights can still function]; Rest undefined.
             buffer[1229] = 0;
+        }
+        
+        private static void SetPreset(MobileLight[] pool, MobileLightPreset[] preset)
+        {
+            for (var i = 0; i < preset.Length; i++)
+            {
+                var fixture = pool[i];
+                fixture.transform.localPosition = preset[i].GetPosition();
+            }
         }
         #endregion
     }
