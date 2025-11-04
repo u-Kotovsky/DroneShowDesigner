@@ -9,6 +9,7 @@ namespace Runtime.UI
     {
         public RectTransform hotbar;
         public RectTransform pages;
+        public RectTransform page;
 
         public RectTransform hierarchy;
         public RectTransform inspector;
@@ -53,7 +54,7 @@ namespace Runtime.UI
                 });
             });
             
-            SetHotBarButtons(true);
+            //SetHotBarButtons(true);
         }
 
         private void SetHotBarButtons(bool active)
