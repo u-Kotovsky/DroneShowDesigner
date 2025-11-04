@@ -15,35 +15,27 @@ namespace Runtime.Dmx.Fixtures
         public DmxController dmxController;
 
         [Header("Cinemachine")] 
-        public CinemachineSplineCart cinemachineSplineCart;
-        public SplineContainer SplineContainer;
+        public SplineContainer splineContainer;
         
         [Header("Fixtures to enable on start")]
-        public bool usePyroDrone = false;
-        public bool useLightingDrone = false;
+        public bool usePyroDrone;
+        public bool useLightingDrone;
         public bool useMobileTruss = true;
         public bool useMobileLight = true;
         
-        [Header("Drone Spawn Settings")]
-        public float droneMargin = 1;
-        
         [Header("Pyro Drone Spawn Settings")]
-        public GameObject pyroDronePrefab;
         public int pyroDroneSpawnCount = 16;
         public PyroDrone[] pyroDronePool;
         
         [Header("Lighting Drone Spawn Settings")]
-        public GameObject lightingDronePrefab;
         public int lightingDroneSpawnCount = 1000;
         public LightingDrone[] lightingDronePool;
         
         [Header("Mobile Truss Spawn Settings")]
-        public GameObject mobileTrussPrefab;
         public int mobileTrussSpawnCount = 12;
         public MobileTruss[] mobileTrussPool;
 
         [Header("Mobile Light Spawn Settings")]
-        public GameObject mobileLightPrefab;
         public int mobileLightSpawnCount = 8;
         public MobileLight[] mobileLightPool;
     
@@ -59,7 +51,7 @@ namespace Runtime.Dmx.Fixtures
                 if (usePyroDrone)
                     PyroDrone.Spawn(this, ref pyroDronePool, ref pyroDroneSpawnCount);
                 if (useLightingDrone)
-                    LightingDrone.Spawn(this, ref lightingDronePool, ref lightingDroneSpawnCount, ref SplineContainer);
+                    LightingDrone.Spawn(this, ref lightingDronePool, ref lightingDroneSpawnCount, ref splineContainer);
                 if (useMobileTruss)
                     MobileTruss.Spawn(this, ref mobileTrussPool, ref mobileTrussSpawnCount);
                 if (useMobileLight)
