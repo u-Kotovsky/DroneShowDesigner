@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -19,11 +20,12 @@ namespace Runtime.UI
         public Sprite defaultUISprite;
         private static Sprite _defaultUISprite;
         
-        private Button[] hotbarButtons;
+        private List<Button> hotbarButtons;
 
         private void Awake()
         {
             _defaultUISprite ??= defaultUISprite;
+            hotbarButtons = new List<Button>();
             var buttonColor = Color.gray3;
             var textColor = Color.white;
             
@@ -31,30 +33,41 @@ namespace Runtime.UI
             {
                 button.onClick.AddListener(() =>
                 {
+                    SetHotBarButtons(true);
                     button.interactable = false;
                     Debug.Log("Open Settings");
                 });
+                
+                hotbarButtons.Add(button);
+                
+                button.onClick.Invoke();
             });
             
             UIUtility.AddButton(defaultUISprite, hotbar, "Console", buttonColor, textColor, button =>
             {
                 button.onClick.AddListener(() =>
                 {
+                    SetHotBarButtons(true);
                     button.interactable = false;
                     Debug.Log("Open Console");
                 });
+                
+                hotbarButtons.Add(button);
             });
             
             UIUtility.AddButton(defaultUISprite, hotbar, "Editor", buttonColor, textColor, button =>
             {
                 button.onClick.AddListener(() =>
                 {
+                    SetHotBarButtons(true);
                     button.interactable = false;
                     Debug.Log("Open Editor");
                 });
+                
+                hotbarButtons.Add(button);
             });
             
-            //SetHotBarButtons(true);
+            
         }
 
         private void SetHotBarButtons(bool active)
