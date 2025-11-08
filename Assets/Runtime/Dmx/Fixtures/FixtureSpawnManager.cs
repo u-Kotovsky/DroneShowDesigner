@@ -83,6 +83,12 @@ namespace Runtime.Dmx.Fixtures
             }
         }
 
+        private void Update()
+        {
+            WriteDmxData(ref dmxController.dmxBuffer.buffer); // makes everything update each unity frame
+            dmxController.ForceBufferUpdate();
+        }
+
         private void OnDmxDataChanged(short universe, byte[] data, byte[] globalDmxBuffer)
         {
             WriteDmxData(ref globalDmxBuffer);
