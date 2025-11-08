@@ -55,6 +55,11 @@ namespace Unity_DMX.Core
             dmxBuffer.OnBufferUpdate += OnBufferUpdate;
         }
 
+        public void ForceBufferUpdate()
+        {
+            OnBufferUpdate(dmxBuffer.buffer);
+        }
+
         private void OnBufferUpdate(byte[] buffer)
         {
             var universeCount = (short)(dmxBuffer.buffer.Length / 512);
