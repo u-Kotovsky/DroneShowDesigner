@@ -6,6 +6,8 @@ namespace Runtime.Dmx.Fixtures.Drones
     // TODO: Boundary box visuals/limit for editor usage
     public class LightingDrone : BaseDrone
     {
+        public RendererToDrones meshToDrones;
+        
         #region Color
         private static readonly int BaseColor = Shader.PropertyToID("_BaseColor");
         private byte r;
@@ -36,16 +38,20 @@ namespace Runtime.Dmx.Fixtures.Drones
 
         private void Update()
         {
-            WriteDmxPosition(0, transform.position, true);
-            
-            if (DroneRenderers == null) return;
-            foreach (var droneRenderer in DroneRenderers)
+            if (DroneRenderers != null)
             {
-                if (droneRenderer == null || droneRenderer.sharedMaterial == null)
-                    continue;
+                foreach (var droneRenderer in DroneRenderers)
+                {
+                    if (droneRenderer == null || droneRenderer.sharedMaterial == null)
+                        continue;
 
-                droneRenderer.sharedMaterial.SetColor(BaseColor, color); // can be called only from main thread.
+                    droneRenderer.sharedMaterial.SetColor(BaseColor, color); // can be called only from main thread.
+                }
             }
+            
+            if (meshToDrones != null) meshToDrones.SetDronePosition(this);
+            
+            WriteDmxPosition(0, transform.position, true);
         }
 
         public override void WriteDmxData()
@@ -64,6 +70,9 @@ namespace Runtime.Dmx.Fixtures.Drones
             pool = new LightingDrone[count];
             LightingDrone fixture = null;
             int offset = (512 * 5) + 321 - 1; // 2880 is start for FX drone // Offset is probably correct (maybe?)
+            
+            // test mesh 
+            var meshToDrones = FindFirstObjectByType<RendererToDrones>();
 
             for (int i = 0; i < pool.Length; i++)
             {
@@ -72,8 +81,9 @@ namespace Runtime.Dmx.Fixtures.Drones
                 //fixture.gameObject.AddComponent<DroneNavigation>();
                 //var pathNav = fixture.gameObject.AddComponent<DronePathNavigation>();
                 //pathNav.waitBeforeStart = i * 0.25f;
-                var cartFollower = fixture.gameObject.AddComponent<DroneSplineCartFollower>();
-                cartFollower.StartWithDelay(i * 0.2f, splineContainer);
+                fixture.meshToDrones = meshToDrones;
+                //var cartFollower = fixture.gameObject.AddComponent<DroneSplineCartFollower>();
+                //cartFollower.StartWithDelay(i * 0.2f, splineContainer);
             }
             
             Debug.Log($"{pool.Length} lighting drones are instanced");
