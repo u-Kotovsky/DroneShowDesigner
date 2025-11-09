@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Runtime.Dmx.Fixtures.Drones
@@ -6,36 +7,72 @@ namespace Runtime.Dmx.Fixtures.Drones
     public class RendererToDrones : MonoBehaviour
     {
         public MeshRenderer target;
-        public Transform viewPoint;
-        
         private MeshFilter targetMeshFilter;
         private Vector3[] vertices;
+        
+        public Transform viewPoint;
+        
         private const int HardLimit = 1000;
         public float maxRaycastDistance = 0.1f;
+        
+        private Dictionary<int, int> droneToVertex = new Dictionary<int, int>();
 
-        private void AssignMeshFilter()
+        public bool drawDebugLines;
+        public bool drawDebugEdgeLines;
+
+        private void AssignMeshData()
         {
             if (target == null) return;
-            if (targetMeshFilter != null) return;
+            if (targetMeshFilter != null || (targetMeshFilter != null /*&& 
+                                             targetMeshFilter.Length != target.Length*/)) return;
             
+            //targetMeshFilter = new MeshFilter[target.Length];
             targetMeshFilter = target.GetComponent<MeshFilter>();
+            vertices = targetMeshFilter.sharedMesh.vertices;
+            /*for (var i = 0; i < targetMeshFilter.Length; i++)
+            {
+                targetMeshFilter[i] = target[i].GetComponent<MeshFilter>();
+                vertices[i] = targetMeshFilter[i].sharedMesh.vertices;
+            }*/
         }
 
-        private void AssignVertices()
+        public void SetupDronePoolToVertices(LightingDrone[] pool)
         {
-            if (targetMeshFilter == null) return;
-            if (targetMeshFilter.sharedMesh == null) return;
+            droneToVertex = new Dictionary<int, int>();
             
-            vertices = targetMeshFilter.sharedMesh.vertices;
+            AssignMeshData();
+
+            if (vertices.Length < pool.Length)
+            {
+                // Good to go, or maybe subdivide result.
+
+                for (var i = 0; i < vertices.Length; i++)
+                {
+                    droneToVertex.Add(i, i);
+                }
+
+                return;
+            }
+
+            if (vertices.Length > pool.Length)
+            {
+                // Decimate vertices
+                // Or also calculate only visible
+
+                for (var i = 0; i < vertices.Length; i++)
+                {
+                    droneToVertex.Add(i, i);
+                }
+
+                return;
+            }
         }
-        
         
         private void OnDrawGizmos()
         {
             if (target == null) return;
             
-            AssignMeshFilter();
-            AssignVertices();
+            AssignMeshData();
 
             if (vertices == null) return;
 
@@ -49,31 +86,13 @@ namespace Runtime.Dmx.Fixtures.Drones
                 });
             }
         }
-
-        public void SetDronesPosition(LightingDrone[] drones) // go through all 1k drones
-        {
-            if (vertices == null)
-            {
-                AssignVertices();
-                AssignMeshFilter();
-
-                return;
-            }
-            
-            for (var i = 0; i < drones.Length && i < vertices.Length; i++)
-            {
-                drones[i].transform.position = vertices[i];
-            }
-        }
         
         
         public void CheckForSpace(int vertexIndex, Action<Vector3, Vector3, bool> callback) // go through all 1k drones
         {
             if (vertices == null)
             {
-                AssignVertices();
-                AssignMeshFilter();
-
+                AssignMeshData();
                 return;
             }
             
@@ -81,12 +100,12 @@ namespace Runtime.Dmx.Fixtures.Drones
             
             var vertex = vertices[vertexIndex];
             Vector3 worldVertex = target.transform.TransformPoint(vertex);
-            
-            // Distance from view point to vertex in world
-            var distance = Vector3.Distance(worldVertex, viewPoint.position);
 
             if (viewPoint != null)
             {
+                // Distance from view point to vertex in world
+                var vertexToView = Vector3.Distance(worldVertex, viewPoint.position);
+                
                 Vector3 direction = worldVertex - viewPoint.position;
                 var hitWasMade = Physics.Raycast(viewPoint.position, direction, out var hit, 50);
                 
@@ -95,25 +114,55 @@ namespace Runtime.Dmx.Fixtures.Drones
 
                 if (hitWasMade)
                 {
-                    var distanceVertexToHit = Vector3.Distance(worldVertex, hit.point);
-                    if (distanceVertexToHit > maxRaycastDistance)
+                    var vertexToHit = Vector3.Distance(worldVertex, hit.point);
+                    if (vertexToHit > maxRaycastDistance)
                     {
                         //Debug.DrawLine(worldVertex, hit.point, Color.pink);
                         return;
                     }
 
-                    //Debug.DrawLine(viewPoint.transform.position, hit.point,
-                    //    distanceVertexToHit > distance ? Color.red : Color.green);
+                    if (drawDebugLines)
+                    {
+                        Debug.DrawLine(viewPoint.transform.position, hit.point,
+                            vertexToHit > vertexToView ? Color.red : Color.green);
+                        Debug.DrawLine(hit.point, hit.point + Vector3.up * 0.08f,
+                            vertexToHit > vertexToView ? Color.yellow : Color.blue);
+                    }
 
-                    //Debug.DrawLine(hit.point, hit.point + Vector3.up * 0.08f,
-                    //    distanceVertexToHit > distance ? Color.yellow : Color.blue);
-
-                    callback?.Invoke(worldVertex, hit.point, hit.distance <= distance);
                 }
+                
+                callback?.Invoke(worldVertex, hit.point, hitWasMade);
             }
             else
             {
                 callback?.Invoke(worldVertex, worldVertex, true);
+            }
+            
+            if (drawDebugEdgeLines)
+            {
+                if (vertices == null || vertices.Length < 2) return;
+                
+                var next = vertices.Length + 1 >= vertexIndex 
+                           && vertices.Length - 1 >= 0 ? vertexIndex - 1 : vertexIndex + 1;
+
+                if (vertexIndex == 0) next = 1;
+                
+                try
+                {
+                    var worldNext = vertices[next];
+                    Vector3 worldVertex2 = target.transform.TransformPoint(worldNext);
+                    Vector3 worldVertex3 = Vector3.Lerp(worldVertex, worldVertex2, 0.5f);
+                    
+                    Debug.DrawLine(worldVertex, worldVertex2, Color.grey); // Mesh Edge
+                    Debug.DrawLine(worldVertex, worldVertex + Vector3.up * 0.1f, Color.green);
+                    Debug.DrawLine(worldVertex3, worldVertex3 + Vector3.up * 0.1f, Color.blue);
+                    //Debug.DrawLine(worldVertex2, worldVertex2 + Vector3.up * 0.1f, Color.green);
+                }
+                catch (Exception e)
+                {
+                    Debug.LogException(e);
+                    Debug.Log($"{vertexIndex} {next}/{vertices.Length}");
+                }
             }
         }
 
@@ -121,27 +170,75 @@ namespace Runtime.Dmx.Fixtures.Drones
         {
             if (vertices == null)
             {
-                AssignVertices();
-                AssignMeshFilter();
-
+                AssignMeshData();
                 return;
             }
             
             if (drone.fixtureIndex >= vertices.Length) return;
             
-            // TODO: check if that vertex is not obscured by other drones
-            // We have viewPoint that is a sphere, so we can check by raycasting from viewpoint into drone direction,
-            // if it hits something that's not drone -> skip that drone
             
             CheckForSpace(drone.fixtureIndex, (worldVertex, hitPoint, isHitDrone) =>
             {
-                if (isHitDrone)
+                // TODO: check if that vertex is not obscured by other drones
+                // We have viewPoint that is a sphere, so we can check by raycasting from viewpoint into drone direction,
+                // if it hits something that's not drone -> skip that drone
+                if (viewPoint != null)
                 {
-                    drone.transform.position = hitPoint;
+                    //var vertexToView = Vector3.Distance(worldVertex, viewPoint.position);
+                    var vertexToHit = Vector3.Distance(worldVertex, hitPoint);
+                    if (isHitDrone)
+                    {
+                        drone.transform.position = hitPoint;
+                    }
+                    if (isHitDrone && vertexToHit < maxRaycastDistance)
+                    {
+                        drone.color = GetColorByVertex(target, targetMeshFilter, drone.fixtureIndex);
+                    }
+                    else
+                    {
+                        drone.color =  Color.black;
+                    }
+                    drone.WriteDmxColor(drone.color);
                 }
-                drone.color = isHitDrone ? Vector3.Distance(worldVertex, hitPoint) < maxRaycastDistance ? Color.green : Color.red
-                        : Color.red;
+                else
+                {
+                    WriteVertexToDrone(drone, worldVertex, GetColorByVertex(target, targetMeshFilter, drone.fixtureIndex));
+                }
             });
+        }
+
+        public static void WriteVertexToDrone(LightingDrone drone, Vector3 position, Color color)
+        {
+            drone.transform.position = position;
+            drone.color = color;
+            drone.WriteDmxColor(drone.color);
+        }
+
+        public static Color GetColorByVertex(MeshRenderer renderer, MeshFilter filter, int vertexIndex)
+        {
+            // Get UV coordinates
+            Vector2[] uvs = filter.sharedMesh.uv;
+
+            // Get UV for this vertex
+            Vector2 uv = uvs[vertexIndex];
+
+            // Sample texture at UV (if material has a main texture)
+            Texture2D mainTexture = renderer.material.mainTexture as Texture2D;
+
+            if (mainTexture != null)
+            {
+                // Convert UV to pixel coordinates
+                int x = Mathf.RoundToInt(uv.x * mainTexture.width);
+                int y = Mathf.RoundToInt(uv.y * mainTexture.height);
+    
+                Color textureColor = mainTexture.GetPixel(x, y);
+                return textureColor * renderer.material.color;
+            }
+            else
+            {
+                // No texture, just use material color
+                return renderer.material.color;
+            }
         }
     }
 }
