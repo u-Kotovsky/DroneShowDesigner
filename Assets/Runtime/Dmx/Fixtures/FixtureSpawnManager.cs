@@ -59,7 +59,7 @@ namespace Runtime.Dmx.Fixtures
 
                 if (useLightingDrone)
                 {
-                    lightingDronePool[0].transform.parent.localPosition = new Vector3(-15, 20, 50);
+                    lightingDronePool[0].transform.parent.localPosition = new Vector3(0, 10, 0);
                 
                     int counter = 0;
                     
@@ -73,7 +73,7 @@ namespace Runtime.Dmx.Fixtures
                             var drone = lightingDronePool[counter];
                         
                             drone.transform.localPosition = new Vector3(x, 0, y);
-                            drone.GetComponent<LightingDrone>().color = Color.white;
+                            //drone.GetComponent<LightingDrone>().color = Color.white;
                         
                             counter++;
                         }
