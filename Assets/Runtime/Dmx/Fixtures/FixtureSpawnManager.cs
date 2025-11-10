@@ -62,14 +62,17 @@ namespace Runtime.Dmx.Fixtures
                     lightingDronePool[0].transform.parent.localPosition = new Vector3(-15, 20, 50);
                 
                     int counter = 0;
-                    for (var i = 0; i < 500; i++)
+                    
+                    var (rectWidth, rectHeight) = Utility.GetMostRectangular(lightingDronePool.Length);
+                    
+                    for (var y = 0; y < rectWidth; y++)
                     {
-                        for (int j = 0; j < 32; j++)
+                        for (int x = 0; x < rectHeight; x++)
                         {
                             if (lightingDronePool.Length <= counter) return;
                             var drone = lightingDronePool[counter];
                         
-                            drone.transform.localPosition = new Vector3(j, i, 0);
+                            drone.transform.localPosition = new Vector3(x, 0, y);
                             drone.GetComponent<LightingDrone>().color = Color.white;
                         
                             counter++;
