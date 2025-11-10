@@ -26,6 +26,13 @@ namespace Runtime.Dmx.Fixtures.Drones
             Buffer[7] = g;
             Buffer[8] = b;
         }
+
+        public void ForceSetColor(Color value)
+        {
+            color = value;
+            WriteDmxColor(value);
+            UpdateMaterial();
+        }
         #endregion
         
         private void Awake()
@@ -38,20 +45,26 @@ namespace Runtime.Dmx.Fixtures.Drones
 
         private void Update()
         {
-            if (DroneRenderers != null)
-            {
-                foreach (var droneRenderer in DroneRenderers)
-                {
-                    if (droneRenderer == null || droneRenderer.sharedMaterial == null)
-                        continue;
-
-                    droneRenderer.sharedMaterial.SetColor(BaseColor, color); // can be called only from main thread.
-                }
-            }
-            
             if (meshToDrones != null) meshToDrones.SetDronePosition(this);
             
             WriteDmxPosition(0, transform.position, true);
+            UpdateMaterial();
+        }
+
+        public void UpdateMaterial()
+        {
+            if (DroneRenderers == null) return;
+            
+            foreach (var droneRenderer in DroneRenderers)
+            {
+                if (droneRenderer == null || droneRenderer.sharedMaterial == null)
+                    continue;
+                
+                MaterialPropertyBlock propertyBlock = new MaterialPropertyBlock();
+                propertyBlock.SetColor(BaseColor, color);
+                droneRenderer.SetPropertyBlock(propertyBlock);
+                //droneRenderer.sharedMaterial.SetColor(BaseColor, color); // can be called only from main thread.
+            }
         }
 
         public override void WriteDmxData()
@@ -73,6 +86,7 @@ namespace Runtime.Dmx.Fixtures.Drones
             
             // test mesh 
             var meshToDrones = FindFirstObjectByType<RendererToDrones>();
+            var balloonDrones = FindFirstObjectByType<BalloonDrones>();
 
             for (int i = 0; i < pool.Length; i++)
             {
@@ -82,11 +96,15 @@ namespace Runtime.Dmx.Fixtures.Drones
                 //var pathNav = fixture.gameObject.AddComponent<DronePathNavigation>();
                 //pathNav.waitBeforeStart = i * 0.25f;
                 fixture.meshToDrones = meshToDrones;
+                
                 //var cartFollower = fixture.gameObject.AddComponent<DroneSplineCartFollower>();
                 //cartFollower.StartWithDelay(i * 0.2f, splineContainer);
             }
             
             Debug.Log($"{pool.Length} lighting drones are instanced");
+            
+            if (meshToDrones != null) meshToDrones.SetupDronePoolToVertices(pool);
+            if (balloonDrones != null && balloonDrones.isActiveAndEnabled) balloonDrones.Setup(pool);
         }
 
         private static void Spawn(ref LightingDrone[] pool, ref int index, ref int offset, ref LightingDrone fixture)
