@@ -14,8 +14,9 @@ namespace Runtime.Dmx.Fixtures.Drones
         
         private const int HardLimit = 1000;
         public float maxRaycastDistance = 0.1f;
+        public float minVertDistance = 0.1f;
         
-        private Dictionary<int, int> droneToVertex = new Dictionary<int, int>();
+        private Dictionary<int, int> droneVertex = new Dictionary<int, int>();
 
         public bool drawDebugLines;
         public bool drawDebugEdgeLines;
@@ -38,17 +39,28 @@ namespace Runtime.Dmx.Fixtures.Drones
 
         public void SetupDronePoolToVertices(LightingDrone[] pool)
         {
-            droneToVertex = new Dictionary<int, int>();
+            droneVertex = new Dictionary<int, int>();
             
             AssignMeshData();
 
             if (vertices.Length < pool.Length)
             {
+                Debug.LogWarning($"Too low vertices. ({vertices.Length}/{pool.Length})");
                 // Good to go, or maybe subdivide result.
-
                 for (var i = 0; i < vertices.Length; i++)
                 {
-                    droneToVertex.Add(i, i);
+                    bool isNearby = false;
+                    
+                    // Check if there's one nearby already, if so -> skip
+                    for (var i1 = 0; i1 < vertices.Length; i1++)
+                    {
+                        if (Vector3.Distance(vertices[i], vertices[i1]) < minVertDistance && droneVertex.ContainsValue(i1))
+                        {
+                            isNearby = true;
+                        }
+                    }
+                    
+                    if (!isNearby) droneVertex.Add(i, i);
                 }
 
                 return;
@@ -56,14 +68,22 @@ namespace Runtime.Dmx.Fixtures.Drones
 
             if (vertices.Length > pool.Length)
             {
+                Debug.LogWarning($"Too many vertices. ({vertices.Length}/{pool.Length})");
                 // Decimate vertices
                 // Or also calculate only visible
-
                 for (var i = 0; i < vertices.Length; i++)
                 {
-                    droneToVertex.Add(i, i);
+                    bool isNearby = false;
+                    
+                    // Check if there's one nearby already, if so -> skip
+                    for (var i1 = 0; i1 < vertices.Length; i1++)
+                    {
+                        if (Vector3.Distance(vertices[i], vertices[i1]) < minVertDistance)
+                            isNearby = true;
+                    }
+                    
+                    if (!isNearby) droneVertex.Add(i, i);
                 }
-
                 return;
             }
         }
@@ -86,7 +106,6 @@ namespace Runtime.Dmx.Fixtures.Drones
                 });
             }
         }
-        
         
         public void CheckForSpace(int vertexIndex, Action<Vector3, Vector3, bool> callback) // go through all 1k drones
         {
@@ -115,27 +134,20 @@ namespace Runtime.Dmx.Fixtures.Drones
                 if (hitWasMade)
                 {
                     var vertexToHit = Vector3.Distance(worldVertex, hit.point);
-                    if (vertexToHit > maxRaycastDistance)
-                    {
-                        //Debug.DrawLine(worldVertex, hit.point, Color.pink);
-                        return;
-                    }
+                    if (vertexToHit > maxRaycastDistance) return;
 
                     if (drawDebugLines)
                     {
-                        Debug.DrawLine(viewPoint.transform.position, hit.point,
-                            vertexToHit > vertexToView ? Color.red : Color.green);
-                        Debug.DrawLine(hit.point, hit.point + Vector3.up * 0.08f,
-                            vertexToHit > vertexToView ? Color.yellow : Color.blue);
+                        Debug.DrawLine(viewPoint.transform.position, hit.point, vertexToHit > vertexToView ? Color.red : Color.green);
+                        Debug.DrawLine(hit.point, hit.point + Vector3.up * 0.08f, vertexToHit > vertexToView ? Color.yellow : Color.blue);
                     }
-
                 }
                 
                 callback?.Invoke(worldVertex, hit.point, hitWasMade);
             }
             else
             {
-                callback?.Invoke(worldVertex, worldVertex, true);
+                callback?.Invoke(worldVertex, worldVertex, true); // atm using this
             }
             
             if (drawDebugEdgeLines)
@@ -148,14 +160,14 @@ namespace Runtime.Dmx.Fixtures.Drones
                 if (vertexIndex == 0) next = 1;
                 
                 try
-                {
+                { // todo: subdivision
                     var worldNext = vertices[next];
                     Vector3 worldVertex2 = target.transform.TransformPoint(worldNext);
                     Vector3 worldVertex3 = Vector3.Lerp(worldVertex, worldVertex2, 0.5f);
                     
                     Debug.DrawLine(worldVertex, worldVertex2, Color.grey); // Mesh Edge
-                    Debug.DrawLine(worldVertex, worldVertex + Vector3.up * 0.1f, Color.green);
-                    Debug.DrawLine(worldVertex3, worldVertex3 + Vector3.up * 0.1f, Color.blue);
+                    Debug.DrawLine(worldVertex, worldVertex + Vector3.up * 0.1f, Color.green); // Actual Vertex
+                    Debug.DrawLine(worldVertex3, worldVertex3 + Vector3.up * 0.1f, Color.blue); // Additive Vertex
                     //Debug.DrawLine(worldVertex2, worldVertex2 + Vector3.up * 0.1f, Color.green);
                 }
                 catch (Exception e)
@@ -179,6 +191,8 @@ namespace Runtime.Dmx.Fixtures.Drones
             
             CheckForSpace(drone.fixtureIndex, (worldVertex, hitPoint, isHitDrone) =>
             {
+                if (!droneVertex.TryGetValue(drone.fixtureIndex, out var vertexIndex)) return;
+
                 // TODO: check if that vertex is not obscured by other drones
                 // We have viewPoint that is a sphere, so we can check by raycasting from viewpoint into drone direction,
                 // if it hits something that's not drone -> skip that drone
@@ -192,7 +206,9 @@ namespace Runtime.Dmx.Fixtures.Drones
                     }
                     if (isHitDrone && vertexToHit < maxRaycastDistance)
                     {
-                        drone.color = GetColorByVertex(target, targetMeshFilter, drone.fixtureIndex);
+                        drone.color = GetColorByVertex(target, targetMeshFilter,
+                            vertexIndex);
+                        //drone.fixtureIndex);
                     }
                     else
                     {
@@ -202,7 +218,9 @@ namespace Runtime.Dmx.Fixtures.Drones
                 }
                 else
                 {
-                    WriteVertexToDrone(drone, worldVertex, GetColorByVertex(target, targetMeshFilter, drone.fixtureIndex));
+                    WriteVertexToDrone(drone, worldVertex, GetColorByVertex(target, targetMeshFilter,
+                        vertexIndex));
+                       // drone.fixtureIndex));
                 }
             });
         }
