@@ -75,11 +75,11 @@ namespace Runtime.Dmx.Fixtures.Drones
         
         #region Static
         public static GameObject lightingDronePrefab = Resources.Load<GameObject>("LightingDrone");
-        private static GameObject internalPool;
+        private static GameObject _internalPool;
         
         public static void Spawn(FixtureSpawnManager spawnManager, ref LightingDrone[] pool, ref int count, ref SplineContainer splineContainer)
         {
-            if (internalPool == null) internalPool = new GameObject("LightingDronePool");
+            if (_internalPool == null) _internalPool = new GameObject("LightingDronePool");
             pool = new LightingDrone[count];
             LightingDrone fixture = null;
             int offset = (512 * 5) + 321 - 1; // 2880 is start for FX drone // Offset is probably correct (maybe?)
@@ -110,7 +110,7 @@ namespace Runtime.Dmx.Fixtures.Drones
         private static void Spawn(ref LightingDrone[] pool, ref int index, ref int offset, ref LightingDrone fixture)
         {
             var instance = Instantiate(lightingDronePrefab, new Vector3(index, 1, 0), Quaternion.identity);
-            instance.transform.SetParent(internalPool.transform);
+            instance.transform.SetParent(_internalPool.transform);
             fixture = instance.AddComponent<LightingDrone>();
             fixture.fixtureIndex = index;
             fixture.globalChannelStart = offset + (index * fixture.GetDmxData().Length);

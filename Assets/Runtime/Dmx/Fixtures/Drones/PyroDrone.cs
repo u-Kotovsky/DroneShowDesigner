@@ -52,11 +52,11 @@ namespace Runtime.Dmx.Fixtures.Drones
 
         #region Static
         public static GameObject pyroDronePrefab = Resources.Load<GameObject>("PyroDrone");
-        private static GameObject internalPool;
+        private static GameObject _internalPool;
         
         public static void Spawn(FixtureSpawnManager spawnManager, ref PyroDrone[] pool, ref int count)
         {
-            if (internalPool == null) internalPool = new GameObject("PyroDronePool");
+            if (_internalPool == null) _internalPool = new GameObject("PyroDronePool");
             pool = new PyroDrone[count];
             PyroDrone fixture = null;
             int offset = (512 * 5) + 41 - 1; // 2600 is start for pyro drone.
@@ -75,7 +75,7 @@ namespace Runtime.Dmx.Fixtures.Drones
         private static void Spawn(ref PyroDrone[] pool, ref int index, ref int offset, ref PyroDrone fixture)
         {
             var instance = Instantiate(pyroDronePrefab, new Vector3(index, 2, 0), Quaternion.identity);
-            instance.transform.SetParent(internalPool.transform);
+            instance.transform.SetParent(_internalPool.transform);
             fixture = instance.AddComponent<PyroDrone>();
             fixture.fixtureIndex = index;
             fixture.globalChannelStart = offset + (index * fixture.GetDmxData().Length);

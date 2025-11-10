@@ -41,11 +41,11 @@ namespace Runtime.Dmx.Fixtures.Truss
 
         #region Static
         public static GameObject trussPrefab = Resources.Load<GameObject>("MobileTruss");
-        private static GameObject internalPool;
+        private static GameObject _internalPool;
 
         public static void Spawn(FixtureSpawnManager spawnManager, ref MobileTruss[] pool, ref int count)
         {
-            if (internalPool == null) internalPool = new GameObject("MobileTrussPool");
+            if (_internalPool == null) _internalPool = new GameObject("MobileTrussPool");
             pool = new MobileTruss[count];
             MobileTruss fixture = null;
             int offset = 6; // Start for mobile truss.
@@ -67,7 +67,7 @@ namespace Runtime.Dmx.Fixtures.Truss
         private static void Spawn(ref MobileTruss[] pool, ref int index, ref int offset, ref MobileTruss fixture)
         {
             var instance = Instantiate(trussPrefab, new Vector3(index * 9, 2, 0), Quaternion.identity);
-            instance.transform.SetParent(internalPool.transform);
+            instance.transform.SetParent(_internalPool.transform);
             fixture = instance.AddComponent<MobileTruss>();
             fixture.fixtureIndex = index;
             fixture.globalChannelStart = offset + (index * fixture.GetDmxData().Length);

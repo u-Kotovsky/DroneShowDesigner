@@ -27,11 +27,11 @@ namespace Runtime.Dmx.Fixtures.Lights
 
         #region Static
         public static GameObject mobileLightPrefab = Resources.Load<GameObject>("MobileLight");
-        private static GameObject internalPool;
+        private static GameObject _internalPool;
         
         public static void Spawn(FixtureSpawnManager spawnManager, ref MobileLight[] pool, ref int count)
         {
-            if (internalPool == null) internalPool = new GameObject("MobileLightPool");
+            if (_internalPool == null) _internalPool = new GameObject("MobileLightPool");
             pool = new MobileLight[count];
             MobileLight fixture = null;
             int offset = 1077; // Start for mobile light.
@@ -50,7 +50,7 @@ namespace Runtime.Dmx.Fixtures.Lights
         private static void Spawn(ref MobileLight[] pool, ref int index, ref int offset, ref MobileLight fixture)
         {
             var instance = Instantiate(mobileLightPrefab, new Vector3(index, 2, 0), Quaternion.identity);
-            instance.transform.SetParent(internalPool.transform);
+            instance.transform.SetParent(_internalPool.transform);
             fixture = instance.AddComponent<MobileLight>();
             fixture.fixtureIndex = index;
             fixture.globalChannelStart = offset + (index * fixture.GetDmxData().Length);
