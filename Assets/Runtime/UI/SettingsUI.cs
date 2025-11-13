@@ -34,27 +34,17 @@ namespace Runtime.UI
                     dmxController.remoteIP = data.artNetConfig.endPoint.address;
                     dmxController.remotePort = data.artNetConfig.endPoint.port;
                     dmxController.enabled = data.artNetConfig.enableInput;
-                    if (data.artNetConfig.enableInput)
-                    {
-                        dmxController.StartArtNet();
-                    }
-                    else
-                    {
-                        dmxController.StopArtNet();
-                    }
+                    
+                    if (dmxController.IsArtNetOn) dmxController.StopArtNet();
+                    if (data.artNetConfig.enableInput) dmxController.StartArtNet();
                     
                     dmxController.redirectTo.remoteIP = data.artNetConfig.redirectTo.address;
                     dmxController.redirectTo.remotePort = data.artNetConfig.redirectTo.port;
                     dmxController.redirectTo.enabled = data.artNetConfig.enableOutput;
                     dmxController.redirectPackets = data.artNetConfig.enableOutput;
-                    if (data.artNetConfig.enableInput)
-                    {
-                        dmxController.redirectTo.StartArtNet();
-                    }
-                    else
-                    {
-                        dmxController.redirectTo.StopArtNet();
-                    }
+                    
+                    if (dmxController.redirectTo.IsArtNetOn) dmxController.redirectTo.StopArtNet();
+                    if (data.artNetConfig.enableInput) dmxController.redirectTo.StartArtNet();
                 };
             }
             catch (Exception e)

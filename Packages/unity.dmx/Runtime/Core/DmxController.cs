@@ -63,6 +63,7 @@ namespace Unity_DMX.Core
         }
 
         private bool isArtNetOn = false;
+        public bool IsArtNetOn => isArtNetOn;
 
         public void StartArtNet()
         {
