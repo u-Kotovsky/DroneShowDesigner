@@ -81,6 +81,8 @@ namespace Runtime.UI
                 
                 hotbarButtons.Add(button);
             });
+            
+            SettingsUI.Poke();
         }
 
         private void CleanScreen()

@@ -12,7 +12,8 @@ namespace Runtime.UI
     {
         private static RectTransform _rootRect, _groupRect, _containerRect;
         private static TextMeshProUGUI _pathToFileText;
-        private static TMP_InputField _artNetInIp, _artNetInPort, _artNetOutIp, _artNetOutPort;
+        private static TMP_InputField _targetFrameRate, _artNetInIp, _artNetInPort, _artNetOutIp, _artNetOutPort;
+        private static Toggle _enableMobileTruss, _enableMobileLight, _enableLightingDrones, _enablePyroDrones;
         private static Toggle _artNetInToggle, _artNetOutToggle;
 
         static SettingsUI()
@@ -31,6 +32,10 @@ namespace Runtime.UI
 
                 SettingsService.OnSettingsChanged += (data) =>
                 {
+                    // targetFramerate
+                    Application.targetFrameRate = data.targetFrameRate;
+                    
+                    // Art Net
                     dmxController.remoteIP = data.artNetConfig.endPoint.address;
                     dmxController.remotePort = data.artNetConfig.endPoint.port;
                     dmxController.enabled = data.artNetConfig.enableInput;
@@ -45,16 +50,37 @@ namespace Runtime.UI
                     
                     if (dmxController.redirectTo.IsArtNetOn) dmxController.redirectTo.StopArtNet();
                     if (data.artNetConfig.enableInput) dmxController.redirectTo.StartArtNet();
+                    
+                    // Custom Fixtures
+                    fixtureSpawner.useMobileTruss = data.enableMobileTruss;
+                    fixtureSpawner.useMobileLight = data.enableMobileLight;
+                    fixtureSpawner.usePyroDrone = data.enablePyroDrones;
+                    fixtureSpawner.useLightingDrone = data.enableLightingDrones;
                 };
+
+                try
+                {
+                    if (!File.Exists(_pathToSettings)) Save();
+                    Load();
+                }
+                catch (Exception e)
+                {
+                    Debug.LogException(e);
+                    Debug.LogError($"Failed to load settings");
+                }
+                
+                fixtureSpawner.Initialize();
             }
             catch (Exception e)
             {
                 Debug.LogException(e);
                 Debug.LogError("Failed to hook up settings updates");
             }
-            
-            if (!File.Exists(_pathToSettings)) Save();
-            Load();
+        }
+
+        public static void Poke()
+        {
+            // initialize static part lol
         }
         
         public static void BuildUI(RectTransform parent)
@@ -88,6 +114,12 @@ namespace Runtime.UI
             saveButton.onClick.AddListener(Save);
             cancelButton.onClick.AddListener(Load);
             
+            // Unity frames
+            var targetFrameRateRect = UIUtility.AddItemToList(listRect, 0, 20, "Target Framerate");
+            _targetFrameRate = UIUtility.AddInputField(targetFrameRateRect, Color.white * .5f, Color.white);
+            _targetFrameRate.contentType = TMP_InputField.ContentType.IntegerNumber;
+            _targetFrameRate.onValueChanged.AddListener((value) => { SettingsService.data.targetFrameRate = ushort.Parse(value); });
+            
             // ArtNet (Input)
             var artNetInToggleRect = UIUtility.AddItemToList(listRect, 0, 20, "Art Net (In) Toggle");
             _artNetInToggle = UIUtility.AddToggle(artNetInToggleRect, Color.white * .5f, Color.white);
@@ -116,6 +148,23 @@ namespace Runtime.UI
             _artNetOutPort.contentType = TMP_InputField.ContentType.IntegerNumber;
             _artNetOutPort.onValueChanged.AddListener((value) => { SettingsService.data.artNetConfig.redirectTo.port = ushort.Parse(value); });
             
+            // Custom Fixtures
+            var enableMobileTrussRect = UIUtility.AddItemToList(listRect, 0, 20, "Enable Mobile Truss");
+            _enableMobileTruss = UIUtility.AddToggle(enableMobileTrussRect, Color.white * .5f, Color.white);
+            _enableMobileTruss.onValueChanged.AddListener((value) => { SettingsService.data.enableMobileTruss = value; });
+            
+            var enableMobileLightRect = UIUtility.AddItemToList(listRect, 0, 20, "Enable Mobile Light");
+            _enableMobileLight = UIUtility.AddToggle(enableMobileLightRect, Color.white * .5f, Color.white);
+            _enableMobileLight.onValueChanged.AddListener((value) => { SettingsService.data.enableMobileLight = value; });
+            
+            var enablePyroDronesRect = UIUtility.AddItemToList(listRect, 0, 20, "Enable Pyro Drones");
+            _enablePyroDrones = UIUtility.AddToggle(enablePyroDronesRect, Color.white * .5f, Color.white);
+            _enablePyroDrones.onValueChanged.AddListener((value) => { SettingsService.data.enablePyroDrones = value; });
+            
+            var enableLightingDronesRect = UIUtility.AddItemToList(listRect, 0, 20, "Enable Lighting Drones");
+            _enableLightingDrones = UIUtility.AddToggle(enableLightingDronesRect, Color.white * .5f, Color.white);
+            _enableLightingDrones.onValueChanged.AddListener((value) => { SettingsService.data.enableLightingDrones = value; });
+            
             RefreshUI();
         }
 
@@ -123,11 +172,26 @@ namespace Runtime.UI
         public static void RefreshUI()
         {
             Debug.Log("Refreshing Settings UI");
+            RefreshFixturesUI();
+            RefreshFramesPerSecondUI();
             RefreshPathToFileUI();
             RefreshArtNetInputUI();
             RefreshArtNetOutputUI();
         }
 
+        private static void RefreshFixturesUI()
+        {
+            if (_enableMobileTruss != null) _enableMobileTruss.isOn = SettingsService.data.enableMobileTruss;
+            if (_enableMobileLight != null) _enableMobileLight.isOn = SettingsService.data.enableMobileLight;
+            if (_enablePyroDrones != null) _enablePyroDrones.isOn = SettingsService.data.enablePyroDrones;
+            if (_enableLightingDrones != null) _enableLightingDrones.isOn = SettingsService.data.enableLightingDrones;
+        }
+
+        private static void RefreshFramesPerSecondUI()
+        {
+            if (_targetFrameRate != null) _targetFrameRate.text = "" + SettingsService.data.targetFrameRate;
+        }
+        
         private static void RefreshPathToFileUI()
         {
             if (_pathToFileText != null) _pathToFileText.text = _pathToSettings;

@@ -1791,7 +1791,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &927574764
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1799,7 +1799,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 927574763}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 158ae11f2e6c046449fa14cba938c7e1, type: 3}
   m_Name: 
@@ -2063,7 +2063,7 @@ MonoBehaviour:
   dmxController: {fileID: 902629287}
   splineContainer: {fileID: 717603561}
   usePyroDrone: 0
-  useLightingDrone: 1
+  useLightingDrone: 0
   useMobileTruss: 0
   useMobileLight: 0
   pyroDroneSpawnCount: 16
@@ -2423,7 +2423,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &2031567595
 Transform:
   m_ObjectHideFlags: 0

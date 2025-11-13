@@ -38,8 +38,8 @@ namespace Runtime.Dmx.Fixtures
         [Header("Mobile Light Spawn Settings")]
         public int mobileLightSpawnCount = 8;
         public MobileLight[] mobileLightPool;
-    
-        private void Awake()
+
+        public void Initialize()
         {
             try
             {
