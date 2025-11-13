@@ -1,5 +1,6 @@
 using System;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -7,14 +8,14 @@ namespace Runtime.UI
 {
     public abstract class UIUtility
     {
-        public static void AddButton(Sprite defaultUISprite, RectTransform rect, string title, Color buttonColor, Color textColor,
+        public static void AddButton(RectTransform rect, string title, Color buttonColor, Color textColor,
             Action<Button> callback)
         {
-            var button = AddButton(defaultUISprite, rect, title, buttonColor, textColor);
+            var button = AddButton(rect, title, buttonColor, textColor);
             callback?.Invoke(button);
         }
 
-        public static Button AddButton(Sprite defaultUISprite, RectTransform rect, string title, Color buttonColor, Color textColor)
+        public static Button AddButton(RectTransform rect, string title, Color buttonColor, Color textColor)
         {
             var obj = AddRect(rect, $"Button ({title})");
             
@@ -22,7 +23,7 @@ namespace Runtime.UI
             obj.transform.SetParent(rect);
 
             var image = obj.gameObject.AddComponent<Image>();
-            image.sprite = defaultUISprite;
+            image.sprite = MainUIController.DefaultUISprite;
             button.targetGraphic = image;
             button.image.type = Image.Type.Sliced;
             button.image.pixelsPerUnitMultiplier = 1.5f;
@@ -45,11 +46,68 @@ namespace Runtime.UI
             return button;
         }
 
+        public static void StretchToParent(RectTransform child, Vector2 padding = default)
+        {
+            // Set anchors to stretch all sides
+            child.anchorMin = Vector2.zero;
+            child.anchorMax = Vector2.one;
+    
+            // Apply padding
+            child.offsetMin = new Vector2(padding.x, padding.y);
+            child.offsetMax = new Vector2(-padding.x, -padding.y);
+        }
+        
+        public static void AddToggle(RectTransform rect, Color backgroundColor, Color checkmarkColor, 
+            Action<Toggle> callback)
+        {
+            var toggle = AddToggle(rect, backgroundColor, checkmarkColor);
+            callback?.Invoke(toggle);
+        }
+        
+        public static Toggle AddToggle(RectTransform rect, Color backgroundColor, Color checkmarkColor)
+        {
+            var obj = AddRect(rect, $"Toggle");
+            
+            var toggle = obj.gameObject.AddComponent<Toggle>();
+            obj.transform.SetParent(rect);
+            
+            var colors = toggle.colors;
+            colors.normalColor = new Color(1, 1, 1, 1);
+            colors.highlightedColor = new Color(.96f, .96f,.96f, 1);
+            colors.pressedColor = new Color(.78f, .78f, .78f, 1);
+            colors.selectedColor = new Color(.96f, .96f,.96f, 1);
+            colors.disabledColor = new Color(.78f, .78f, .78f, .5f);
+            toggle.colors = colors;
+            
+            var background = AddRect(obj, "Background");
+            StretchToParent(background, new Vector2(0, 0));
+            background.sizeDelta = new Vector2(background.sizeDelta.y, background.sizeDelta.y);
+            
+            var backgroundImage = background.gameObject.AddComponent<Image>();
+            backgroundImage.sprite = MainUIController.DefaultUISprite;
+            backgroundImage.type = Image.Type.Sliced;
+            backgroundImage.pixelsPerUnitMultiplier = 1.5f;
+            backgroundImage.color = backgroundColor;
+
+            var checkmark = AddRect(background, "Checkmark");
+            var checkmarkImage = checkmark.gameObject.AddComponent<Image>();
+            checkmarkImage.sprite = MainUIController.DefaultUISprite;
+            checkmarkImage.type = Image.Type.Sliced;
+            checkmarkImage.pixelsPerUnitMultiplier = 1.5f;
+            checkmarkImage.color = checkmarkColor;
+
+            toggle.graphic = checkmarkImage;
+            
+            SetAllStretch(checkmark, 3, 3, -3, -3);
+            
+            return toggle;
+        }
+
         public static TextMeshProUGUI AddText(RectTransform rect, string text, Color textColor)
         {
             var obj = AddRect(rect, "Text");
-            
             var component = obj.gameObject.AddComponent<TextMeshProUGUI>();
+            
             component.text = text;
             component.color = textColor;
             component.enableAutoSizing = true;
@@ -72,7 +130,6 @@ namespace Runtime.UI
             var rect = rectObj.AddComponent<RectTransform>();
             return rect;
         }
-
         
         public static RectTransform SetAllStretch(RectTransform rect, Vector4 offset = new())
         {
@@ -89,7 +146,7 @@ namespace Runtime.UI
         public static RectTransform SetAllStretch(RectTransform rect, float x = 0, float y = 0, float z = 0, float w = 0)
             => SetAllStretch(rect, new Vector4(x, y, z, w));
         
-        public static RectTransform CreateList(Transform parent, string name)
+        public static RectTransform CreateVerticalList(Transform parent, string name)
         {
             var listRect = AddRect(parent, name);
             var listLayout = listRect.gameObject.AddComponent<VerticalLayoutGroup>();
@@ -118,6 +175,53 @@ namespace Runtime.UI
             }
                 
             return elementRect;
+        }
+        
+        public static TMP_InputField AddInputField(RectTransform rect, Color elementColor, Color textColor)
+        {
+            var obj = AddRect(rect, $"InputField");
+            
+            var inputField = obj.gameObject.AddComponent<TMP_InputField>();
+            obj.transform.SetParent(rect);
+
+            var colors = inputField.colors;
+            colors.normalColor = new Color(1, 1, 1, 1);
+            colors.highlightedColor = new Color(.96f, .96f,.96f, 1);
+            colors.pressedColor = new Color(.78f, .78f, .78f, 1);
+            colors.selectedColor = new Color(.96f, .96f,.96f, 1);
+            colors.disabledColor = new Color(.78f, .78f, .78f, .5f);
+            inputField.colors = colors;
+            
+            var image = obj.gameObject.AddComponent<Image>();
+            image.sprite = MainUIController.DefaultUISprite;// defaultUISprite;
+            image.color = elementColor;
+            inputField.targetGraphic = image;
+            inputField.image.type = Image.Type.Sliced;
+            inputField.image.pixelsPerUnitMultiplier = 1.5f;
+            
+            var textArea = AddRect(obj, "TextArea");
+            var rectMask2d = textArea.AddComponent<RectMask2D>();
+            rectMask2d.padding = new Vector4(-8, -8, -5, -5);
+            
+            var caret = AddRect(textArea, "Caret");
+            var selectionCaret = caret.AddComponent<TMP_SelectionCaret>();
+            
+            inputField.textViewport = textArea;
+            SetAllStretch(textArea, 3, 3, -3, -3);
+            
+            var placeholder = AddText(textArea, "Enter text..", textColor * 0.5f);
+            placeholder.textWrappingMode = TextWrappingModes.NoWrap;
+            placeholder.text = "Placeholder";
+            var text = AddText(textArea, "", textColor);
+            text.textWrappingMode = TextWrappingModes.PreserveWhitespaceNoWrap;
+            
+            SetAllStretch(placeholder.rectTransform, 0);
+            SetAllStretch(text.rectTransform, 0);
+            
+            inputField.placeholder = placeholder;
+            inputField.textComponent = text;
+            
+            return inputField;
         }
     }
 }

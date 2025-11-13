@@ -20,6 +20,9 @@ namespace Runtime.Dmx.Fixtures.Drones
 
         public bool drawDebugLines;
         public bool drawDebugEdgeLines;
+        
+        // TODO: SO, I create a linear path for each triangle's edge so the we can find out what is connected and
+        // then look if there's anything can be subdivided or decimated to optimize drone positions.
 
         private void AssignMeshData()
         {
@@ -43,7 +46,7 @@ namespace Runtime.Dmx.Fixtures.Drones
             
             AssignMeshData();
 
-            if (vertices.Length < pool.Length)
+            if (vertices.Length < pool.Length) // something is null
             {
                 Debug.LogWarning($"Too low vertices. ({vertices.Length}/{pool.Length})");
                 // Good to go, or maybe subdivide result.
@@ -206,9 +209,7 @@ namespace Runtime.Dmx.Fixtures.Drones
                     }
                     if (isHitDrone && vertexToHit < maxRaycastDistance)
                     {
-                        drone.color = GetColorByVertex(target, targetMeshFilter,
-                            vertexIndex);
-                        //drone.fixtureIndex);
+                        drone.color = GetColorByVertex(target, targetMeshFilter, vertexIndex);
                     }
                     else
                     {
@@ -218,9 +219,7 @@ namespace Runtime.Dmx.Fixtures.Drones
                 }
                 else
                 {
-                    WriteVertexToDrone(drone, worldVertex, GetColorByVertex(target, targetMeshFilter,
-                        vertexIndex));
-                       // drone.fixtureIndex));
+                    WriteVertexToDrone(drone, worldVertex, GetColorByVertex(target, targetMeshFilter, vertexIndex));
                 }
             });
         }

@@ -73,7 +73,6 @@ namespace Runtime.Dmx.Fixtures
                             var drone = lightingDronePool[counter];
                         
                             drone.transform.localPosition = new Vector3(x, 0, y);
-                            //drone.GetComponent<LightingDrone>().color = Color.white;
                         
                             counter++;
                         }

@@ -26,7 +26,7 @@ namespace Runtime.UI
             var buttonColor = Color.gray3;
             var textColor = Color.white;
             
-            UIUtility.AddButton(defaultUISprite, hotbar, "Console", buttonColor, textColor, button =>
+            UIUtility.AddButton(hotbar, "Console", buttonColor, textColor, button =>
             {
                 button.onClick.AddListener(() =>
                 {
@@ -34,14 +34,13 @@ namespace Runtime.UI
                     SetHotBarButtons(true);
                     button.interactable = false;
                     Debug.Log("Open Console");
-                    
                 });
                 
                 hotbarButtons.Add(button);
                 button.onClick.Invoke();
             });
             
-            UIUtility.AddButton(defaultUISprite, hotbar, "Settings", buttonColor, textColor, button =>
+            UIUtility.AddButton(hotbar, "Settings", buttonColor, textColor, button =>
             {
                 button.onClick.AddListener(() =>
                 {
@@ -55,7 +54,7 @@ namespace Runtime.UI
                 hotbarButtons.Add(button);
             });
             
-            UIUtility.AddButton(defaultUISprite, hotbar, "Editor", buttonColor, textColor, button =>
+            UIUtility.AddButton(hotbar, "Editor", buttonColor, textColor, button =>
             {
                 button.onClick.AddListener(() =>
                 {
@@ -69,7 +68,7 @@ namespace Runtime.UI
                 hotbarButtons.Add(button);
             });
             
-            UIUtility.AddButton(defaultUISprite, hotbar, "Timeline", buttonColor, textColor, button =>
+            UIUtility.AddButton(hotbar, "Timeline", buttonColor, textColor, button =>
             {
                 button.onClick.AddListener(() =>
                 {
@@ -82,8 +81,6 @@ namespace Runtime.UI
                 
                 hotbarButtons.Add(button);
             });
-            
-            
         }
 
         private void CleanScreen()

@@ -1,3 +1,8 @@
+using System;
+using System.IO;
+using Runtime.Core.Settings;
+using Runtime.Dmx.Fixtures;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -5,58 +10,191 @@ namespace Runtime.UI
 {
     public abstract class SettingsUI
     {
+        private static RectTransform _rootRect, _groupRect, _containerRect;
+        private static TextMeshProUGUI _pathToFileText;
+        private static TMP_InputField _artNetInIp, _artNetInPort, _artNetOutIp, _artNetOutPort;
+        private static Toggle _artNetInToggle, _artNetOutToggle;
+
+        static SettingsUI()
+        {
+            var pathToData = Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "DroneShowDesigner");
+
+            if (!Directory.Exists(pathToData)) 
+                Directory.CreateDirectory(pathToData);
+            
+            _pathToSettings = Path.Join(pathToData, "Settings.json");
+
+            try
+            {
+                var fixtureSpawner = UnityEngine.Object.FindFirstObjectByType<FixtureSpawnManager>();
+                var dmxController = fixtureSpawner.dmxController;
+
+                SettingsService.OnSettingsChanged += (data) =>
+                {
+                    dmxController.remoteIP = data.artNetConfig.endPoint.address;
+                    dmxController.remotePort = data.artNetConfig.endPoint.port;
+                    dmxController.enabled = data.artNetConfig.enableInput;
+                    if (data.artNetConfig.enableInput)
+                    {
+                        dmxController.StartArtNet();
+                    }
+                    else
+                    {
+                        dmxController.StopArtNet();
+                    }
+                    
+                    dmxController.redirectTo.remoteIP = data.artNetConfig.redirectTo.address;
+                    dmxController.redirectTo.remotePort = data.artNetConfig.redirectTo.port;
+                    dmxController.redirectTo.enabled = data.artNetConfig.enableOutput;
+                    dmxController.redirectPackets = data.artNetConfig.enableOutput;
+                    if (data.artNetConfig.enableInput)
+                    {
+                        dmxController.redirectTo.StartArtNet();
+                    }
+                    else
+                    {
+                        dmxController.redirectTo.StopArtNet();
+                    }
+                };
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+                Debug.LogError("Failed to hook up settings updates");
+            }
+            
+            if (!File.Exists(_pathToSettings)) Save();
+            Load();
+        }
+        
         public static void BuildUI(RectTransform parent)
         {
             // Root
-            var settingRootRect = UIUtility.AddRect(parent, "Settings Root");
-            var settingRootLayout = settingRootRect.gameObject.AddComponent<HorizontalLayoutGroup>();
-            settingRootLayout.childForceExpandWidth = true; // Forces children to expand horizontally
-            settingRootLayout.childForceExpandHeight = true;
-            UIUtility.SetAllStretch(settingRootRect, Vector4.zero);
+            _rootRect = UIUtility.AddRect(parent, "Settings Root");
+            var rootLayout = _rootRect.gameObject.AddComponent<VerticalLayoutGroup>();
+            rootLayout.childForceExpandWidth = true; // Forces children to expand horizontally
+            rootLayout.childForceExpandHeight = false;
+            rootLayout.childControlHeight = false;
+            UIUtility.SetAllStretch(_rootRect, Vector4.zero);
             
-            // Left
-            var settingGroupRect = UIUtility.AddRect(settingRootRect, "Settings Groups Root");
-            var settingGroupLayout = settingGroupRect.gameObject.AddComponent<VerticalLayoutGroup>();
-            settingGroupLayout.childForceExpandWidth = true; // Forces children to expand horizontally
-            settingGroupLayout.childForceExpandHeight = true;
-            UIUtility.SetAllStretch(settingGroupRect, Vector4.zero);
+            // Current File Info
+            var element0 = UIUtility.AddItemToList(_rootRect, -4, 20);
+            _pathToFileText = UIUtility.AddText(element0, "path/to/current/settings", Color.white * .7f);
             
-            // List of groups
-            var groupListRect = UIUtility.CreateList(settingGroupRect, "Settings Group List");
-
-            for (int i = 0; i < 64; i++)
-            {
-                var element = UIUtility.AddItemToList(groupListRect, 0, 20);
-                var button = UIUtility.AddButton(MainUIController.DefaultUISprite, element, "Group" + i, 
-                    Color.white * .4f, Color.white);
-                button.onClick.AddListener(() =>
-                {
-                    // TODO: On setting group click, load options for this specific group.
-                });
-            }
-            
-            // Right
-            var settingsRect = UIUtility.AddRect(settingRootRect, "Settings Parameters List");
-            var settingsLayout = settingsRect.gameObject.AddComponent<VerticalLayoutGroup>();
-            settingsLayout.childForceExpandWidth = true; // Forces children to expand horizontally
-            settingsLayout.childForceExpandHeight = true;
-            UIUtility.SetAllStretch(settingsRect, Vector4.zero);
+            // Container
+            _containerRect = UIUtility.AddRect(_rootRect, "Settings Container");
+            var containerLayout = _containerRect.gameObject.AddComponent<HorizontalLayoutGroup>();
+            containerLayout.childForceExpandWidth = true; // Forces children to expand horizontally
+            containerLayout.childForceExpandHeight = true;
+            UIUtility.SetAllStretch(_containerRect, Vector4.zero);
                     
             // List of groups
-            var listRect = UIUtility.CreateList(settingsRect, "SettingsList");
-
-            for (int i = 0; i < 64; i++)
-            {
-                var element = UIUtility.AddItemToList(listRect, 0, 20, "Setting" + i, "value");
-                var button = UIUtility.AddButton(MainUIController.DefaultUISprite, element, "value" + i + " (Click to edit)", 
-                    Color.white * .4f, Color.white);
-                button.onClick.AddListener(() =>
-                {
-                    // TODO: edit this specific setting
-                });
-                
-                // TODO: this is a list, calculate how much elements fits on the screen, -> load only those first + offset
-            }
+            var listRect = UIUtility.CreateVerticalList(_containerRect, "SettingsList");
+            
+            // Save/Cancel
+            var actionsRect = UIUtility.AddItemToList(listRect, 0, 20);
+            var saveButton = UIUtility.AddButton(actionsRect, "Save", Color.white * .5f, Color.white);
+            var cancelButton = UIUtility.AddButton(actionsRect, "Cancel", Color.white * .5f, Color.white);
+            saveButton.onClick.AddListener(Save);
+            cancelButton.onClick.AddListener(Load);
+            
+            // ArtNet (Input)
+            var artNetInToggleRect = UIUtility.AddItemToList(listRect, 0, 20, "Art Net (In) Toggle");
+            _artNetInToggle = UIUtility.AddToggle(artNetInToggleRect, Color.white * .5f, Color.white);
+            _artNetInToggle.onValueChanged.AddListener((value) => { SettingsService.data.artNetConfig.enableInput = value; });
+            
+            var artNetIpRect = UIUtility.AddItemToList(listRect, 0, 20, "Art Net (In) Ip");
+            _artNetInIp = UIUtility.AddInputField(artNetIpRect, Color.white * .5f, Color.white);
+            _artNetInIp.onValueChanged.AddListener((value) => { SettingsService.data.artNetConfig.endPoint.address = value; });
+            
+            var artNetPortRect = UIUtility.AddItemToList(listRect, 0, 20, "Art Net (In) Port");
+            _artNetInPort = UIUtility.AddInputField(artNetPortRect, Color.white * .5f, Color.white);
+            _artNetInPort.contentType = TMP_InputField.ContentType.IntegerNumber;
+            _artNetInPort.onValueChanged.AddListener((value) => { SettingsService.data.artNetConfig.endPoint.port = ushort.Parse(value); });
+            
+            // ArtNet (Redirect)
+            var artNetOutToggleRect = UIUtility.AddItemToList(listRect, 0, 20, "Art Net (Out) Toggle");
+            _artNetOutToggle = UIUtility.AddToggle(artNetOutToggleRect, Color.white * .5f, Color.white);
+            _artNetOutToggle.onValueChanged.AddListener((value) => { SettingsService.data.artNetConfig.enableOutput = value; });
+            
+            var artNetRedirectIpRect = UIUtility.AddItemToList(listRect, 0, 20, "Art Net (Out) Ip");
+            _artNetOutIp = UIUtility.AddInputField(artNetRedirectIpRect, Color.white * .5f, Color.white);
+            _artNetOutIp.onValueChanged.AddListener((value) => { SettingsService.data.artNetConfig.redirectTo.address = value; });
+            
+            var artNetRedirectPortRect = UIUtility.AddItemToList(listRect, 0, 20, "Art Net (Out) Port");
+            _artNetOutPort = UIUtility.AddInputField(artNetRedirectPortRect, Color.white * .5f, Color.white);
+            _artNetOutPort.contentType = TMP_InputField.ContentType.IntegerNumber;
+            _artNetOutPort.onValueChanged.AddListener((value) => { SettingsService.data.artNetConfig.redirectTo.port = ushort.Parse(value); });
+            
+            RefreshUI();
         }
+
+        #region RefreshUI
+        public static void RefreshUI()
+        {
+            Debug.Log("Refreshing Settings UI");
+            RefreshPathToFileUI();
+            RefreshArtNetInputUI();
+            RefreshArtNetOutputUI();
+        }
+
+        private static void RefreshPathToFileUI()
+        {
+            if (_pathToFileText != null) _pathToFileText.text = _pathToSettings;
+        }
+
+        private static void RefreshArtNetInputUI()
+        {
+            if (SettingsService.data == null)
+            {
+                Debug.LogError("Settings data is null");
+                return;
+            }
+            
+            if (_artNetInToggle != null) _artNetInToggle.isOn = SettingsService.data.artNetConfig.enableInput;
+            if (_artNetInIp != null) _artNetInIp.text = SettingsService.data.artNetConfig.endPoint.address;
+            if (_artNetInPort != null) _artNetInPort.text = "" + SettingsService.data.artNetConfig.endPoint.port;
+        }
+
+        private static void RefreshArtNetOutputUI()
+        {
+            if (SettingsService.data == null)
+            {
+                Debug.LogError("Settings data is null");
+                return;
+            }
+            
+            if (_artNetOutToggle != null) _artNetOutToggle.isOn = SettingsService.data.artNetConfig.enableOutput;
+            if (_artNetOutIp != null) _artNetOutIp.text = SettingsService.data.artNetConfig.redirectTo.address;
+            if (_artNetOutPort != null) _artNetOutPort.text = "" + SettingsService.data.artNetConfig.redirectTo.port;
+        }
+        #endregion
+
+        #region Save/Load
+        private static string _pathToSettings;
+        
+        private static void Save()
+        {
+            SettingsService.Save(_pathToSettings);
+        }
+
+        private static void Load()
+        {
+            try
+            {
+                SettingsService.Load(_pathToSettings);
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+                Debug.LogError($"Failed to load settings from file '{_pathToSettings}'. Reloading with default settings...");
+                // Will not load, but instead save new config file so program won't throw errors anymore, unless there's a bug in it lol
+                Save();
+            }
+
+            RefreshUI();
+        }
+
+        #endregion
     }
 }

@@ -33,6 +33,17 @@ namespace Unity_DMX.Core
         {
             prefix = gameObject.name;
             
+            StartArtNet();
+            
+            dmxToSend ??= new ArtNetDmxPacket();
+            dmxToSend.DmxData ??= new byte[512];
+            dmxDataMap = new Dictionary<int, byte[]>();
+            
+            dmxBuffer.OnBufferUpdate += OnBufferUpdate;
+        }
+
+        public void InitializeSocket()
+        {
             Debug.Log($"'{prefix}' '{remotePort}' is " + (isServer ? "server" : "client"));
             socket = new ArtNetSocket(remotePort);
             socket.NewPacket += OnNewPacketReceived;
@@ -48,11 +59,29 @@ namespace Unity_DMX.Core
                 remote = new IPEndPoint(NetworkUtility.FindFromHostName(remoteIP), remotePort);
             }
             
-            dmxToSend ??= new ArtNetDmxPacket();
-            dmxToSend.DmxData ??= new byte[512];
-            dmxDataMap = new Dictionary<int, byte[]>();
-            
             dmxBuffer.OnBufferUpdate += OnBufferUpdate;
+        }
+
+        private bool isArtNetOn = false;
+
+        public void StartArtNet()
+        {
+            Debug.Log($"'{prefix}' '{remotePort}' as " + (isServer ? "server" : "client") + " is now requested to be started.");
+            if (isArtNetOn) return;
+            InitializeSocket();
+            isArtNetOn = true;
+        }
+
+        public void StopArtNet()
+        {
+            Debug.Log($"'{prefix}' '{remotePort}' as " + (isServer ? "server" : "client") + " is now requested to be stopped.");
+            if (!isArtNetOn) return;
+            socket.Close();
+            socket.NewPacket -= OnNewPacketReceived;
+            socket = null;
+            remote = null;
+            isArtNetOn = false;
+            dmxBuffer.OnBufferUpdate -= OnBufferUpdate;
         }
 
         public void ForceBufferUpdate()
@@ -125,13 +154,14 @@ namespace Unity_DMX.Core
         
         public void Send(short universe, byte[] dmxData)
         {
-            dmxToSend.Universe = universe;
-
             if (dmxData == null) throw new Exception("Dmx data is null");
             if (dmxData.Length != 512) throw new Exception("Dmx data length is not 512");
             if (dmxToSend == null) throw new Exception("Dmx to send is null");
             if (dmxToSend.DmxData == null) throw new Exception("Dmx data to send is null");
-        
+            if (socket == null) return; // ignore that
+            
+            dmxToSend.Universe = universe;
+            
             Buffer.BlockCopy(dmxData, 0, dmxToSend.DmxData, 0, dmxData.Length);
 
             if (useBroadcast && isServer)
