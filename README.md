@@ -1,9 +1,13 @@
-Currently used as a bridge between lighting program (grandma2) and gridnode serializer (HNode)
-It takes original ArtNet packet, overrides predefined channels of objects and then sending it to the gridnode
+# DroneShowDesigner
+> Probably needs new name since it drives not only drones but also trusses and lights
 
-I set HNode port to 6455 so it won't take ArtNet packets from lighting program and instead my bridge will write them
-This bridge by default listens on 6454 and sends to 6455.
+> [!NOTE]
+> This project is in early work-in-progress state. Report any issues you find.
 
-This is a very early project so things can break, let me know in issues if something doesn't work right.
+> [!NOTE]
+> To have bridge working, set your [HNode](https://github.com/Happyrobot33/HNode) port to 6455 (make sure you have the same port in DroneShowDesigner as output).
+
+> [!NOTE]
+> It takes original ArtNet packet, overrides predefined channels of objects and then sending it to the gridnode
 
 ArtNet plugin used in this repository is https://github.com/sugi-cho/ArtNet.Unity
