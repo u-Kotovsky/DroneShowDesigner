@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using Runtime.Core.Movement;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -19,8 +21,20 @@ namespace Runtime.UI
         
         private List<Button> hotbarButtons;
 
+        private Camera targetCamera;
+        private SpectatorCameraController cameraController;
+
         private void Awake()
         {
+            try
+            {
+                RefreshCameraReferences();
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+                Debug.LogError($"Failed to refresh camera references");
+            }
             DefaultUISprite ??= defaultUISprite;
             hotbarButtons = new List<Button>();
             var buttonColor = Color.gray3;
@@ -34,6 +48,7 @@ namespace Runtime.UI
                     SetHotBarButtons(true);
                     button.interactable = false;
                     Debug.Log("Open Console");
+                    cameraController?.DisableMovement();
                 });
                 
                 hotbarButtons.Add(button);
@@ -49,6 +64,7 @@ namespace Runtime.UI
                     button.interactable = false;
                     Debug.Log("Open Settings");
                     SettingsUI.BuildUI(page);
+                    cameraController?.DisableMovement();
                 });
                 
                 hotbarButtons.Add(button);
@@ -62,7 +78,7 @@ namespace Runtime.UI
                     SetHotBarButtons(true);
                     button.interactable = false;
                     Debug.Log("Open Editor");
-                    
+                    cameraController?.EnableMovement();
                 });
                 
                 hotbarButtons.Add(button);
@@ -77,12 +93,19 @@ namespace Runtime.UI
                     button.interactable = false;
                     Debug.Log("Open Timeline");
                     TimelineUI.BuildUI(page);
+                    cameraController?.DisableMovement();
                 });
                 
                 hotbarButtons.Add(button);
             });
             
             SettingsUI.Poke();
+        }
+
+        private void RefreshCameraReferences()
+        {
+            targetCamera = Camera.main;
+            if (targetCamera != null) cameraController = targetCamera?.GetComponent<SpectatorCameraController>();
         }
 
         private void CleanScreen()
