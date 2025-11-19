@@ -35,10 +35,27 @@ namespace Runtime.UI
                 Debug.LogException(e);
                 Debug.LogError($"Failed to refresh camera references");
             }
+            
             DefaultUISprite ??= defaultUISprite;
             hotbarButtons = new List<Button>();
             var buttonColor = Color.gray3;
             var textColor = Color.white;
+            
+            UIUtility.AddButton(hotbar, "About", buttonColor, textColor, button =>
+            {
+                button.onClick.AddListener(() =>
+                {
+                    CleanScreen();
+                    SetHotBarButtons(true);
+                    button.interactable = false;
+                    Debug.Log("Open About");
+                    AboutUI.BuildUI(page);
+                    cameraController?.DisableMovement();
+                });
+                
+                hotbarButtons.Add(button);
+                button.onClick.Invoke();
+            });
             
             UIUtility.AddButton(hotbar, "Console", buttonColor, textColor, button =>
             {
@@ -52,7 +69,6 @@ namespace Runtime.UI
                 });
                 
                 hotbarButtons.Add(button);
-                button.onClick.Invoke();
             });
             
             UIUtility.AddButton(hotbar, "Settings", buttonColor, textColor, button =>
@@ -111,9 +127,7 @@ namespace Runtime.UI
         private void CleanScreen()
         {
             foreach (Transform child in page.transform)
-            {
                 Destroy(child.gameObject);
-            }
         }
 
         private void SetHotBarButtons(bool active)

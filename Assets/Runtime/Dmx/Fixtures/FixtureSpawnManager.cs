@@ -1,11 +1,8 @@
-using System;
 using Runtime.Dmx.Fixtures.Drones;
 using Runtime.Dmx.Fixtures.Lights;
 using Runtime.Dmx.Fixtures.Truss;
 using Unity_DMX.Core;
-using Unity.Cinemachine;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.Splines;
 
 namespace Runtime.Dmx.Fixtures
@@ -18,10 +15,94 @@ namespace Runtime.Dmx.Fixtures
         public SplineContainer splineContainer;
         
         [Header("Fixtures to enable on start")]
-        public bool usePyroDrone;
-        public bool useLightingDrone;
-        public bool useMobileTruss = true;
-        public bool useMobileLight = true;
+        private bool usePyroDrone;
+        public bool UsePyroDrone
+        {
+            get => usePyroDrone;
+            set
+            {
+                if (usePyroDrone != value)
+                {
+                    TogglePool(pyroDronePool, value);
+                    usePyroDrone = value;
+                }
+            }
+        }
+        
+        private bool useLightingDrone;
+        public bool UseLightingDrone
+        {
+            get => useLightingDrone;
+            set
+            {
+                if (useLightingDrone != value)
+                {
+                    TogglePool(lightingDronePool, value);
+                    useLightingDrone = value;
+                }
+            }
+        }
+        
+        private bool useMobileTruss;
+        public bool UseMobileTruss
+        {
+            get => useMobileTruss;
+            set
+            {
+                if (useMobileTruss != value)
+                {
+                    TogglePool(mobileTrussPool, value);
+                    useMobileTruss = value;
+                }
+            }
+        }
+
+        private bool useMobileLight;
+        public bool UseMobileLight
+        {
+            get => useMobileLight;
+            set
+            {
+                if (useMobileLight != value)
+                {
+                    TogglePool(mobileLightPool, value);
+                    useMobileLight = value;
+                }
+            }
+        }
+
+        #region TogglePool
+        
+        private void TogglePool(PyroDrone[] pool, bool active)
+        {
+            foreach (var obj in pool)
+                if (obj != null) obj.gameObject.SetActive(active);
+        }
+
+        private void TogglePool(LightingDrone[] pool, bool active)
+        {
+            foreach (var obj in pool)
+                if (obj != null) obj.gameObject.SetActive(active);
+        }
+
+        private void TogglePool(MobileLight[] pool, bool active)
+        {
+            foreach (var obj in pool)
+                if (obj != null) obj.gameObject.SetActive(active);
+        }
+
+        private void TogglePool(MobileTruss[] pool, bool active)
+        {
+            foreach (var obj in pool)
+                if (obj != null) obj.gameObject.SetActive(active);
+        }
+
+        #endregion
+        
+        public bool IsMobileTrussInitialized { get; private set; }
+        public bool IsMobileLightInitialized { get; private set; }
+        public bool IsPyroDroneInitialized { get; private set; }
+        public bool IsLightingDroneInitialized { get; private set; }
         
         [Header("Pyro Drone Spawn Settings")]
         public int pyroDroneSpawnCount = 16;
@@ -39,50 +120,87 @@ namespace Runtime.Dmx.Fixtures
         public int mobileLightSpawnCount = 8;
         public MobileLight[] mobileLightPool;
 
-        public void Initialize()
+        public void InitializeMobileTruss()
         {
-            try
+            if (UseMobileTruss)
             {
-                Application.targetFrameRate = 60;
-                Application.runInBackground = true;
-                
-                dmxController.OnDmxDataChanged += OnDmxDataChanged;
-                
-                if (usePyroDrone)
-                    PyroDrone.Spawn(this, ref pyroDronePool, ref pyroDroneSpawnCount);
-                if (useLightingDrone)
-                    LightingDrone.Spawn(this, ref lightingDronePool, ref lightingDroneSpawnCount, ref splineContainer);
-                if (useMobileTruss)
-                    MobileTruss.Spawn(this, ref mobileTrussPool, ref mobileTrussSpawnCount);
-                if (useMobileLight)
-                    MobileLight.Spawn(this, ref mobileLightPool, ref mobileLightSpawnCount);
+                MobileTruss.Spawn(this, ref mobileTrussPool, ref mobileTrussSpawnCount);
+                IsMobileTrussInitialized = true;
+            }
+        }
 
-                if (useLightingDrone)
-                {
-                    lightingDronePool[0].transform.parent.localPosition = new Vector3(0, 10, 0);
+        public void InitializeMobileLight()
+        {
+            if (UseMobileLight)
+            {
+                MobileLight.Spawn(this, ref mobileLightPool, ref mobileLightSpawnCount);
+                IsMobileLightInitialized = true;
+            }
+        }
+
+        public void InitializePyroDrones()
+        {
+            if (UsePyroDrone)
+            {
+                PyroDrone.Spawn(this, ref pyroDronePool, ref pyroDroneSpawnCount);
+                IsPyroDroneInitialized = true;
+            }
+        }
+
+        public void InitializeLightingDrones()
+        {
+            if (UseLightingDrone)
+            {
+                LightingDrone.Spawn(this, ref lightingDronePool, ref lightingDroneSpawnCount, ref splineContainer);
+                IsLightingDroneInitialized = true;
                 
-                    int counter = 0;
-                    
-                    var (rectWidth, rectHeight) = Utility.GetMostRectangular(lightingDronePool.Length);
-                    
-                    for (var y = 0; y < rectWidth; y++)
+                // Post-setup
+                lightingDronePool[0].transform.parent.localPosition = new Vector3(0, 10, 0);
+            
+                int counter = 0;
+                //var (rectWidth, rectHeight) = Utility.GetMostRectangular(lightingDronePool.Length);
+                var size = Mathf.Sqrt(lightingDronePool.Length);
+                var offset = size / 2;
+                
+                for (var y = 0; y < size; y++)
+                {
+                    for (int x = 0; x < size; x++)
                     {
-                        for (int x = 0; x < rectHeight; x++)
+                        if (lightingDronePool.Length <= counter) return;
+                        var drone = lightingDronePool[counter];
+
+                        var c = counter % 5;
+                    
+                        drone.transform.localPosition = new Vector3(x - offset, c * 5, y - offset);
+
+                        switch (c)
                         {
-                            if (lightingDronePool.Length <= counter) return;
-                            var drone = lightingDronePool[counter];
-                        
-                            drone.transform.localPosition = new Vector3(x, 0, y);
-                        
-                            counter++;
+                            case 0:
+                                drone.color = Color.red;
+                                break;
+                            case 1:
+                                drone.color = Color.yellow;
+                                break;
+                            case 2:
+                                drone.color = Color.green;
+                                break;
+                            case 3:
+                                drone.color = Color.cyan;
+                                break;
+                            case 4:
+                                drone.color = Color.blue;
+                                break;
                         }
+                    
+                        counter++;
                     }
                 }
             }
-            catch (Exception e)
-            {
-                Debug.LogException(e);
-            }
+        }
+
+        public void Awake()
+        {
+            dmxController.OnDmxDataChanged += OnDmxDataChanged;
         }
 
         private void Update()
@@ -98,22 +216,22 @@ namespace Runtime.Dmx.Fixtures
         
         private void WriteDmxData(ref byte[] buffer)
         {
-            if (usePyroDrone)
+            if (UsePyroDrone)
             {
                 PyroDrone.WriteDataToGlobalBuffer(ref pyroDronePool, ref buffer);
             }
 
-            if (useLightingDrone)
+            if (UseLightingDrone)
             {
                 LightingDrone.WriteDataToGlobalBuffer(ref lightingDronePool, ref buffer);
             }
 
-            if (useMobileTruss)
+            if (UseMobileTruss)
             {
                 MobileTruss.WriteDataToGlobalBuffer(ref mobileTrussPool, ref buffer);
             }
 
-            if (useMobileLight)
+            if (UseMobileLight)
             {
                 MobileLight.WriteDataToGlobalBuffer(ref mobileLightPool, ref buffer);
             }

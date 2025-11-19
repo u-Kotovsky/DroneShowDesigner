@@ -239,5 +239,62 @@ namespace Runtime.UI
             return image;
         }
 
+        public static Scrollbar AddScrollbar(RectTransform parent, string name)
+        {
+            var scrollbarImage = AddImage(parent, MainUIController.DefaultUISprite, true);
+            scrollbarImage.gameObject.name = name;
+            
+            var scrollbar = scrollbarImage.rectTransform.gameObject.AddComponent<Scrollbar>();
+            
+            var slidingAreaRect = AddRect(scrollbarImage.rectTransform, "SlidingArea");
+            
+            var handleImage = AddImage(slidingAreaRect, MainUIController.DefaultUISprite);
+            scrollbar.handleRect = handleImage.rectTransform;
+            scrollbar.targetGraphic = handleImage;
+            
+            return scrollbar;
+        }
+        
+        public static TMP_Dropdown AddDropdown(RectTransform rect, string[] options, Color elementColor, Color textColor)
+        {
+            var obj = AddRect(rect, $"Dropdown");
+            
+            //var image = obj.gameObject.AddComponent<Image>();
+            //image.sprite = MainUIController.DefaultUISprite;// defaultUISprite;
+            //image.color = elementColor;
+            
+            var image = AddImage(obj, MainUIController.DefaultUISprite);
+            image.color = elementColor;
+            
+            var dropdown = obj.gameObject.AddComponent<TMP_Dropdown>();
+            obj.transform.SetParent(rect);
+            
+            dropdown.targetGraphic = image;
+            dropdown.image.type = Image.Type.Sliced;
+            dropdown.image.pixelsPerUnitMultiplier = 1.5f;
+            
+            var colors = dropdown.colors;
+            colors.normalColor = new Color(1, 1, 1, 1);
+            colors.highlightedColor = new Color(.96f, .96f,.96f, 1);
+            colors.pressedColor = new Color(.78f, .78f, .78f, 1);
+            colors.selectedColor = new Color(.96f, .96f,.96f, 1);
+            colors.disabledColor = new Color(.78f, .78f, .78f, .5f);
+            dropdown.colors = colors;
+            
+            var label = AddText(obj, "Text", elementColor);
+            
+            //var arrow = AddRect(obj, "Arrow");
+            var arrow = AddImage(obj, MainUIController.DefaultUISprite);
+            
+            var template = AddRect(obj, "Template");
+            
+            var viewport = AddRect(obj, "Viewport");
+            // content, item, item bg; item checkmark; item label
+            
+            var scrollbar = AddScrollbar(obj, "Scrollbar");
+            // sliding area, handle
+            
+            return dropdown;
+        }
     }
 }

@@ -35,7 +35,7 @@ namespace Runtime.UI
                     // targetFramerate
                     Application.targetFrameRate = data.targetFrameRate;
                     
-                    // Art Net
+                    // ArtNet Input
                     dmxController.remoteIP = data.artNetConfig.endPoint.address;
                     dmxController.remotePort = data.artNetConfig.endPoint.port;
                     dmxController.enabled = data.artNetConfig.enableInput;
@@ -43,6 +43,7 @@ namespace Runtime.UI
                     if (dmxController.IsArtNetOn) dmxController.StopArtNet();
                     if (data.artNetConfig.enableInput) dmxController.StartArtNet();
                     
+                    // ArtNet Output
                     dmxController.redirectTo.remoteIP = data.artNetConfig.redirectTo.address;
                     dmxController.redirectTo.remotePort = data.artNetConfig.redirectTo.port;
                     dmxController.redirectTo.enabled = data.artNetConfig.enableOutput;
@@ -52,10 +53,22 @@ namespace Runtime.UI
                     if (data.artNetConfig.enableInput) dmxController.redirectTo.StartArtNet();
                     
                     // Custom Fixtures
-                    fixtureSpawner.useMobileTruss = data.enableMobileTruss;
-                    fixtureSpawner.useMobileLight = data.enableMobileLight;
-                    fixtureSpawner.usePyroDrone = data.enablePyroDrones;
-                    fixtureSpawner.useLightingDrone = data.enableLightingDrones;
+                    if (!fixtureSpawner.IsMobileTrussInitialized)
+                        fixtureSpawner.InitializeMobileTruss();
+                    
+                    if (!fixtureSpawner.IsMobileLightInitialized)
+                        fixtureSpawner.InitializeMobileLight();
+                    
+                    if (!fixtureSpawner.IsPyroDroneInitialized)
+                        fixtureSpawner.InitializePyroDrones();
+                    
+                    if (!fixtureSpawner.IsLightingDroneInitialized)
+                        fixtureSpawner.InitializeLightingDrones();
+                    
+                    fixtureSpawner.UseMobileTruss = data.enableMobileTruss;
+                    fixtureSpawner.UseMobileLight = data.enableMobileLight;
+                    fixtureSpawner.UsePyroDrone = data.enablePyroDrones;
+                    fixtureSpawner.UseLightingDrone = data.enableLightingDrones;
                 };
 
                 try
@@ -68,8 +81,6 @@ namespace Runtime.UI
                     Debug.LogException(e);
                     Debug.LogError($"Failed to load settings");
                 }
-                
-                fixtureSpawner.Initialize();
             }
             catch (Exception e)
             {
