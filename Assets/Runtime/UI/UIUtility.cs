@@ -223,5 +223,21 @@ namespace Runtime.UI
             
             return inputField;
         }
+
+        public static Image AddImage(RectTransform parent, Sprite sprite, bool doNotMakeNewRect = false)
+        {
+            RectTransform target = parent;
+            
+            if (!doNotMakeNewRect)
+            {
+                target = AddRect(parent, "Image");
+            }
+            
+            var image = target.gameObject.AddComponent<Image>();
+            image.overrideSprite = sprite;
+            
+            return image;
+        }
+
     }
 }
