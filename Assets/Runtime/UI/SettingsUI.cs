@@ -80,7 +80,7 @@ namespace Runtime.UI
 
         public static void Poke()
         {
-            // initialize static part lol
+            // Initialize static part lol
         }
         
         public static void BuildUI(RectTransform parent)
@@ -115,58 +115,66 @@ namespace Runtime.UI
             cancelButton.onClick.AddListener(Load);
             
             // Unity frames
-            var targetFrameRateRect = UIUtility.AddItemToList(listRect, 1, 20, "Target Framerate");
-            _targetFrameRate = UIUtility.AddInputField(targetFrameRateRect, Color.white * .5f, Color.white);
-            _targetFrameRate.contentType = TMP_InputField.ContentType.IntegerNumber;
-            _targetFrameRate.onValueChanged.AddListener((value) => { SettingsService.data.targetFrameRate = ushort.Parse(value); });
+            AddInput(listRect, ref _targetFrameRate, 1, "Target Framerate", TMP_InputField.ContentType.IntegerNumber,
+                value => { SettingsService.data.targetFrameRate = ushort.Parse(value); });
             
             // ArtNet (Input)
-            var artNetInToggleRect = UIUtility.AddItemToList(listRect, 2, 20, "Art Net (In) Toggle");
-            _artNetInToggle = UIUtility.AddToggle(artNetInToggleRect, Color.white * .5f, Color.white);
-            _artNetInToggle.onValueChanged.AddListener((value) => { SettingsService.data.artNetConfig.enableInput = value; });
+            AddToggle(listRect, ref _artNetInToggle, 2, "Art Net (In) Toggle", 
+                (value) => { SettingsService.data.artNetConfig.enableInput = value; });
             
-            var artNetIpRect = UIUtility.AddItemToList(listRect, 3, 20, "Art Net (In) Ip");
-            _artNetInIp = UIUtility.AddInputField(artNetIpRect, Color.white * .5f, Color.white);
-            _artNetInIp.onValueChanged.AddListener((value) => { SettingsService.data.artNetConfig.endPoint.address = value; });
+            AddInput(listRect, ref _artNetInIp, 3, "Art Net (In) Ip", TMP_InputField.ContentType.Standard,
+                value => { SettingsService.data.artNetConfig.endPoint.address = value; });
             
-            var artNetPortRect = UIUtility.AddItemToList(listRect, 4, 20, "Art Net (In) Port");
-            _artNetInPort = UIUtility.AddInputField(artNetPortRect, Color.white * .5f, Color.white);
-            _artNetInPort.contentType = TMP_InputField.ContentType.IntegerNumber;
-            _artNetInPort.onValueChanged.AddListener((value) => { SettingsService.data.artNetConfig.endPoint.port = ushort.Parse(value); });
+            AddInput(listRect, ref _artNetInPort, 4, "Art Net (In) Port", TMP_InputField.ContentType.IntegerNumber,
+                value => { SettingsService.data.artNetConfig.endPoint.port = ushort.Parse(value); });
             
             // ArtNet (Redirect)
-            var artNetOutToggleRect = UIUtility.AddItemToList(listRect, 5, 20, "Art Net (Out) Toggle");
-            _artNetOutToggle = UIUtility.AddToggle(artNetOutToggleRect, Color.white * .5f, Color.white);
-            _artNetOutToggle.onValueChanged.AddListener((value) => { SettingsService.data.artNetConfig.enableOutput = value; });
+            AddToggle(listRect, ref _artNetOutToggle, 5, "Art Net (Out) Toggle", 
+                value => { SettingsService.data.artNetConfig.enableOutput = value; });
             
-            var artNetRedirectIpRect = UIUtility.AddItemToList(listRect, 6, 20, "Art Net (Out) Ip");
-            _artNetOutIp = UIUtility.AddInputField(artNetRedirectIpRect, Color.white * .5f, Color.white);
-            _artNetOutIp.onValueChanged.AddListener((value) => { SettingsService.data.artNetConfig.redirectTo.address = value; });
+            AddInput(listRect, ref _artNetOutIp, 6, "Art Net (Out) Ip", TMP_InputField.ContentType.Standard,
+                value => { SettingsService.data.artNetConfig.redirectTo.address = value; });
             
-            var artNetRedirectPortRect = UIUtility.AddItemToList(listRect, 7, 20, "Art Net (Out) Port");
-            _artNetOutPort = UIUtility.AddInputField(artNetRedirectPortRect, Color.white * .5f, Color.white);
-            _artNetOutPort.contentType = TMP_InputField.ContentType.IntegerNumber;
-            _artNetOutPort.onValueChanged.AddListener((value) => { SettingsService.data.artNetConfig.redirectTo.port = ushort.Parse(value); });
+            AddInput(listRect, ref _artNetOutPort, 7, "Art Net (Out) Port", TMP_InputField.ContentType.IntegerNumber,
+                value => { SettingsService.data.artNetConfig.redirectTo.port = ushort.Parse(value); });
             
             // Custom Fixtures
-            var enableMobileTrussRect = UIUtility.AddItemToList(listRect, 8, 20, "Enable Mobile Truss");
-            _enableMobileTruss = UIUtility.AddToggle(enableMobileTrussRect, Color.white * .5f, Color.white);
-            _enableMobileTruss.onValueChanged.AddListener((value) => { SettingsService.data.enableMobileTruss = value; });
+            AddToggle(listRect, ref _enableMobileTruss, 8, "Enable Mobile Truss", 
+                value => { SettingsService.data.enableMobileTruss = value; });
             
-            var enableMobileLightRect = UIUtility.AddItemToList(listRect, 9, 20, "Enable Mobile Light");
-            _enableMobileLight = UIUtility.AddToggle(enableMobileLightRect, Color.white * .5f, Color.white);
-            _enableMobileLight.onValueChanged.AddListener((value) => { SettingsService.data.enableMobileLight = value; });
+            AddToggle(listRect, ref _enableMobileLight, 9, "Enable Mobile Light", 
+                value => { SettingsService.data.enableMobileLight = value; });
             
-            var enablePyroDronesRect = UIUtility.AddItemToList(listRect, 10, 20, "Enable Pyro Drones");
-            _enablePyroDrones = UIUtility.AddToggle(enablePyroDronesRect, Color.white * .5f, Color.white);
-            _enablePyroDrones.onValueChanged.AddListener((value) => { SettingsService.data.enablePyroDrones = value; });
+            AddToggle(listRect, ref _enablePyroDrones, 10, "Enable Pyro Drones", 
+                value => { SettingsService.data.enablePyroDrones = value; });
             
-            var enableLightingDronesRect = UIUtility.AddItemToList(listRect, 11, 20, "Enable Lighting Drones");
-            _enableLightingDrones = UIUtility.AddToggle(enableLightingDronesRect, Color.white * .5f, Color.white);
-            _enableLightingDrones.onValueChanged.AddListener((value) => { SettingsService.data.enableLightingDrones = value; });
+            AddToggle(listRect, ref _enableLightingDrones, 11, "Enable Lighting Drones", 
+                value => { SettingsService.data.enableLightingDrones = value; });
             
             RefreshUI();
         }
+
+        #region Shortenes
+
+        public static Toggle AddToggle(RectTransform listRect, ref Toggle toggle, int index, string text, Action<bool> onValueChanged)
+        {
+            var rect = UIUtility.AddItemToList(listRect, index, 20, text);
+            toggle = UIUtility.AddToggle(rect, Color.white * .5f, Color.white);
+            toggle.onValueChanged.AddListener(value => { onValueChanged(value); });
+            return toggle;
+        }
+
+        public static TMP_InputField AddInput(RectTransform listRect, ref TMP_InputField inputField, int index, string text, 
+            TMP_InputField.ContentType contentType, Action<string> onValueChanged)
+        {
+            var rect = UIUtility.AddItemToList(listRect, index, 20, text);
+            inputField = UIUtility.AddInputField(rect, Color.white * .5f, Color.white);
+            inputField.onValueChanged.AddListener((value) => { onValueChanged(value); });
+            inputField.contentType = contentType;
+            return inputField;
+        }
+
+        #endregion
 
         #region RefreshUI
         public static void RefreshUI()
