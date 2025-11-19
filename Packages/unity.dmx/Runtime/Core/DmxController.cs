@@ -166,9 +166,17 @@ namespace Unity_DMX.Core
             Buffer.BlockCopy(dmxData, 0, dmxToSend.DmxData, 0, dmxData.Length);
 
             if (useBroadcast && isServer)
+            {
                 socket.Send(dmxToSend);
-            else
+            }
+            else if (remote != null)
+            {
                 socket.Send(dmxToSend, remote);
+            }
+            else
+            {
+                // Fail?
+            }
         } 
     }
 }
