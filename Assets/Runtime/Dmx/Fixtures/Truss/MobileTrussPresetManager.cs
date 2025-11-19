@@ -95,13 +95,28 @@ namespace Runtime.Dmx.Fixtures.Truss
             preset6[10] = new TrussPreset(173, 38, 159, 255, 82, 160, 42, 170, 63, 255, 0, 0);
             preset6[11] = new TrussPreset(189, 183, 159, 255, 111, 82, 42, 170, 49, 199, 0, 0);
             
-            trussPresets = new TrussPreset[6][];
+            TrussPreset[] preset7 = new TrussPreset[12];
+            preset7[0] = new TrussPreset(66, 20, 159, 253, 144, 112, 42, 167, 135, 29, 0, 0);
+            preset7[1] = new TrussPreset(82, 164, 159, 254, 173, 32, 42, 168, 149, 85, 0, 0);
+            preset7[2] = new TrussPreset(111, 85, 159, 255, 189, 176, 42, 167, 163, 140, 0, 0);
+            preset7[3] = new TrussPreset(144, 116, 159, 255, 189, 177, 42, 167, 7, 36, 0, 0);
+            preset7[4] = new TrussPreset(173, 35, 159, 254, 173, 32, 42, 166, 21, 93, 0, 0);
+            preset7[5] = new TrussPreset(189, 181, 159, 253, 144, 113, 42, 166, 35, 148, 0, 0);
+            preset7[6] = new TrussPreset(189, 181, 159, 253, 111, 82, 42, 170, 49, 198, 0, 0);
+            preset7[7] = new TrussPreset(173, 36, 159, 254, 82, 161, 42, 170, 63, 255, 0, 0);
+            preset7[8] = new TrussPreset(144, 116, 159, 255, 66, 18, 42, 168, 78, 55, 0, 0);
+            preset7[9] = new TrussPreset(111, 85, 159, 255, 66, 17, 42, 168, 92, 120, 0, 0);
+            preset7[10] = new TrussPreset(82, 165, 159, 254, 82, 161, 42, 170, 106, 175, 0, 0);
+            preset7[11] = new TrussPreset(66, 20, 159, 253, 111, 81, 42, 166, 120, 226, 0, 0);
+            
+            trussPresets = new TrussPreset[7][];
             trussPresets[0] = preset1;
             trussPresets[1] = preset2;
             trussPresets[2] = preset3;
             trussPresets[3] = preset4;
             trussPresets[4] = preset5;
             trussPresets[5] = preset6;
+            trussPresets[6] = preset7;
         }
     }
 }
