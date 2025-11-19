@@ -122,78 +122,66 @@ namespace Runtime.Dmx.Fixtures
 
         public void InitializeMobileTruss()
         {
-            if (UseMobileTruss)
-            {
-                MobileTruss.Spawn(this, ref mobileTrussPool, ref mobileTrussSpawnCount);
-                IsMobileTrussInitialized = true;
-            }
+            MobileTruss.Spawn(this, ref mobileTrussPool, ref mobileTrussSpawnCount);
+            IsMobileTrussInitialized = true;
         }
 
         public void InitializeMobileLight()
         {
-            if (UseMobileLight)
-            {
-                MobileLight.Spawn(this, ref mobileLightPool, ref mobileLightSpawnCount);
-                IsMobileLightInitialized = true;
-            }
+            MobileLight.Spawn(this, ref mobileLightPool, ref mobileLightSpawnCount);
+            IsMobileLightInitialized = true;
         }
 
         public void InitializePyroDrones()
         {
-            if (UsePyroDrone)
-            {
-                PyroDrone.Spawn(this, ref pyroDronePool, ref pyroDroneSpawnCount);
-                IsPyroDroneInitialized = true;
-            }
+            PyroDrone.Spawn(this, ref pyroDronePool, ref pyroDroneSpawnCount);
+            IsPyroDroneInitialized = true;
         }
 
         public void InitializeLightingDrones()
         {
-            if (UseLightingDrone)
-            {
-                LightingDrone.Spawn(this, ref lightingDronePool, ref lightingDroneSpawnCount, ref splineContainer);
-                IsLightingDroneInitialized = true;
-                
-                // Post-setup
-                lightingDronePool[0].transform.parent.localPosition = new Vector3(0, 10, 0);
+            LightingDrone.Spawn(this, ref lightingDronePool, ref lightingDroneSpawnCount, ref splineContainer);
+            IsLightingDroneInitialized = true;
             
-                int counter = 0;
-                //var (rectWidth, rectHeight) = Utility.GetMostRectangular(lightingDronePool.Length);
-                var size = Mathf.Sqrt(lightingDronePool.Length);
-                var offset = size / 2;
-                
-                for (var y = 0; y < size; y++)
+            // Post-setup
+            lightingDronePool[0].transform.parent.localPosition = new Vector3(0, 10, 0);
+        
+            int counter = 0;
+            //var (rectWidth, rectHeight) = Utility.GetMostRectangular(lightingDronePool.Length);
+            var size = Mathf.Sqrt(lightingDronePool.Length);
+            var offset = size / 2;
+            
+            for (var y = 0; y < size; y++)
+            {
+                for (int x = 0; x < size; x++)
                 {
-                    for (int x = 0; x < size; x++)
+                    if (lightingDronePool.Length <= counter) return;
+                    var drone = lightingDronePool[counter];
+
+                    var c = counter % 5;
+                
+                    drone.transform.localPosition = new Vector3(x - offset, c * 5, y - offset);
+
+                    switch (c)
                     {
-                        if (lightingDronePool.Length <= counter) return;
-                        var drone = lightingDronePool[counter];
-
-                        var c = counter % 5;
-                    
-                        drone.transform.localPosition = new Vector3(x - offset, c * 5, y - offset);
-
-                        switch (c)
-                        {
-                            case 0:
-                                drone.color = Color.red;
-                                break;
-                            case 1:
-                                drone.color = Color.yellow;
-                                break;
-                            case 2:
-                                drone.color = Color.green;
-                                break;
-                            case 3:
-                                drone.color = Color.cyan;
-                                break;
-                            case 4:
-                                drone.color = Color.blue;
-                                break;
-                        }
-                    
-                        counter++;
+                        case 0:
+                            drone.color = Color.red;
+                            break;
+                        case 1:
+                            drone.color = Color.yellow;
+                            break;
+                        case 2:
+                            drone.color = Color.green;
+                            break;
+                        case 3:
+                            drone.color = Color.cyan;
+                            break;
+                        case 4:
+                            drone.color = Color.blue;
+                            break;
                     }
+                
+                    counter++;
                 }
             }
         }
@@ -201,6 +189,16 @@ namespace Runtime.Dmx.Fixtures
         public void Awake()
         {
             dmxController.OnDmxDataChanged += OnDmxDataChanged;
+            
+            MobileTruss.Poke();
+            MobileLight.Poke();
+            PyroDrone.Poke();
+            LightingDrone.Poke();
+            
+            InitializeMobileTruss();
+            InitializeMobileLight();
+            InitializePyroDrones();
+            InitializeLightingDrones();
         }
 
         private void Update()

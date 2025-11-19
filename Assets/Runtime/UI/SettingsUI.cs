@@ -53,18 +53,6 @@ namespace Runtime.UI
                     if (data.artNetConfig.enableInput) dmxController.redirectTo.StartArtNet();
                     
                     // Custom Fixtures
-                    if (!fixtureSpawner.IsMobileTrussInitialized)
-                        fixtureSpawner.InitializeMobileTruss();
-                    
-                    if (!fixtureSpawner.IsMobileLightInitialized)
-                        fixtureSpawner.InitializeMobileLight();
-                    
-                    if (!fixtureSpawner.IsPyroDroneInitialized)
-                        fixtureSpawner.InitializePyroDrones();
-                    
-                    if (!fixtureSpawner.IsLightingDroneInitialized)
-                        fixtureSpawner.InitializeLightingDrones();
-                    
                     fixtureSpawner.UseMobileTruss = data.enableMobileTruss;
                     fixtureSpawner.UseMobileLight = data.enableMobileLight;
                     fixtureSpawner.UsePyroDrone = data.enablePyroDrones;

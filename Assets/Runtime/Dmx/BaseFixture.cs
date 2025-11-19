@@ -1,3 +1,4 @@
+using System;
 using Runtime.Dmx.Fixtures;
 using UnityEngine;
 
@@ -8,6 +9,7 @@ namespace Runtime.Dmx
         public FixtureSpawnManager spawnManager;
         public int globalChannelStart;
         protected byte[] Buffer;
+        protected byte[] Length;
         public int fixtureIndex;
 
         public abstract void WriteDmxData();
@@ -15,8 +17,15 @@ namespace Runtime.Dmx
         public byte[] GetDmxData()
         {
             WriteDmxData();
+
+            //if (!gameObject.activeInHierarchy) return Array.Empty<byte>(Length);
             
             return Buffer;
+        }
+
+        public static void Poke()
+        {
+            // Initialize static
         }
     }
 }

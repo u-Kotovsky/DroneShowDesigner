@@ -6,7 +6,6 @@ namespace Runtime.Core.Movement
     {
         private float movementSpeed = 1f;
         private float movementSpeedBoostMultiplier = 8f;
-        private float lookSpeed = 1f;
 
         private bool isMovementEnabled = true;
         private Vector2 mouseLook = new(0f, 0f);
