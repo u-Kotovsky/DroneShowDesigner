@@ -19,8 +19,8 @@ namespace Runtime.Dmx.Fixtures.Truss
 
         private void Update()
         {
-            WriteDmxPosition(0, transform.localPosition);
-            WriteDmxRotation(6, transform.localRotation.eulerAngles);
+            WriteDmxPosition(0, transform.position);
+            WriteDmxRotation(6, transform.rotation.eulerAngles);
         }
 
         public Vector3 GetMaxPosition()
