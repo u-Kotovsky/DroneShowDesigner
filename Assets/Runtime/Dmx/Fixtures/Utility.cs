@@ -8,7 +8,7 @@ namespace Runtime.Dmx.Fixtures
      * Thanks a lot to Micca, happyrobot33, Talos for explaining coarse & fine workflow! <3
      */
 
-    public abstract class Utility
+    public static class Utility
     {
         /// <summary>
         /// Map a value with min/max ranges
@@ -124,8 +124,7 @@ namespace Runtime.Dmx.Fixtures
         /// <returns></returns>
         public static float GetValueFromCoarseFine(byte coarse, byte fine, float minValue, float maxValue)
         {
-            uint combinedValue = ((uint)coarse << 8) | fine;
-            float normalized = combinedValue / (float)ushort.MaxValue;
+            float normalized = GetNormalizedValueFromCoarseFine(coarse, fine);
             return Mathf.Lerp(minValue, maxValue, normalized);
         }
     
@@ -135,11 +134,10 @@ namespace Runtime.Dmx.Fixtures
         /// <param name="coarse"></param>
         /// <param name="fine"></param>
         /// <returns></returns>
-        public static float GetValueFromCoarseFine(byte coarse, byte fine)
+        public static float GetNormalizedValueFromCoarseFine(byte coarse, byte fine)
         {
             uint combinedValue = ((uint)coarse << 8) | fine;
-            float normalized = combinedValue / (float)ushort.MaxValue;
-            return normalized;
+            return combinedValue / (float)ushort.MaxValue;
         }
         
         /// <summary>
@@ -150,7 +148,16 @@ namespace Runtime.Dmx.Fixtures
         {
             GUIUtility.systemCopyBuffer = "[" + string.Join(", ", buffer) + "]";
         }
-        
+
+        public static byte[] GetRange(this byte[] buffer, int start, int count)
+        {
+            byte[] bytes = new byte[count];
+                    
+            Buffer.BlockCopy(buffer, start, bytes, 0, bytes.Length);
+
+            return bytes;
+        }
+
         /// <summary>
         /// Copy DMX512 values as native array
         /// </summary>
@@ -159,20 +166,19 @@ namespace Runtime.Dmx.Fixtures
         /// <param name="size"></param>
         public static void CopyDmxValuesAsArray(byte[] dmxData, int offset, int size)
         {
-            byte[] bytes = new byte[size];
-                    
-            System.Buffer.BlockCopy(dmxData, offset, bytes, 0, size);
+            byte[] bytes = dmxData.GetRange(offset, size);
 
             CopyDmxValuesAsArray(bytes);
         }
-        
+
         /// <summary>
-        /// Copy string buffer with \n splitter
+        /// Copy string buffer with separator
         /// </summary>
         /// <param name="buffer"></param>
-        public static void CopyValuesAsArray(string[] buffer)
+        /// <param name="separator"></param>
+        public static void CopyValuesAsArray(string[] buffer, string separator = "\n")
         {
-            GUIUtility.systemCopyBuffer = string.Join("\n", buffer); 
+            GUIUtility.systemCopyBuffer = string.Join(separator, buffer); 
         }
 
         /// <summary>
@@ -185,7 +191,7 @@ namespace Runtime.Dmx.Fixtures
             int universe = (int)Mathf.Floor(globalChannelStart / 512) + 1;
             int addressStart = (globalChannelStart % 512) + 1;
             string[] values = new string[dmxData.Length];
-                    
+            
             for (var i = 0; i < values.Length; i++)
                 values[i] = $"{universe}.{addressStart + i} {dmxData[i]}";
 
@@ -201,14 +207,12 @@ namespace Runtime.Dmx.Fixtures
         /// <param name="size"></param>
         public static void CopyDmxValuesWithOffsetAsMa3Representation(byte[] dmxData, int globalChannelStart, int offset, int size)
         {
-            byte[] bytes = new byte[size];
-            
-            System.Buffer.BlockCopy(dmxData, offset, bytes, 0, size);
+            byte[] bytes = dmxData.GetRange(offset, size);
             
             int universe = (int)Mathf.Floor(globalChannelStart / 512) + 1;
             int addressStart = (globalChannelStart % 512) + 1;
             string[] values = new string[bytes.Length];
-                    
+            
             for (var i = 0; i < values.Length; i++)
                 values[i] = $"{universe}.{addressStart + i} {bytes[i]}";
 
@@ -280,7 +284,7 @@ namespace Runtime.Dmx.Fixtures
 
             // Clamp to prevent going over 1
             float colorT = Mathf.Clamp01(elapsedInPhase / phaseDuration);
-            float smoothT = Utility.SmoothStep(colorT, 1f); // Smooth transition from 0 to 1
+            float smoothT = SmoothStep(colorT, 1f); // Smooth transition from 0 to 1
 
             return smoothT;
         }
