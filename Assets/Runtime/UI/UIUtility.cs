@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 namespace Runtime.UI
 {
-    public abstract class UIUtility
+    public static class UIUtility
     {
         public static void AddButton(RectTransform rect, string title, Color buttonColor, Color textColor,
             Action<Button> callback)
@@ -116,7 +116,7 @@ namespace Runtime.UI
             
             return component;
         }
-
+        
         public static RectTransform AddRect(RectTransform parent, string name = "GameObject", bool worldPositionStays = false)
             => AddRect(parent.transform, name, worldPositionStays);
 
