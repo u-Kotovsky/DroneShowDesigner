@@ -1,8 +1,6 @@
-using System;
-using Runtime.Dmx.Fixtures;
 using UnityEngine;
 
-namespace Runtime.Dmx
+namespace Runtime.Dmx.Fixtures
 {
     public abstract class BaseFixture : MonoBehaviour
     {
