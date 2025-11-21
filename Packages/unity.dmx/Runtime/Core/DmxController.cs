@@ -5,6 +5,7 @@ using ArtNet.Packets;
 using ArtNet.Sockets;
 using ArtNet.Enums;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Unity_DMX.Core
 {
@@ -13,7 +14,7 @@ namespace Unity_DMX.Core
         [Header("Configuration")]
         public DmxBuffer dmxBuffer;
         public bool useBroadcast;
-        public string remoteIP = "127.0.0.1";
+        public string remoteIp = "127.0.0.1";
         private IPEndPoint remote; // For sending packets?
         public int remotePort = 6454;
         public bool isServer;
@@ -28,6 +29,12 @@ namespace Unity_DMX.Core
         
         public event Action<short, byte[], byte[]> OnDmxDataChanged = delegate { };
         private string prefix;
+        
+        public void SetRemote(string ip, int port)
+        {
+            remoteIp = ip;
+            remotePort = port;
+        }
         
         private void Awake()
         {
@@ -52,11 +59,11 @@ namespace Unity_DMX.Core
             {
                 // When you set the subnet mask, it will set the address you do not send to yourself (Convenient!）
                 // However, debugging becomes troublesome
-                socket.Open(NetworkUtility.FindFromHostName(remoteIP), remotePort, NetworkUtility.FindFromHostName(remoteIP));
+                socket.Open(NetworkUtility.FindFromHostName(remoteIp), remotePort, NetworkUtility.FindFromHostName(remoteIp));
             }
             else
             {
-                remote = new IPEndPoint(NetworkUtility.FindFromHostName(remoteIP), remotePort);
+                remote = new IPEndPoint(NetworkUtility.FindFromHostName(remoteIp), remotePort);
             }
             
             dmxBuffer.OnBufferUpdate += OnBufferUpdate;

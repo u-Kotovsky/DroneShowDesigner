@@ -23,9 +23,7 @@ namespace Runtime.UI
         {
             var pathToData =Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "DroneShowDesigner");
 
-            if (!Directory.Exists(pathToData))
-                Directory.CreateDirectory(pathToData);
-            
+            if (!Directory.Exists(pathToData)) Directory.CreateDirectory(pathToData);
             _pathToTimelineFile = Path.Join(pathToData, "Timeline.json");
             
             if (!File.Exists(_pathToTimelineFile)) SaveCurrentFile();
@@ -35,7 +33,8 @@ namespace Runtime.UI
         public static void BuildUI(Transform parent)
         {
             _timelineRootRect = UIUtility.AddRect(parent, "Timeline");
-            _timelineRootRect.gameObject.AddComponent<VerticalLayoutGroup>();
+            //_timelineRootRect.gameObject.AddComponent<VerticalLayoutGroup>();
+            _timelineRootRect.WithVerticalLayout();
             
             UIUtility.SetAllStretch(_timelineRootRect, Vector4.zero);
             
@@ -52,9 +51,9 @@ namespace Runtime.UI
             _saveAsNewFileButton = UIUtility.AddButton(element1, "Save as File", Color.grey, Color.white);
             _loadFromFileButton = UIUtility.AddButton(element1, "Load from File", Color.grey, Color.white);
             
-            _saveCurrentFileButton.onClick.AddListener(SaveCurrentFile);
-            _saveAsNewFileButton.onClick.AddListener(SaveAsFile);
-            _loadFromFileButton.onClick.AddListener(LoadFromFile);
+            _saveCurrentFileButton.OnClick(SaveCurrentFile);
+            _saveAsNewFileButton.OnClick(SaveAsFile);
+            _loadFromFileButton.OnClick(LoadFromFile);
             
             // Space
             var element2 = UIUtility.AddItemToList(_timelineListRect, -2, 20);
@@ -68,9 +67,9 @@ namespace Runtime.UI
             _editCue = UIUtility.AddButton(element3, "Edit cue", Color.grey, Color.white);
             _deleteCue = UIUtility.AddButton(element3, "Delete cue", Color.grey, Color.white);
 
-            _addCue.onClick.AddListener(AddCue);
-            _editCue.onClick.AddListener(EditCue);
-            _deleteCue.onClick.AddListener(DeleteCue);
+            _addCue.OnClick(AddCue);
+            _editCue.OnClick(EditCue);
+            _deleteCue.OnClick(DeleteCue);
             
             UIUtility.AddItemToList(_timelineListRect, 0, 20, "Index", "Name", "Object Count"); // Header
 
@@ -154,7 +153,6 @@ namespace Runtime.UI
                 SaveCurrentFile();
             }
         }
-
         #endregion
         
         private static void AddCue()

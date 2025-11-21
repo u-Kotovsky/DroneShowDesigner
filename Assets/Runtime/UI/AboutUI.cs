@@ -13,9 +13,10 @@ namespace Runtime.UI
         {
             // Root
             _rootRect = UIUtility.AddRect(parent, "Settings Root");
-            var rootLayout = _rootRect.gameObject.AddComponent<VerticalLayoutGroup>();
-            rootLayout.childForceExpandWidth = true; // Forces children to expand horizontally
-            rootLayout.childForceExpandHeight = true;
+
+            _rootRect
+                .WithVerticalLayout()
+                .ForceExpand(true, true);
             //rootLayout.childControlHeight = false;
             UIUtility.SetAllStretch(_rootRect, Vector4.zero);
             

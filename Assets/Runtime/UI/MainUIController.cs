@@ -43,7 +43,6 @@ namespace Runtime.UI
             
             UIUtility.AddButton(hotbar, "About", buttonColor, textColor, button =>
             {
-                button.onClick.AddListener(() =>
                 {
                     CleanScreen();
                     SetHotBarButtons(true);
@@ -59,7 +58,7 @@ namespace Runtime.UI
             
             UIUtility.AddButton(hotbar, "Console", buttonColor, textColor, button =>
             {
-                button.onClick.AddListener(() =>
+                button.OnClick(() =>
                 {
                     CleanScreen();
                     SetHotBarButtons(true);
@@ -73,7 +72,7 @@ namespace Runtime.UI
             
             UIUtility.AddButton(hotbar, "Settings", buttonColor, textColor, button =>
             {
-                button.onClick.AddListener(() =>
+                button.OnClick(() =>
                 {
                     CleanScreen();
                     SetHotBarButtons(true);
@@ -88,7 +87,7 @@ namespace Runtime.UI
             
             UIUtility.AddButton(hotbar, "Editor", buttonColor, textColor, button =>
             {
-                button.onClick.AddListener(() =>
+                button.OnClick(() =>
                 {
                     CleanScreen();
                     SetHotBarButtons(true);
@@ -102,7 +101,7 @@ namespace Runtime.UI
             
             UIUtility.AddButton(hotbar, "Timeline", buttonColor, textColor, button =>
             {
-                button.onClick.AddListener(() =>
+                button.OnClick(() =>
                 {
                     CleanScreen();
                     SetHotBarButtons(true);

@@ -4,6 +4,7 @@ using Runtime.Core.Settings;
 using Runtime.Dmx.Fixtures;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 namespace Runtime.UI
@@ -36,16 +37,14 @@ namespace Runtime.UI
                     Application.targetFrameRate = data.targetFrameRate;
                     
                     // ArtNet Input
-                    dmxController.remoteIP = data.artNetConfig.endPoint.address;
-                    dmxController.remotePort = data.artNetConfig.endPoint.port;
+                    dmxController.SetRemote(data.artNetConfig.endPoint.address, data.artNetConfig.endPoint.port);
                     dmxController.enabled = data.artNetConfig.enableInput;
                     
                     if (dmxController.IsArtNetOn) dmxController.StopArtNet();
                     if (data.artNetConfig.enableInput) dmxController.StartArtNet();
                     
                     // ArtNet Output
-                    dmxController.redirectTo.remoteIP = data.artNetConfig.redirectTo.address;
-                    dmxController.redirectTo.remotePort = data.artNetConfig.redirectTo.port;
+                    dmxController.redirectTo.SetRemote(data.artNetConfig.redirectTo.address, data.artNetConfig.redirectTo.port);
                     dmxController.redirectTo.enabled = data.artNetConfig.enableOutput;
                     dmxController.redirectPackets = data.artNetConfig.enableOutput;
                     
@@ -87,8 +86,7 @@ namespace Runtime.UI
             // Root
             _rootRect = UIUtility.AddRect(parent, "Settings Root");
             var rootLayout = _rootRect.gameObject.AddComponent<VerticalLayoutGroup>();
-            rootLayout.childForceExpandWidth = true; // Forces children to expand horizontally
-            rootLayout.childForceExpandHeight = false;
+            rootLayout.ForceExpand(true, false);
             rootLayout.childControlHeight = false;
             UIUtility.SetAllStretch(_rootRect, Vector4.zero);
             
@@ -99,8 +97,7 @@ namespace Runtime.UI
             // Container
             _containerRect = UIUtility.AddRect(_rootRect, "Settings Container");
             var containerLayout = _containerRect.gameObject.AddComponent<HorizontalLayoutGroup>();
-            containerLayout.childForceExpandWidth = true; // Forces children to expand horizontally
-            containerLayout.childForceExpandHeight = true;
+            containerLayout.ForceExpand(true, true);
             UIUtility.SetAllStretch(_containerRect, Vector4.zero);
                     
             // List of groups
@@ -110,65 +107,70 @@ namespace Runtime.UI
             var actionsRect = UIUtility.AddItemToList(listRect, 0, 20);
             var saveButton = UIUtility.AddButton(actionsRect, "Save", Color.white * .5f, Color.white);
             var cancelButton = UIUtility.AddButton(actionsRect, "Cancel", Color.white * .5f, Color.white);
-            saveButton.onClick.AddListener(Save);
-            cancelButton.onClick.AddListener(Load);
+            saveButton.OnClick(Save);
+            cancelButton.OnClick(Load);
             
             // Unity frames
             AddInput(listRect, ref _targetFrameRate, 1, "Target Framerate", TMP_InputField.ContentType.IntegerNumber,
                 value => { SettingsService.data.targetFrameRate = ushort.Parse(value); });
             
             // ArtNet (Input)
-            AddToggle(listRect, ref _artNetInToggle, 2, "Art Net (In) Toggle", 
-                (value) => { SettingsService.data.artNetConfig.enableInput = value; });
-            
-            AddInput(listRect, ref _artNetInIp, 3, "Art Net (In) Ip", TMP_InputField.ContentType.Standard,
-                value => { SettingsService.data.artNetConfig.endPoint.address = value; });
-            
-            AddInput(listRect, ref _artNetInPort, 4, "Art Net (In) Port", TMP_InputField.ContentType.IntegerNumber,
-                value => { SettingsService.data.artNetConfig.endPoint.port = ushort.Parse(value); });
+            AddToggle(listRect, ref _artNetInToggle, 2, "Art Net (In) Toggle")
+                .OnValueChanged((value) => { SettingsService.data.artNetConfig.enableInput = value; });
+            AddInput(listRect, ref _artNetInIp, 3, "Art Net (In) Ip", TMP_InputField.ContentType.Standard)
+                .OnValueChanged(value => { SettingsService.data.artNetConfig.endPoint.address = value; });
+            AddInput(listRect, ref _artNetInPort, 4, "Art Net (In) Port", TMP_InputField.ContentType.IntegerNumber)
+                .OnValueChanged(value => { SettingsService.data.artNetConfig.endPoint.port = ushort.Parse(value); });
             
             // ArtNet (Redirect)
-            AddToggle(listRect, ref _artNetOutToggle, 5, "Art Net (Out) Toggle", 
-                value => { SettingsService.data.artNetConfig.enableOutput = value; });
-            
-            AddInput(listRect, ref _artNetOutIp, 6, "Art Net (Out) Ip", TMP_InputField.ContentType.Standard,
-                value => { SettingsService.data.artNetConfig.redirectTo.address = value; });
-            
-            AddInput(listRect, ref _artNetOutPort, 7, "Art Net (Out) Port", TMP_InputField.ContentType.IntegerNumber,
-                value => { SettingsService.data.artNetConfig.redirectTo.port = ushort.Parse(value); });
+            AddToggle(listRect, ref _artNetOutToggle, 5, "Art Net (Out) Toggle")
+                .OnValueChanged(value => { SettingsService.data.artNetConfig.enableOutput = value; });
+            AddInput(listRect, ref _artNetOutIp, 6, "Art Net (Out) Ip", TMP_InputField.ContentType.Standard)
+                .OnValueChanged(value => { SettingsService.data.artNetConfig.redirectTo.address = value; });
+            AddInput(listRect, ref _artNetOutPort, 7, "Art Net (Out) Port", TMP_InputField.ContentType.IntegerNumber)
+                .OnValueChanged(value => { SettingsService.data.artNetConfig.redirectTo.port = ushort.Parse(value); });
             
             // Custom Fixtures
-            AddToggle(listRect, ref _enableMobileTruss, 8, "Enable Mobile Truss", 
-                value => { SettingsService.data.enableMobileTruss = value; });
-            
-            AddToggle(listRect, ref _enableMobileLight, 9, "Enable Mobile Light", 
-                value => { SettingsService.data.enableMobileLight = value; });
-            
-            AddToggle(listRect, ref _enablePyroDrones, 10, "Enable Pyro Drones", 
-                value => { SettingsService.data.enablePyroDrones = value; });
-            
-            AddToggle(listRect, ref _enableLightingDrones, 11, "Enable Lighting Drones", 
-                value => { SettingsService.data.enableLightingDrones = value; });
+            AddToggle(listRect, ref _enableMobileTruss, 8, "Enable Mobile Truss")
+                .OnValueChanged(value => { SettingsService.data.enableMobileTruss = value; });
+            AddToggle(listRect, ref _enableMobileLight, 9, "Enable Mobile Light")
+                .OnValueChanged(value => { SettingsService.data.enableMobileLight = value; });
+            AddToggle(listRect, ref _enablePyroDrones, 10, "Enable Pyro Drones")
+                .OnValueChanged(value => { SettingsService.data.enablePyroDrones = value; });
+            AddToggle(listRect, ref _enableLightingDrones, 11, "Enable Lighting Drones")
+                .OnValueChanged(value => { SettingsService.data.enableLightingDrones = value; });
             
             RefreshUI();
         }
 
         #region Shortenes
-
-        public static Toggle AddToggle(RectTransform listRect, ref Toggle toggle, int index, string text, Action<bool> onValueChanged)
+        public static Toggle AddToggle(RectTransform listRect, ref Toggle toggle, int index, string text, UnityAction<bool> onValueChanged)
+        {
+            AddToggle(listRect, ref toggle, index, text);
+            toggle.OnValueChanged(onValueChanged);
+            return toggle;
+        }
+        
+        public static Toggle AddToggle(RectTransform listRect, ref Toggle toggle, int index, string text)
         {
             var rect = UIUtility.AddItemToList(listRect, index, 20, text);
             toggle = UIUtility.AddToggle(rect, Color.white * .5f, Color.white);
-            toggle.onValueChanged.AddListener(value => { onValueChanged(value); });
             return toggle;
         }
 
         public static TMP_InputField AddInput(RectTransform listRect, ref TMP_InputField inputField, int index, string text, 
             TMP_InputField.ContentType contentType, Action<string> onValueChanged)
         {
+            AddInput(listRect, ref inputField, index, text, contentType);
+            inputField.OnValueChanged(value => { onValueChanged(value); });
+            return inputField;
+        }
+
+        public static TMP_InputField AddInput(RectTransform listRect, ref TMP_InputField inputField, int index, string text, 
+            TMP_InputField.ContentType contentType)
+        {
             var rect = UIUtility.AddItemToList(listRect, index, 20, text);
             inputField = UIUtility.AddInputField(rect, Color.white * .5f, Color.white);
-            inputField.onValueChanged.AddListener((value) => { onValueChanged(value); });
             inputField.contentType = contentType;
             return inputField;
         }
