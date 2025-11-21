@@ -1,3 +1,4 @@
+using Runtime.Dmx.Fixtures.Drones.Movers;
 using UnityEngine;
 using UnityEngine.Splines;
 
@@ -45,7 +46,10 @@ namespace Runtime.Dmx.Fixtures.Drones
 
         private void Update()
         {
-            if (meshToDrones != null) meshToDrones.SetDronePosition(this);
+            if (meshToDrones != null && meshToDrones.isActiveAndEnabled)
+            {
+                meshToDrones.SetDronePosition(this);
+            }
             
             WriteDmxPosition(0, transform.position, true);
             UpdateMaterial();
@@ -63,13 +67,11 @@ namespace Runtime.Dmx.Fixtures.Drones
                 MaterialPropertyBlock propertyBlock = new MaterialPropertyBlock();
                 propertyBlock.SetColor(BaseColor, color);
                 droneRenderer.SetPropertyBlock(propertyBlock);
-                //droneRenderer.sharedMaterial.SetColor(BaseColor, color); // can be called only from main thread.
             }
         }
 
         public override void WriteDmxData()
         {
-            //WriteDmxPosition(0, transform.position, true); // requires to be run from mainthread
             WriteDmxColor(color);
         }
         
@@ -102,9 +104,18 @@ namespace Runtime.Dmx.Fixtures.Drones
             }
             
             Debug.Log($"{pool.Length} lighting drones are instanced");
-            
-            if (meshToDrones != null) meshToDrones.SetupDronePoolToVertices(pool);
-            if (balloonDrones != null && balloonDrones.isActiveAndEnabled) balloonDrones.Setup(pool);
+
+            if (meshToDrones != null && meshToDrones.isActiveAndEnabled)
+            {
+                Debug.Log($"Setup Mesh To Drones");
+                meshToDrones.SetupDronePoolToVertices(pool);
+            }
+
+            if (balloonDrones != null && balloonDrones.isActiveAndEnabled)
+            {
+                Debug.Log($"Setup Balloon Drones");
+                balloonDrones.Setup(pool);
+            }
         }
 
         private static void Spawn(ref LightingDrone[] pool, ref int index, ref int offset, ref LightingDrone fixture)
@@ -134,13 +145,13 @@ namespace Runtime.Dmx.Fixtures.Drones
         
         private static void WriteSpecialData(byte[] buffer)
         {
-            int offset = 512 * 5 - 1;
-            buffer[offset + 39] = 255;
-            buffer[offset + 40] = 0;
-            buffer[offset + 243] = 255;
-            buffer[offset + 244] = 0;
-            buffer[offset + 245] = 255;
-            buffer[offset + 246] = 255;
+            int offset = 512 * 5 - 1; // 2560 - 1
+            buffer[offset + 39] = 255; // 2559 + 39 = 2598 // Enable ???? Why do I need this? TODO: test it
+            buffer[offset + 40] = 0; // 2599 // Enable ???? Why do I need this? TODO: test it
+            buffer[offset + 243] = 255; // 2802 // Enable Misc Fixture
+            buffer[offset + 244] = 0; // 2803 // Make sure we don't turn off Misc Fixture
+            buffer[offset + 245] = 255; // 2804 // Enable Huge Drone Map
+            //buffer[offset + 246] = 255; // 2805 // Delete World
         }
         #endregion
     }

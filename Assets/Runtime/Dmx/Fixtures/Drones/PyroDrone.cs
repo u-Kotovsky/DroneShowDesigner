@@ -14,9 +14,9 @@ namespace Runtime.Dmx.Fixtures.Drones
         
         private void Awake()
         {
-            Buffer = new byte[10]; // (0 -> 6) Position Coarse + Fine, (7 -> 9) Pitch + Yaw + Roll, (10) Index
-            MinAngle = -180;
-            MaxAngle = 180;
+            Buffer = new byte[10]; // (0 -> 5) Position Coarse + Fine, (6 -> 8) Pitch + Yaw + Roll, (9) Index
+            MinAngle = -360;
+            MaxAngle = 360;
             MinPosition = new Vector3(-800, -800, -800);
             MaxPosition = new Vector3(800, 800, 800);
         }
@@ -45,8 +45,6 @@ namespace Runtime.Dmx.Fixtures.Drones
 
         public override void WriteDmxData()
         {
-            //WriteDmxPosition(0, transform.position, true); // requires main thread
-            //WriteDmxRotation(transform.rotation.eulerAngles);
             WriteDmxIndex(index);
         }
 

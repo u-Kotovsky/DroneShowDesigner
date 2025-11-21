@@ -55,13 +55,16 @@ namespace Runtime.Dmx.Fixtures.Truss
                 Spawn(ref pool, ref i, ref offset, ref fixture);
 
                 var nav = fixture.gameObject.AddComponent<MobileTrussNavigation>();
-                nav.playTrussPresetSwap = true;
+                //nav.playTrussPresetSwap = true;
                 fixture.spawnManager = spawnManager;
+                nav.cyclePresets = false;
+                nav.playTrussPresetSwap = false;
+                nav.nextTrussPreset = 6;
             }
 
             Debug.Log($"{pool.Length} mobile trusses are instanced");
 
-            SetPreset(pool, MobileTrussPresetManager.trussPresets[0]);
+            SetPreset(pool, MobileTrussPresetManager.trussPresets[6]);
         }
 
         private static void Spawn(ref MobileTruss[] pool, ref int index, ref int offset, ref MobileTruss fixture)

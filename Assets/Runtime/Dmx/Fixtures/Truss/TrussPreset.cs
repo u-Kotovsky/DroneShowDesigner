@@ -58,9 +58,9 @@ namespace Runtime.Dmx.Fixtures.Truss
         public Quaternion GetRotation()
         {
             return Quaternion.Euler(new Vector3(
-                Utility.GetValueFromCoarseFine(xRotationCoarse, xRotationFine),
-                Utility.GetValueFromCoarseFine(yRotationCoarse, yRotationFine),
-                Utility.GetValueFromCoarseFine(zRotationCoarse, zRotationFine)) * 540);
+                Utility.GetNormalizedValueFromCoarseFine(xRotationCoarse, xRotationFine),
+                Utility.GetNormalizedValueFromCoarseFine(yRotationCoarse, yRotationFine),
+                Utility.GetNormalizedValueFromCoarseFine(zRotationCoarse, zRotationFine)) * 540);
         }
     }
 }

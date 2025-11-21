@@ -13,23 +13,23 @@ namespace Runtime.Dmx.Fixtures.Lights
         private byte zPositionCoarse;
         private byte zPositionFine;
 
-        private static readonly Vector3 Offset = new Vector3(0f, 21f, 0f);
-        private static readonly Vector3 MinPosition = new Vector3(-52.5f, -22.5f, -52.5f);
-        private static readonly Vector3 MaxPosition = new Vector3(52.5f, 22.5f, 52.5f);
+        private static readonly Vector3 Offset = new(0f, 21f, 0f);
+        private static readonly Vector3 MinPosition = new(-52.5f, -22.5f, -52.5f);
+        private static readonly Vector3 MaxPosition = new(52.5f, 22.5f, 52.5f);
 
         public MobileLightPreset() { }
 
         public MobileLightPreset(
-            byte xpc, byte xpf,
-            byte ypc, byte ypf,
-            byte zpc, byte zpf)
+            byte xPositionCoarse, byte xPositionFine,
+            byte yPositionCoarse, byte yPositionFine,
+            byte zPositionCoarse, byte zPositionFine)
         {
-            xPositionCoarse = xpc;
-            xPositionFine = xpf;
-            yPositionCoarse = ypc;
-            yPositionFine = ypf;
-            zPositionCoarse = zpc;
-            zPositionFine = zpf;
+            this.xPositionCoarse = xPositionCoarse;
+            this.xPositionFine = xPositionFine;
+            this.yPositionCoarse = yPositionCoarse;
+            this.yPositionFine = yPositionFine;
+            this.zPositionCoarse = zPositionCoarse;
+            this.zPositionFine = zPositionFine;
         }
 
         public Vector3 GetPosition()
