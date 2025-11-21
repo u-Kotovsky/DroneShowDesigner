@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Runtime.Core.Movement;
+using Runtime.UI.Setup.Patch;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -43,6 +44,7 @@ namespace Runtime.UI
             
             UIUtility.AddButton(hotbar, "About", buttonColor, textColor, button =>
             {
+                button.OnClick(() =>
                 {
                     CleanScreen();
                     SetHotBarButtons(true);
@@ -54,6 +56,21 @@ namespace Runtime.UI
                 
                 hotbarButtons.Add(button);
                 button.onClick.Invoke();
+            });
+            
+            UIUtility.AddButton(hotbar, "Setup", buttonColor, textColor, button =>
+            {
+                button.OnClick(() =>
+                {
+                    CleanScreen();
+                    SetHotBarButtons(true);
+                    button.interactable = false;
+                    Debug.Log("Open Setup");
+                    SetupPatchUI.BuildUI(page);
+                    cameraController?.DisableMovement();
+                });
+                
+                hotbarButtons.Add(button);
             });
             
             UIUtility.AddButton(hotbar, "Console", buttonColor, textColor, button =>

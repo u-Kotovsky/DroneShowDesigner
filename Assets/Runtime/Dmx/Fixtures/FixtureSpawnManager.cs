@@ -160,7 +160,7 @@ namespace Runtime.Dmx.Fixtures
 
                     var c = counter % 5;
                 
-                    drone.transform.localPosition = new Vector3(x - offset, c * 5, y - offset);
+                    drone.transform.localPosition = new Vector3(x - offset, 700 + (c * 5), y - offset);
 
                     switch (c)
                     {
