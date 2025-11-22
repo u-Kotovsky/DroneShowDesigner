@@ -8,6 +8,18 @@ namespace Runtime.UI
 {
     public static class UIUtility
     {
+        public static void StretchToParent(RectTransform child, Vector2 padding = default)
+        {
+            // Set anchors to stretch all sides
+            child.anchorMin = Vector2.zero;
+            child.anchorMax = Vector2.one;
+    
+            // Apply padding
+            child.offsetMin = new Vector2(padding.x, padding.y);
+            child.offsetMax = new Vector2(-padding.x, -padding.y);
+        }
+
+        #region UI Elements (Button, InputField, Toggle etc.)
         public static void AddButton(RectTransform rect, string title, Color buttonColor, Color textColor,
             Action<Button> callback)
         {
@@ -45,20 +57,7 @@ namespace Runtime.UI
             
             return button;
         }
-
-        public static void StretchToParent(RectTransform child, Vector2 padding = default)
-        {
-            // Set anchors to stretch all sides
-            child.anchorMin = Vector2.zero;
-            child.anchorMax = Vector2.one;
-    
-            // Apply padding
-            child.offsetMin = new Vector2(padding.x, padding.y);
-            child.offsetMax = new Vector2(-padding.x, -padding.y);
-        }
-        
-        public static void AddToggle(RectTransform rect, Color backgroundColor, Color checkmarkColor, 
-            Action<Toggle> callback)
+        public static void AddToggle(RectTransform rect, Color backgroundColor, Color checkmarkColor, Action<Toggle> callback)
         {
             var toggle = AddToggle(rect, backgroundColor, checkmarkColor);
             callback?.Invoke(toggle);
@@ -79,8 +78,8 @@ namespace Runtime.UI
             colors.disabledColor = new Color(.78f, .78f, .78f, .5f);
             toggle.colors = colors;
             
-            var background = AddRect(obj, "Background");
-            StretchToParent(background, new Vector2(0, 0));
+            var background = AddRect(obj, "Background")
+                .StretchToParent(0, 0);
             background.sizeDelta = new Vector2(background.sizeDelta.y, background.sizeDelta.y);
             
             var backgroundImage = background.gameObject.AddComponent<Image>();
@@ -89,7 +88,8 @@ namespace Runtime.UI
             backgroundImage.pixelsPerUnitMultiplier = 1.5f;
             backgroundImage.color = backgroundColor;
 
-            var checkmark = AddRect(background, "Checkmark");
+            var checkmark = AddRect(background, "Checkmark")
+                .SetAllStretch(3, 3, -3, -3);
             var checkmarkImage = checkmark.gameObject.AddComponent<Image>();
             checkmarkImage.sprite = MainUIController.DefaultUISprite;
             checkmarkImage.type = Image.Type.Sliced;
@@ -98,7 +98,7 @@ namespace Runtime.UI
 
             toggle.graphic = checkmarkImage;
             
-            SetAllStretch(checkmark, 3, 3, -3, -3);
+            //SetAllStretch(checkmark, 3, 3, -3, -3);
             
             return toggle;
         }
@@ -107,7 +107,6 @@ namespace Runtime.UI
         {
             var obj = AddRect(rect, "Text");
             var component = obj.gameObject.AddComponent<TextMeshProUGUI>();
-            
             component.text = text;
             component.color = textColor;
             component.enableAutoSizing = true;
@@ -115,64 +114,6 @@ namespace Runtime.UI
             component.fontSizeMin = 7;
             
             return component;
-        }
-        
-        public static RectTransform AddRect(RectTransform parent, string name = "GameObject", bool worldPositionStays = false)
-            => AddRect(parent.transform, name, worldPositionStays);
-
-        public static RectTransform AddRect(GameObject parent, string name = "GameObject", bool worldPositionStays = false)
-            => AddRect(parent.transform, name, worldPositionStays);
-
-        public static RectTransform AddRect(Transform parent, string name = "GameObject", bool worldPositionStays = false)
-        {
-            var rectObj = new GameObject(name);
-            rectObj.transform.SetParent(parent.transform, worldPositionStays);
-            var rect = rectObj.AddComponent<RectTransform>();
-            return rect;
-        }
-        
-        public static RectTransform SetAllStretch(RectTransform rect, Vector4 offset = new())
-        {
-            // Fill the space
-            rect.anchorMin = Vector2.zero;
-            rect.anchorMax = Vector2.one;
-            rect.pivot = new Vector2(0.5f, 0.5f); // Center pivot for consistent behavior
-            rect.offsetMin = new Vector2(offset.x, offset.y); // Left, bottom
-            rect.offsetMax = new Vector2(offset.z, offset.w); // Right, top
-
-            return rect;
-        }
-        
-        public static RectTransform SetAllStretch(RectTransform rect, float x = 0, float y = 0, float z = 0, float w = 0)
-            => SetAllStretch(rect, new Vector4(x, y, z, w));
-        
-        public static RectTransform CreateVerticalList(Transform parent, string name)
-        {
-            var listRect = AddRect(parent, name);
-            var listLayout = listRect.gameObject.AddComponent<VerticalLayoutGroup>().ForceExpand(true, false);
-            listLayout.childControlHeight = false;
-            
-            return listRect;
-        }
-        
-        // List is vertical
-        public static RectTransform AddItemToList(Transform parent, int internalIndex, float height, params string[] values)
-        {
-            var elementRect = AddRect(parent, $"Element {internalIndex}");
-            elementRect.gameObject.AddComponent<HorizontalLayoutGroup>();
-            elementRect.sizeDelta = new Vector2(0, height);
-            
-            var image = elementRect.gameObject.AddComponent<Image>();
-            image.color = internalIndex % 2 == 0 ? Color.white * 0.35f : Color.white * 0.05f;
-        
-            foreach (var value in values)
-            {
-                var subElementRect = AddRect(elementRect, value);
-                var subElementText = AddText(subElementRect, value, Color.white);
-                SetAllStretch(subElementText.rectTransform, Vector4.zero);
-            }
-                
-            return elementRect;
         }
         
         public static TMP_InputField AddInputField(RectTransform rect, Color elementColor, Color textColor)
@@ -293,6 +234,67 @@ namespace Runtime.UI
             // sliding area, handle
             
             return dropdown;
+        }
+        #endregion
+        
+        #region Rect
+        public static RectTransform AddRect(RectTransform parent, string name = "GameObject", bool worldPositionStays = false)
+            => AddRect(parent.transform, name, worldPositionStays);
+
+        public static RectTransform AddRect(GameObject parent, string name = "GameObject", bool worldPositionStays = false)
+            => AddRect(parent.transform, name, worldPositionStays);
+
+        public static RectTransform AddRect(Transform parent, string name = "GameObject", bool worldPositionStays = false)
+        {
+            var rectObj = new GameObject(name);
+            rectObj.transform.SetParent(parent.transform, worldPositionStays);
+            var rect = rectObj.AddComponent<RectTransform>();
+            return rect;
+        }
+        #endregion
+        
+        public static RectTransform SetAllStretch(RectTransform rect, float x = 0, float y = 0, float z = 0, float w = 0)
+            => SetAllStretch(rect, new Vector4(x, y, z, w));
+        
+        public static RectTransform SetAllStretch(RectTransform rect, Vector4 offset = new())
+        {
+            // Fill the space
+            rect.anchorMin = Vector2.zero;
+            rect.anchorMax = Vector2.one;
+            rect.pivot = new Vector2(0.5f, 0.5f); // Center pivot for consistent behavior
+            rect.offsetMin = new Vector2(offset.x, offset.y); // Left, bottom
+            rect.offsetMax = new Vector2(offset.z, offset.w); // Right, top
+
+            return rect;
+        }
+        
+        public static RectTransform CreateVerticalList(Transform parent, string name)
+        {
+            var listRect = AddRect(parent, name);
+            var listLayout = listRect.gameObject.AddComponent<VerticalLayoutGroup>().ForceExpand(true, false);
+            listLayout.childControlHeight = false;
+            
+            return listRect;
+        }
+        
+        // List is vertical
+        public static RectTransform AddItemToList(Transform parent, int internalIndex, float height, params string[] values)
+        {
+            var elementRect = AddRect(parent, $"Element {internalIndex}");
+            elementRect.gameObject.AddComponent<HorizontalLayoutGroup>();
+            elementRect.sizeDelta = new Vector2(0, height);
+            
+            var image = elementRect.gameObject.AddComponent<Image>();
+            image.color = internalIndex % 2 == 0 ? Color.white * 0.35f : Color.white * 0.05f;
+        
+            foreach (var value in values)
+            {
+                var subElementRect = AddRect(elementRect, value);
+                var subElementText = AddText(subElementRect, value, Color.white);
+                SetAllStretch(subElementText.rectTransform, Vector4.zero);
+            }
+                
+            return elementRect;
         }
     }
 }

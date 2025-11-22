@@ -1,4 +1,3 @@
-using System;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -23,14 +22,14 @@ namespace Runtime.UI
         #endregion
         
         #region ForceExpand
-        public static HorizontalLayoutGroup ForceExpand(this HorizontalLayoutGroup target, bool width, bool height)
+        public static HorizontalLayoutGroup ForceExpand(this HorizontalLayoutGroup target, bool width = true, bool height = true)
         {
             target.childForceExpandWidth = width;
             target.childForceExpandHeight = height;
             return target;
         }
 
-        public static VerticalLayoutGroup ForceExpand(this VerticalLayoutGroup target, bool width, bool height)
+        public static VerticalLayoutGroup ForceExpand(this VerticalLayoutGroup target, bool width = true, bool height = true)
         {
             target.childForceExpandWidth = width;
             target.childForceExpandHeight = height;
@@ -38,6 +37,22 @@ namespace Runtime.UI
         }
         #endregion
 
+        #region ControlChildSize
+        public static HorizontalLayoutGroup ControlChildSize(this HorizontalLayoutGroup target, bool width = true, bool height = true)
+        {
+            target.childControlWidth = width;
+            target.childControlHeight = height;
+            return target;
+        }
+        public static VerticalLayoutGroup ControlChildSize(this VerticalLayoutGroup target, bool width = true, bool height = true)
+        {
+            target.childControlWidth = width;
+            target.childControlHeight = height;
+            return target;
+        }
+        #endregion
+        
+        #region Events
         public static Button OnClick(this Button button, UnityAction callback)
         {
             button.onClick.AddListener(callback);
@@ -55,7 +70,9 @@ namespace Runtime.UI
             inputField.onValueChanged.AddListener(callback);
             return inputField;
         }
+        #endregion
 
+        #region With@Component
         public static RectTransform WithImage(this RectTransform target, Color color)
         {
             var image = target.AddComponent<Image>();
@@ -68,6 +85,51 @@ namespace Runtime.UI
             var image = target.AddComponent<Image>();
             image.overrideSprite = sprite;
             return target;
+        }
+        #endregion
+        
+        #region Stretch
+        public static RectTransform SetAllStretch(this RectTransform rect, float x = 0, float y = 0, float z = 0, float w = 0)
+            => SetAllStretch(rect, new Vector4(x, y, z, w));
+        
+        public static RectTransform SetAllStretch(this RectTransform rect, Vector4 offset = new())
+        {
+            UIUtility.SetAllStretch(rect, offset);
+            return rect;
+        }
+
+        public static LayoutGroup SetAllStretch(this LayoutGroup layout, float x = 0, float y = 0, float z = 0, float w = 0)
+            => SetAllStretch(layout, new Vector4(x, y, z, w));
+        
+        public static LayoutGroup SetAllStretch(this LayoutGroup layout, Vector4 offset = new())
+        {
+            UIUtility.SetAllStretch(layout.GetRect(), offset);
+            return layout;
+        }
+
+        public static RectTransform StretchToParent(this RectTransform child, float x = 0, float y = 0)
+        {
+            UIUtility.StretchToParent(child, new Vector2(x, y));
+            return child;
+        }
+
+        public static RectTransform StretchToParent(this RectTransform child, Vector2 padding = default)
+        {
+            UIUtility.StretchToParent(child, padding);
+            return child;
+        }
+
+        #endregion
+        
+        public static RectTransform GetRect(this LayoutGroup rect, Vector4 offset = new())
+        {
+            return rect.GetComponent<RectTransform>();
+        }
+        
+        public static RectTransform SetHeight(this RectTransform rect, float height)
+        {
+            rect.sizeDelta.Set(rect.sizeDelta.x, height);
+            return rect;
         }
     }
 }
