@@ -55,5 +55,19 @@ namespace Runtime.UI
             inputField.onValueChanged.AddListener(callback);
             return inputField;
         }
+
+        public static RectTransform WithImage(this RectTransform target, Color color)
+        {
+            var image = target.AddComponent<Image>();
+            image.color = color;
+            return target;
+        }
+
+        public static RectTransform WithImage(this RectTransform target, Sprite sprite = null)
+        {
+            var image = target.AddComponent<Image>();
+            image.overrideSprite = sprite;
+            return target;
+        }
     }
 }

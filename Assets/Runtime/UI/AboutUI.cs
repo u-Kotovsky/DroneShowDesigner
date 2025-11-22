@@ -13,7 +13,6 @@ namespace Runtime.UI
         {
             // Root
             _rootRect = UIUtility.AddRect(parent, "Settings Root");
-
             _rootRect
                 .WithVerticalLayout()
                 .ForceExpand(true, true);
@@ -21,9 +20,8 @@ namespace Runtime.UI
             UIUtility.SetAllStretch(_rootRect, Vector4.zero);
             
             // Current File Info
-            var element0 = UIUtility.AddRect(_rootRect, "About");
-            var image = element0.gameObject.AddComponent<Image>();
-            image.color = new Color(.2f, .2f, .2f, 1);
+            var element0 = UIUtility.AddRect(_rootRect, "About")
+                .WithImage(new Color(.2f, .2f, .2f, 1));
             
             _infoText = UIUtility.AddText(element0, @"Project is open source and it's source code available at <nobr><link ID='https://github.com/u-Kotovsky/DroneShowDesigner'>https://github.com/u-Kotovsky/DroneShowDesigner</link></nobr> although the name may change so look under user repositories.", Color.white * .7f);
             

@@ -38,19 +38,19 @@ namespace Runtime.UI.Setup.Patch
             }
 
             RectTransform = UIUtility.AddRect(parent, nameof(SetupPatchUI));
-
-            var image = RectTransform.gameObject.AddComponent<Image>();
-            image.color = new Color(.2f, .2f, .2f, 1);
+            RectTransform
+                .WithImage(new Color(.2f, .2f, .2f, 1))
+                .WithVerticalLayout()
+                .ForceExpand(false, false);
             
             UIUtility.AddText(RectTransform, "WOOO IM PATCH", Color.white);
 
-            _addLayer = UIUtility.AddButton(RectTransform, "Add Layer", Color.white * .5f, Color.white);
-            _editLayer = UIUtility.AddButton(RectTransform, "Edit Layer", Color.white * .5f, Color.white);
-            _deleteLayer = UIUtility.AddButton(RectTransform, "Delete Layer", Color.white * .5f, Color.white);
-
-            _addLayer.OnClick(Button_AddLayer_OnClick);
-            _editLayer.OnClick(Button_EditLayer_OnClick);
-            _deleteLayer.OnClick(Button_DeleteLayer_OnClick);
+            _addLayer = UIUtility.AddButton(RectTransform, "Add Layer", Color.white * .5f, Color.white)
+                .OnClick(Button_AddLayer_OnClick);
+            _editLayer = UIUtility.AddButton(RectTransform, "Edit Layer", Color.white * .5f, Color.white)
+                .OnClick(Button_EditLayer_OnClick);
+            _deleteLayer = UIUtility.AddButton(RectTransform, "Delete Layer", Color.white * .5f, Color.white)
+                .OnClick(Button_DeleteLayer_OnClick);
             
             UIExist = true;
         }

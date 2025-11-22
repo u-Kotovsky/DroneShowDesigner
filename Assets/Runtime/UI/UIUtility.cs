@@ -149,9 +149,7 @@ namespace Runtime.UI
         public static RectTransform CreateVerticalList(Transform parent, string name)
         {
             var listRect = AddRect(parent, name);
-            var listLayout = listRect.gameObject.AddComponent<VerticalLayoutGroup>();
-            listLayout.childForceExpandWidth = true;
-            listLayout.childForceExpandHeight = false;
+            var listLayout = listRect.gameObject.AddComponent<VerticalLayoutGroup>().ForceExpand(true, false);
             listLayout.childControlHeight = false;
             
             return listRect;

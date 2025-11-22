@@ -33,7 +33,6 @@ namespace Runtime.UI
         public static void BuildUI(Transform parent)
         {
             _timelineRootRect = UIUtility.AddRect(parent, "Timeline");
-            //_timelineRootRect.gameObject.AddComponent<VerticalLayoutGroup>();
             _timelineRootRect.WithVerticalLayout();
             
             UIUtility.SetAllStretch(_timelineRootRect, Vector4.zero);
@@ -47,13 +46,12 @@ namespace Runtime.UI
             
             // Manage Current File
             var element1 = UIUtility.AddItemToList(_timelineListRect, -3, 20);
-            _saveCurrentFileButton = UIUtility.AddButton(element1, "Save", Color.grey, Color.white);
-            _saveAsNewFileButton = UIUtility.AddButton(element1, "Save as File", Color.grey, Color.white);
-            _loadFromFileButton = UIUtility.AddButton(element1, "Load from File", Color.grey, Color.white);
-            
-            _saveCurrentFileButton.OnClick(SaveCurrentFile);
-            _saveAsNewFileButton.OnClick(SaveAsFile);
-            _loadFromFileButton.OnClick(LoadFromFile);
+            _saveCurrentFileButton = UIUtility.AddButton(element1, "Save", Color.grey, Color.white)
+                .OnClick(SaveCurrentFile);
+            _saveAsNewFileButton = UIUtility.AddButton(element1, "Save as File", Color.grey, Color.white)
+                .OnClick(SaveAsFile);
+            _loadFromFileButton = UIUtility.AddButton(element1, "Load from File", Color.grey, Color.white)
+                .OnClick(LoadFromFile);
             
             // Space
             var element2 = UIUtility.AddItemToList(_timelineListRect, -2, 20);
@@ -63,13 +61,12 @@ namespace Runtime.UI
             
             // Manage cues
             var element3 = UIUtility.AddItemToList(_timelineListRect, -1, 20);
-            _addCue = UIUtility.AddButton(element3, "Add cue", Color.grey, Color.white);
-            _editCue = UIUtility.AddButton(element3, "Edit cue", Color.grey, Color.white);
-            _deleteCue = UIUtility.AddButton(element3, "Delete cue", Color.grey, Color.white);
-
-            _addCue.OnClick(AddCue);
-            _editCue.OnClick(EditCue);
-            _deleteCue.OnClick(DeleteCue);
+            _addCue = UIUtility.AddButton(element3, "Add cue", Color.grey, Color.white)
+                .OnClick(AddCue);
+            _editCue = UIUtility.AddButton(element3, "Edit cue", Color.grey, Color.white)
+                .OnClick(EditCue);
+            _deleteCue = UIUtility.AddButton(element3, "Delete cue", Color.grey, Color.white)
+                .OnClick(DeleteCue);
             
             UIUtility.AddItemToList(_timelineListRect, 0, 20, "Index", "Name", "Object Count"); // Header
 
@@ -102,7 +99,6 @@ namespace Runtime.UI
                         Object.Destroy(currentTimelineObject.gameObject);
 
             _currentTimelineObjects = Array.Empty<RectTransform>();
-            
             PopulateTimelineListUI();
         }
         

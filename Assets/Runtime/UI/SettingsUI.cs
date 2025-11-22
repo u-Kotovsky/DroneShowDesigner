@@ -85,8 +85,8 @@ namespace Runtime.UI
         {
             // Root
             _rootRect = UIUtility.AddRect(parent, "Settings Root");
-            var rootLayout = _rootRect.gameObject.AddComponent<VerticalLayoutGroup>();
-            rootLayout.ForceExpand(true, false);
+            var rootLayout = _rootRect.gameObject.AddComponent<VerticalLayoutGroup>()
+                .ForceExpand(true, false);
             rootLayout.childControlHeight = false;
             UIUtility.SetAllStretch(_rootRect, Vector4.zero);
             
@@ -105,10 +105,10 @@ namespace Runtime.UI
             
             // Save/Cancel
             var actionsRect = UIUtility.AddItemToList(listRect, 0, 20);
-            var saveButton = UIUtility.AddButton(actionsRect, "Save", Color.white * .5f, Color.white);
-            var cancelButton = UIUtility.AddButton(actionsRect, "Cancel", Color.white * .5f, Color.white);
-            saveButton.OnClick(Save);
-            cancelButton.OnClick(Load);
+            UIUtility.AddButton(actionsRect, "Save", Color.white * .5f, Color.white)
+                .OnClick(Save);
+            UIUtility.AddButton(actionsRect, "Cancel", Color.white * .5f, Color.white)
+                .OnClick(Load);
             
             // Unity frames
             AddInput(listRect, ref _targetFrameRate, 1, "Target Framerate", TMP_InputField.ContentType.IntegerNumber,
