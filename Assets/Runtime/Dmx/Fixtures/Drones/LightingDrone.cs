@@ -76,7 +76,7 @@ namespace Runtime.Dmx.Fixtures.Drones
         }
         
         #region Static
-        public static GameObject lightingDronePrefab = Resources.Load<GameObject>("LightingDrone");
+        public static GameObject lightingDronePrefab = Resources.Load<GameObject>("LightingDrone"); // mainthread only, A?!
         private static GameObject _internalPool;
         
         public static void Spawn(FixtureSpawnManager spawnManager, ref LightingDrone[] pool, ref int count, ref SplineContainer splineContainer)
@@ -134,10 +134,9 @@ namespace Runtime.Dmx.Fixtures.Drones
             foreach (var fixture in pool)
             {
                 if (fixture == null) continue; // TODO: check if drones are ready instead.
-                byte[] droneData = fixture.GetDmxData();
+                var droneData = fixture.GetDmxData();
 
-                System.Buffer.BlockCopy(droneData, 0, 
-                    globalDmxBuffer, fixture.globalChannelStart, droneData.Length);
+                System.Buffer.BlockCopy(droneData, 0, globalDmxBuffer, fixture.globalChannelStart, droneData.Length);
             }
 
             WriteSpecialData(globalDmxBuffer);

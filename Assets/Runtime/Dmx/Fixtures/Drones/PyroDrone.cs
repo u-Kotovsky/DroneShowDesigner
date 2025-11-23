@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using UnityEngine;
 
 namespace Runtime.Dmx.Fixtures.Drones
@@ -49,7 +50,7 @@ namespace Runtime.Dmx.Fixtures.Drones
         }
 
         #region Static
-        public static GameObject pyroDronePrefab = Resources.Load<GameObject>("PyroDrone");
+        public static GameObject pyroDronePrefab = Resources.Load<GameObject>("PyroDrone"); // mainthread only
         private static GameObject _internalPool;
         
         public static void Spawn(FixtureSpawnManager spawnManager, ref PyroDrone[] pool, ref int count)

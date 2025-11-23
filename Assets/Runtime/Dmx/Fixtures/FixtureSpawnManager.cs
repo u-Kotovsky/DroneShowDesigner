@@ -72,7 +72,6 @@ namespace Runtime.Dmx.Fixtures
         }
 
         #region TogglePool
-        
         private void TogglePool(PyroDrone[] pool, bool active)
         {
             foreach (var obj in pool)
@@ -96,7 +95,6 @@ namespace Runtime.Dmx.Fixtures
             foreach (var obj in pool)
                 if (obj != null) obj.gameObject.SetActive(active);
         }
-
         #endregion
         
         public bool IsMobileTrussInitialized { get; private set; }
@@ -123,18 +121,21 @@ namespace Runtime.Dmx.Fixtures
         public void InitializeMobileTruss()
         {
             MobileTruss.Spawn(this, ref mobileTrussPool, ref mobileTrussSpawnCount);
+            TogglePool(mobileTrussPool, false);
             IsMobileTrussInitialized = true;
         }
 
         public void InitializeMobileLight()
         {
             MobileLight.Spawn(this, ref mobileLightPool, ref mobileLightSpawnCount);
+            TogglePool(mobileLightPool, false);
             IsMobileLightInitialized = true;
         }
 
         public void InitializePyroDrones()
         {
             PyroDrone.Spawn(this, ref pyroDronePool, ref pyroDroneSpawnCount);
+            TogglePool(pyroDronePool, false);
             IsPyroDroneInitialized = true;
         }
 
@@ -142,6 +143,8 @@ namespace Runtime.Dmx.Fixtures
         {
             LightingDrone.Spawn(this, ref lightingDronePool, ref lightingDroneSpawnCount, ref splineContainer);
             IsLightingDroneInitialized = true;
+            
+            TogglePool(lightingDronePool, false);
             
             // Post-setup
             lightingDronePool[0].transform.parent.localPosition = new Vector3(0, 10, 0);
@@ -190,11 +193,6 @@ namespace Runtime.Dmx.Fixtures
         {
             dmxController.OnDmxDataChanged += OnDmxDataChanged;
             
-            MobileTruss.Poke();
-            MobileLight.Poke();
-            PyroDrone.Poke();
-            LightingDrone.Poke();
-            
             InitializeMobileTruss();
             InitializeMobileLight();
             InitializePyroDrones();
@@ -214,24 +212,24 @@ namespace Runtime.Dmx.Fixtures
         
         private void WriteDmxData(ref byte[] buffer)
         {
-            if (UsePyroDrone)
-            {
-                PyroDrone.WriteDataToGlobalBuffer(ref pyroDronePool, ref buffer);
-            }
-
-            if (UseLightingDrone)
-            {
-                LightingDrone.WriteDataToGlobalBuffer(ref lightingDronePool, ref buffer);
-            }
-
-            if (UseMobileTruss)
+            if (UseMobileTruss && IsMobileTrussInitialized)
             {
                 MobileTruss.WriteDataToGlobalBuffer(ref mobileTrussPool, ref buffer);
             }
 
-            if (UseMobileLight)
+            if (UseMobileLight && IsMobileLightInitialized)
             {
                 MobileLight.WriteDataToGlobalBuffer(ref mobileLightPool, ref buffer);
+            }
+            
+            if (UsePyroDrone && IsPyroDroneInitialized)
+            {
+                PyroDrone.WriteDataToGlobalBuffer(ref pyroDronePool, ref buffer);
+            }
+
+            if (UseLightingDrone && IsLightingDroneInitialized)
+            {
+                LightingDrone.WriteDataToGlobalBuffer(ref lightingDronePool, ref buffer);
             }
         }
     }
