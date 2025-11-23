@@ -3,6 +3,7 @@ using System.IO;
 using Runtime.Core.Settings;
 using Runtime.Dmx.Fixtures;
 using TMPro;
+using Unity_DMX.Core;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -17,6 +18,9 @@ namespace Runtime.UI
         private static Toggle _enableMobileTruss, _enableMobileLight, _enableLightingDrones, _enablePyroDrones;
         private static Toggle _artNetInToggle, _artNetOutToggle;
 
+        private static FixtureSpawnManager _fixtureSpawner;
+        private static DmxController _dmxController;
+
         static SettingsUI()
         {
             var pathToData = Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "DroneShowDesigner");
@@ -28,51 +32,54 @@ namespace Runtime.UI
 
             try
             {
-                var fixtureSpawner = UnityEngine.Object.FindFirstObjectByType<FixtureSpawnManager>();
-                var dmxController = fixtureSpawner.dmxController;
+                _fixtureSpawner = UnityEngine.Object.FindFirstObjectByType<FixtureSpawnManager>();
+                _dmxController = _fixtureSpawner.dmxController;
 
-                SettingsService.OnSettingsChanged += (data) =>
-                {
-                    // targetFramerate
-                    Application.targetFrameRate = data.targetFrameRate;
-                    
-                    // ArtNet Input
-                    dmxController.SetRemote(data.artNetConfig.endPoint.address, data.artNetConfig.endPoint.port);
-                    dmxController.enabled = data.artNetConfig.enableInput;
-                    
-                    if (dmxController.IsArtNetOn) dmxController.StopArtNet();
-                    if (data.artNetConfig.enableInput) dmxController.StartArtNet();
-                    
-                    // ArtNet Output
-                    dmxController.redirectTo.SetRemote(data.artNetConfig.redirectTo.address, data.artNetConfig.redirectTo.port);
-                    dmxController.redirectTo.enabled = data.artNetConfig.enableOutput;
-                    dmxController.redirectPackets = data.artNetConfig.enableOutput;
-                    
-                    if (dmxController.redirectTo.IsArtNetOn) dmxController.redirectTo.StopArtNet();
-                    if (data.artNetConfig.enableInput) dmxController.redirectTo.StartArtNet();
-                    
-                    // Custom Fixtures
-                    fixtureSpawner.UseMobileTruss = data.enableMobileTruss;
-                    fixtureSpawner.UseMobileLight = data.enableMobileLight;
-                    fixtureSpawner.UsePyroDrone = data.enablePyroDrones;
-                    fixtureSpawner.UseLightingDrone = data.enableLightingDrones;
-                };
+                SettingsService.OnSettingsChanged += OnSettingsChanged;
 
-                try
-                {
-                    if (!File.Exists(_pathToSettings)) Save();
-                    Load();
-                }
-                catch (Exception e)
-                {
-                    Debug.LogException(e);
-                    Debug.LogError($"Failed to load settings");
-                }
+                Load();
             }
             catch (Exception e)
             {
                 Debug.LogException(e);
                 Debug.LogError("Failed to hook up settings updates");
+            }
+        }
+
+        private static void OnSettingsChanged(SettingsData data)
+        {
+            Debug.Log("Settings Changed");
+
+            try
+            {
+                // targetFramerate
+                Application.targetFrameRate = data.targetFrameRate;
+                
+                // ArtNet Input
+                _dmxController.SetRemote(data.artNetConfig.endPoint.address, data.artNetConfig.endPoint.port);
+                _dmxController.enabled = data.artNetConfig.enableInput;
+                        
+                if (_dmxController.IsArtNetOn) _dmxController.StopArtNet();
+                if (data.artNetConfig.enableInput) _dmxController.StartArtNet();
+                        
+                // ArtNet Output
+                _dmxController.redirectTo.SetRemote(data.artNetConfig.redirectTo.address, data.artNetConfig.redirectTo.port);
+                _dmxController.redirectTo.enabled = data.artNetConfig.enableOutput;
+                _dmxController.redirectPackets = data.artNetConfig.enableOutput;
+                        
+                if (_dmxController.redirectTo.IsArtNetOn) _dmxController.redirectTo.StopArtNet();
+                if (data.artNetConfig.enableInput) _dmxController.redirectTo.StartArtNet();
+                        
+                // Custom Fixtures
+                _fixtureSpawner.UseMobileTruss = data.enableMobileTruss;
+                _fixtureSpawner.UseMobileLight = data.enableMobileLight;
+                _fixtureSpawner.UsePyroDrone = data.enablePyroDrones;
+                _fixtureSpawner.UseLightingDrone = data.enableLightingDrones;
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+                Debug.LogError("Failed to process new settings");
             }
         }
 
@@ -243,6 +250,12 @@ namespace Runtime.UI
 
         private static void Load()
         {
+            if (!File.Exists(_pathToSettings))
+            {
+                Debug.LogError($"Settings file '{_pathToSettings}' does not exist, loading defaults.");
+                Save();
+            }
+            
             try
             {
                 SettingsService.Load(_pathToSettings);

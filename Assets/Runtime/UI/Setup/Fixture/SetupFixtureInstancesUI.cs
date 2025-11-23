@@ -11,7 +11,6 @@ namespace Runtime.UI.Setup.Fixture
         public static bool UIExist { get; private set; }
         public static RectTransform RectTransform { get; private set; }
         
-        
         public static void BuildUI(RectTransform parent)
         {
             if (UIExist)

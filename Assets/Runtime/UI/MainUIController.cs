@@ -20,7 +20,7 @@ namespace Runtime.UI
         public Sprite defaultUISprite;
         public static Sprite DefaultUISprite;
         
-        private List<Button> hotbarButtons;
+        private static List<Button> hotbarButtons;
 
         private Camera targetCamera;
         private SpectatorCameraController cameraController;
@@ -42,6 +42,8 @@ namespace Runtime.UI
             var buttonColor = Color.gray3;
             var textColor = Color.white;
             
+            var doNotShowPageAbout = PlayerPrefs.GetInt("DoNotShowPageAbout") == 1;
+            
             UIUtility.AddButton(hotbar, "About", buttonColor, textColor, button =>
             {
                 button.OnClick(() =>
@@ -55,7 +57,7 @@ namespace Runtime.UI
                 });
                 
                 hotbarButtons.Add(button);
-                button.onClick.Invoke();
+                if (!doNotShowPageAbout) button.onClick.Invoke();
             });
             
             UIUtility.AddButton(hotbar, "Setup", buttonColor, textColor, button =>
@@ -71,6 +73,7 @@ namespace Runtime.UI
                 });
                 
                 hotbarButtons.Add(button);
+                if (doNotShowPageAbout) button.onClick.Invoke();
             });
             
             UIUtility.AddButton(hotbar, "Console", buttonColor, textColor, button =>
@@ -134,6 +137,14 @@ namespace Runtime.UI
             SettingsUI.Poke();
         }
 
+        public static void Open(int index)
+        {
+            if (index < 0) index = 0;
+            if (index > hotbarButtons.Count - 1) index = hotbarButtons.Count - 1;
+            
+            hotbarButtons[index].onClick.Invoke();
+        }
+
         private void RefreshCameraReferences()
         {
             targetCamera = Camera.main;
@@ -148,8 +159,8 @@ namespace Runtime.UI
 
         private void SetHotBarButtons(bool active)
         {
-            foreach (var hotbarButton in hotbarButtons) // null
-                hotbarButton.interactable = active;
+            foreach (var button in hotbarButtons) // null
+                button.interactable = active;
         }
         
         public void LoadHierarchy()
