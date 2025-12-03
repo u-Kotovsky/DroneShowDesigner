@@ -26,6 +26,7 @@ namespace Runtime.Dmx.Fixtures.Lights
         }
 
         #region Static
+        // TODO: make a place to initialize and use these prefabs.
         public static GameObject mobileLightPrefab = Resources.Load<GameObject>("MobileLight");
         private static GameObject _internalPool;
         

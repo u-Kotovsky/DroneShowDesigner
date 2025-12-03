@@ -50,6 +50,7 @@ namespace Runtime.Dmx.Fixtures.Drones
         }
 
         #region Static
+        // TODO: make a place to initialize and use these prefabs.
         public static GameObject pyroDronePrefab = Resources.Load<GameObject>("PyroDrone"); // mainthread only
         private static GameObject _internalPool;
         

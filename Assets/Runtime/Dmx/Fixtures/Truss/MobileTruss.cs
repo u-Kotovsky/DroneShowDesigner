@@ -40,6 +40,7 @@ namespace Runtime.Dmx.Fixtures.Truss
         }
 
         #region Static
+        // TODO: make a place to initialize and use these prefabs.
         public static GameObject trussPrefab = Resources.Load<GameObject>("MobileTruss");
         private static GameObject _internalPool;
 

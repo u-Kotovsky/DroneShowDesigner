@@ -76,7 +76,8 @@ namespace Runtime.Dmx.Fixtures.Drones
         }
         
         #region Static
-        public static GameObject lightingDronePrefab = Resources.Load<GameObject>("LightingDrone"); // mainthread only, A?!
+        // TODO: make a place to initialize and use these prefabs.
+        public static GameObject lightingDronePrefab = Resources.Load<GameObject>("LightingDrone");
         private static GameObject _internalPool;
         
         public static void Spawn(FixtureSpawnManager spawnManager, ref LightingDrone[] pool, ref int count, ref SplineContainer splineContainer)
