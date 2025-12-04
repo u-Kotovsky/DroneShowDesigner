@@ -120,91 +120,134 @@ namespace Runtime.Core.Selection
             
             var targetGameObject = hitPoint.transform?.gameObject;
             if (targetGameObject == null) return;
-            
-            Debug.Log(hitPoint.transform.gameObject.name);
 
             var parentOfTarget = targetGameObject.transform.parent;
             if (parentOfTarget != null && parentOfTarget.TryGetComponent<Selectable>(out var selectable))
             {
-                // TODO: User experience below
-                // If user holds control, do not reset selection;
-                // If user holds A, select all objects of that type.
-                // If user holds control and object is already selected, deselect it.
-                
-                bool shiftKey = Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl);
-                bool aKey = Input.GetKey(KeyCode.A);
-                
                 if (parentOfTarget.TryGetComponent<MobileTruss>(out var mobileTruss))
                 {
-                    if (!shiftKey && !aKey)
-                    {
-                        selectedGameObjects.Clear();
-                        selectedMobileTrusses.Clear();
-                        Debug.Log($"Added '{parentOfTarget.gameObject.name}' to selectedMobileTrusses");
-                        selectedGameObjects.Add(parentOfTarget.gameObject);
-                        selectedMobileTrusses.Add(mobileTruss);
-                    }
-                    else if (shiftKey && !aKey)
-                    {
-                        Debug.Log($"Added '{parentOfTarget.gameObject.name}' to selectedMobileTrusses");
-                        selectedGameObjects.Add(parentOfTarget.gameObject);
-                        selectedMobileTrusses.Add(mobileTruss);
-                    }
+                    OnObjectHit(ref selectedGameObjects, ref selectedMobileTrusses, ref selectable, ref mobileTruss);
                 }
                 else if (parentOfTarget.TryGetComponent<MobileLight>(out var mobileLight))
                 {
-                    if (!shiftKey && !aKey)
-                    {
-                        selectedGameObjects.Clear();
-                        selectedMobileLights.Clear();
-                        Debug.Log($"Added '{parentOfTarget.gameObject.name}' to selectedMobileLights");
-                        selectedGameObjects.Add(parentOfTarget.gameObject);
-                        selectedMobileLights.Add(mobileLight);
-                    }
-                    else if (shiftKey && !aKey)
-                    {
-                        Debug.Log($"Added '{parentOfTarget.gameObject.name}' to selectedMobileLights");
-                        selectedGameObjects.Add(parentOfTarget.gameObject);
-                        selectedMobileLights.Add(mobileLight);
-                    }
+                    OnObjectHit(ref selectedGameObjects, ref selectedMobileLights, ref selectable, ref mobileLight);
                 }
                 else if (parentOfTarget.TryGetComponent<LightingDrone>(out var lightingDrone))
                 {
-                    if (!shiftKey && !aKey)
-                    {
-                        selectedGameObjects.Clear();
-                        selectedLightingDrones.Clear();
-                        Debug.Log($"Added '{parentOfTarget.gameObject.name}' to selectedLightingDrones");
-                        selectedGameObjects.Add(parentOfTarget.gameObject);
-                        selectedLightingDrones.Add(lightingDrone);
-                    }
-                    else if (shiftKey && !aKey)
-                    {
-                        Debug.Log($"Added '{parentOfTarget.gameObject.name}' to selectedLightingDrones");
-                        selectedGameObjects.Add(parentOfTarget.gameObject);
-                        selectedLightingDrones.Add(lightingDrone);
-                    }
+                    OnObjectHit(ref selectedGameObjects, ref selectedLightingDrones, ref selectable, ref lightingDrone);
                 }
                 else if (parentOfTarget.TryGetComponent<PyroDrone>(out var pyroDrone))
                 {
-                    if (!shiftKey && !aKey)
-                    {
-                        selectedGameObjects.Clear();
-                        selectedPyroDrones.Clear();
-                        Debug.Log($"Added '{parentOfTarget.gameObject.name}' to selectedPyroDrones");
-                        selectedGameObjects.Add(parentOfTarget.gameObject);
-                        selectedPyroDrones.Add(pyroDrone);
-                    }
-                    else if (shiftKey && !aKey)
-                    {
-                        Debug.Log($"Added '{parentOfTarget.gameObject.name}' to selectedPyroDrones");
-                        selectedGameObjects.Add(parentOfTarget.gameObject);
-                        selectedPyroDrones.Add(pyroDrone);
-                    }
+                    OnObjectHit(ref selectedGameObjects, ref selectedPyroDrones, ref selectable, ref pyroDrone);
                 }
                 else
                 {
                     // No supported component found.
+                    
+                    ClearAllSelection();
+                }
+            }
+            else
+            {
+                ClearAllSelection();
+            }
+        }
+
+        private void OnObjectHit<T>(ref List<GameObject> gameObjects, ref List<T> fixturesOfType, ref Selectable selectable, ref T component) where T : Component
+        {
+            // TODO: User experience below
+            // If user holds control, do not reset selection;
+            // If user holds A, select all objects of that type.
+            // If user holds control and object is already selected, deselect it.
+                
+            bool controlKey = Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl);
+            bool aKey = Input.GetKey(KeyCode.A);
+            
+            // TODO: foreach all gameObjects, get selectable component and call OnObjectDeselect
+
+            // Clear all and select new
+            if (!controlKey && !aKey)
+            {
+                Debug.Log($"OnObjectHit: (Replace)");
+                ClearSelection(ref gameObjects, ref fixturesOfType);
+                
+                fixturesOfType.Add(component);
+                gameObjects.Add(component.gameObject);
+                selectable.OnObjectSelected();
+            }
+            // Do not reset, add new
+            else if (controlKey && !aKey)
+            {
+                Debug.Log($"OnObjectHit: (Additive)");
+                fixturesOfType.Add(component);
+                gameObjects.Add(component.gameObject);
+                selectable.OnObjectSelected();
+            }
+            // Select all objects of current type (Additive)
+            else if (controlKey && aKey)
+            {
+                Debug.Log($"OnObjectHit: Select all objects of current type (Additive)");
+                T[] components = FindObjectsByType<T>(FindObjectsSortMode.None);
+                for (var i = 0; i < gameObjects.Count; i++)
+                {
+                    var fixture = fixturesOfType[i];
+
+                    foreach (var fixture2 in components)
+                    {
+                        if (fixture != fixture2)
+                        {
+                            gameObjects.Add(fixture2.gameObject);
+                            fixturesOfType.Add(fixture2);
+                            if (fixture2.TryGetComponent<Selectable>(out var selectable2))
+                            {
+                                selectable2.OnObjectSelected();
+                            }
+                        }
+                    }
+                }
+            }
+            else if (!controlKey && aKey)
+            {
+                Debug.Log($"OnObjectHit: Select all objects of current type (Replace)");
+                // Select all objects of current type (Replace)
+                ClearSelection(ref gameObjects, ref fixturesOfType);
+                
+                var components = FindObjectsByType<T>(FindObjectsSortMode.None);
+                foreach (var fixture in components)
+                {
+                    fixturesOfType.Add(fixture);
+                    gameObjects.Add(fixture.gameObject);
+                    if (fixture.TryGetComponent<Selectable>(out var selectable2))
+                    {
+                        selectable2.OnObjectSelected();
+                    }
+                }
+            }
+        }
+
+        private void ClearAllSelection()
+        {
+            Debug.Log("ClearAllSelection");
+            ClearSelection(ref selectedGameObjects, ref selectedMobileTrusses);
+            ClearSelection(ref selectedGameObjects, ref selectedMobileLights);
+            ClearSelection(ref selectedGameObjects, ref selectedLightingDrones);
+            ClearSelection(ref selectedGameObjects, ref selectedPyroDrones);
+        }
+
+        private void ClearSelection<T>(ref List<GameObject> gameObjects, ref List<T> selectedObjects) where T : Component
+        {
+            Debug.Log($"ClearSelection");
+            for (var i = 0; i < gameObjects.Count; i++)
+            {
+                // TODO: maybe look for object instead of index?
+                var obj = gameObjects[i];
+                var fixture1 = obj.GetComponent<T>();
+
+                if (obj.TryGetComponent<Selectable>(out var selectable))
+                {
+                    gameObjects.RemoveAt(i);
+                    selectedObjects.Remove(fixture1);
+                    selectable.OnObjectDeselected();
                 }
             }
         }

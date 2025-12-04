@@ -27,9 +27,7 @@ namespace Runtime.UI
         static SettingsUI()
         {
             var pathToData = Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "DroneShowDesigner");
-
-            if (!Directory.Exists(pathToData)) 
-                Directory.CreateDirectory(pathToData);
+            if (!Directory.Exists(pathToData)) Directory.CreateDirectory(pathToData);
             
             _pathToSettings = Path.Join(pathToData, "Settings.json");
 
@@ -92,22 +90,24 @@ namespace Runtime.UI
         public static void BuildUI(RectTransform parent)
         {
             // Root
-            _rootRect = UIUtility.AddRect(parent, "Settings Root");
-            var rootLayout = _rootRect.gameObject.AddComponent<VerticalLayoutGroup>()
-                .ForceExpand(true, false);
-            rootLayout.childControlHeight = false;
-            UIUtility.SetAllStretch(_rootRect, Vector4.zero);
+            _rootRect = UIUtility.AddRect(parent, "Settings Root")
+                .WithVerticalLayout()
+                .ForceExpand(true, false)
+                .ControlChildSize(true, false)
+                .SetAllStretch(Vector4.zero)
+                .GetRect();
             
             // Current File Info
             var element0 = UIUtility.AddItemToList(_rootRect, -4, 20);
             _pathToFileText = UIUtility.AddText(element0, "path/to/current/settings", Color.white * .7f);
             
             // Container
-            _containerRect = UIUtility.AddRect(_rootRect, "Settings Container");
-            var containerLayout = _containerRect.gameObject.AddComponent<HorizontalLayoutGroup>();
-            containerLayout.ForceExpand(true, true);
-            UIUtility.SetAllStretch(_containerRect, Vector4.zero);
-                    
+            _containerRect = UIUtility.AddRect(_rootRect, "Settings Container")
+                .WithHorizontalLayout()
+                .ForceExpand()
+                .SetAllStretch(Vector4.zero)
+                .GetRect();
+            
             // List of groups
             var listRect = UIUtility.CreateVerticalList(_containerRect, "SettingsList");
             
