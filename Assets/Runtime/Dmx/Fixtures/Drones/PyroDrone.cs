@@ -1,5 +1,6 @@
 using System;
 using System.Threading;
+using Runtime.Core.Resources;
 using UnityEngine;
 
 namespace Runtime.Dmx.Fixtures.Drones
@@ -50,31 +51,42 @@ namespace Runtime.Dmx.Fixtures.Drones
         }
 
         #region Static
-        // TODO: make a place to initialize and use these prefabs.
-        public static GameObject pyroDronePrefab = Resources.Load<GameObject>("PyroDrone"); // mainthread only
+        private static GameObject _pyroDronePrefab;
         private static GameObject _internalPool;
+        private const int GlobalDmxChannelOffset = (512 * 5) + 41 - 1; // 2600 is start for pyro drone.
+        private const string Prefix = "PyroDrone";
+
+        public static void InitializePrefab(Action callback = default)
+        {
+            if (_pyroDronePrefab != null) return;
+            AssetManager.Load("PyroDrone", prefab =>
+            {
+                if (_pyroDronePrefab != null) return;
+                _pyroDronePrefab = prefab;
+                callback?.Invoke();
+            });
+        }
         
         public static void Spawn(FixtureSpawnManager spawnManager, ref PyroDrone[] pool, ref int count)
         {
             if (_internalPool == null) _internalPool = new GameObject("PyroDronePool");
             pool = new PyroDrone[count];
             PyroDrone fixture = null;
-            int offset = (512 * 5) + 41 - 1; // 2600 is start for pyro drone.
 
             for (int i = 0; i < pool.Length; i++)
             {
-                Spawn(ref pool, ref i, ref offset, ref fixture);
+                Spawn(ref pool, ref i, GlobalDmxChannelOffset, ref fixture);
                 fixture.spawnManager = spawnManager;
             }
             
-            Debug.Log($"{pool.Length} pyro drones are instanced");
+            Debug.Log($"'{Prefix}' {pool.Length} pyro drones are instanced");
 
             SetPreset(pool, PyroDronePresetManager.presets[0]);
         }
 
-        private static void Spawn(ref PyroDrone[] pool, ref int index, ref int offset, ref PyroDrone fixture)
+        private static void Spawn(ref PyroDrone[] pool, ref int index, int offset, ref PyroDrone fixture)
         {
-            var instance = Instantiate(pyroDronePrefab, new Vector3(index, 2, 0), Quaternion.identity);
+            var instance = Instantiate(_pyroDronePrefab, new Vector3(index, 2, 0), Quaternion.identity);
             instance.transform.SetParent(_internalPool.transform);
             fixture = instance.AddComponent<PyroDrone>();
             fixture.fixtureIndex = index;
@@ -106,7 +118,7 @@ namespace Runtime.Dmx.Fixtures.Drones
             WriteSpecialData(globalDmxBuffer);
         }
         
-        private static void WriteSpecialData(byte[] buffer)
+        private static void WriteSpecialData(byte[] buffer) // TODO: explain each setter
         {
             int offset = 512 * 5 - 1;
             buffer[offset + 39] = 255;

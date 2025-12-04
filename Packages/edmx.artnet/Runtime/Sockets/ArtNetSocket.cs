@@ -78,7 +78,6 @@ namespace ArtNet.Sockets
             SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.Broadcast, 1);
             PortOpen = true;
 
-            Debug.Log($"Open: start receive from {LocalIP}:{Port}");
             StartReceive();
         }
 

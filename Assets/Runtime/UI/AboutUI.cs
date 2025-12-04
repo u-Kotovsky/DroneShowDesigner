@@ -7,6 +7,8 @@ namespace Runtime.UI
     {
         private static RectTransform _rootRect;
         private static TextMeshProUGUI _infoText;
+
+        private const string Prefix = "AboutUI";
     
         public static void BuildUI(RectTransform parent)
         {
@@ -38,7 +40,7 @@ namespace Runtime.UI
 
         private static void DoNotShowAgain()
         {
-            Debug.Log("Do not show page about again");
+            Debug.Log($"'{Prefix}' Do not show page about again");
             PlayerPrefs.SetInt("DoNotShowPageAbout", 1);
             MainUIController.Open(1);
         }

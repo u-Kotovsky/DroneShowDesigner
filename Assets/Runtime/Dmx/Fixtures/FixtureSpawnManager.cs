@@ -21,11 +21,8 @@ namespace Runtime.Dmx.Fixtures
             get => usePyroDrone;
             set
             {
-                if (usePyroDrone != value)
-                {
-                    TogglePool(pyroDronePool, value);
-                    usePyroDrone = value;
-                }
+                TogglePool(pyroDronePool, value);
+                usePyroDrone = value;
             }
         }
         
@@ -35,11 +32,8 @@ namespace Runtime.Dmx.Fixtures
             get => useLightingDrone;
             set
             {
-                if (useLightingDrone != value)
-                {
-                    TogglePool(lightingDronePool, value);
-                    useLightingDrone = value;
-                }
+                TogglePool(lightingDronePool, value);
+                useLightingDrone = value;
             }
         }
         
@@ -49,11 +43,8 @@ namespace Runtime.Dmx.Fixtures
             get => useMobileTruss;
             set
             {
-                if (useMobileTruss != value)
-                {
-                    TogglePool(mobileTrussPool, value);
-                    useMobileTruss = value;
-                }
+                TogglePool(mobileTrussPool, value);
+                useMobileTruss = value;
             }
         }
 
@@ -63,39 +54,16 @@ namespace Runtime.Dmx.Fixtures
             get => useMobileLight;
             set
             {
-                if (useMobileLight != value)
-                {
-                    TogglePool(mobileLightPool, value);
-                    useMobileLight = value;
-                }
+                TogglePool(mobileLightPool, value);
+                useMobileLight = value;
             }
         }
 
-        #region TogglePool
-        private void TogglePool(PyroDrone[] pool, bool active)
+        private void TogglePool(Component[] pool, bool active)
         {
             foreach (var obj in pool)
                 if (obj != null) obj.gameObject.SetActive(active);
         }
-
-        private void TogglePool(LightingDrone[] pool, bool active)
-        {
-            foreach (var obj in pool)
-                if (obj != null) obj.gameObject.SetActive(active);
-        }
-
-        private void TogglePool(MobileLight[] pool, bool active)
-        {
-            foreach (var obj in pool)
-                if (obj != null) obj.gameObject.SetActive(active);
-        }
-
-        private void TogglePool(MobileTruss[] pool, bool active)
-        {
-            foreach (var obj in pool)
-                if (obj != null) obj.gameObject.SetActive(active);
-        }
-        #endregion
         
         public bool IsMobileTrussInitialized { get; private set; }
         public bool IsMobileLightInitialized { get; private set; }
@@ -120,73 +88,85 @@ namespace Runtime.Dmx.Fixtures
 
         public void InitializeMobileTruss()
         {
-            MobileTruss.Spawn(this, ref mobileTrussPool, ref mobileTrussSpawnCount);
-            TogglePool(mobileTrussPool, false);
-            IsMobileTrussInitialized = true;
+            MobileTruss.InitializePrefab(() =>
+            {
+                MobileTruss.Spawn(this, ref mobileTrussPool, ref mobileTrussSpawnCount);
+                TogglePool(mobileTrussPool, false);
+                IsMobileTrussInitialized = true;
+            });
         }
 
         public void InitializeMobileLight()
         {
-            MobileLight.Spawn(this, ref mobileLightPool, ref mobileLightSpawnCount);
-            TogglePool(mobileLightPool, false);
-            IsMobileLightInitialized = true;
+            MobileLight.InitializePrefab(() =>
+            {
+                MobileLight.Spawn(this, ref mobileLightPool, ref mobileLightSpawnCount);
+                TogglePool(mobileLightPool, false);
+                IsMobileLightInitialized = true;
+            });
         }
 
         public void InitializePyroDrones()
         {
-            PyroDrone.Spawn(this, ref pyroDronePool, ref pyroDroneSpawnCount);
-            TogglePool(pyroDronePool, false);
-            IsPyroDroneInitialized = true;
+            PyroDrone.InitializePrefab(() =>
+            {
+                PyroDrone.Spawn(this, ref pyroDronePool, ref pyroDroneSpawnCount);
+                TogglePool(pyroDronePool, false);
+                IsPyroDroneInitialized = true;
+            });
         }
 
         public void InitializeLightingDrones()
         {
-            LightingDrone.Spawn(this, ref lightingDronePool, ref lightingDroneSpawnCount, ref splineContainer);
-            IsLightingDroneInitialized = true;
-            
-            TogglePool(lightingDronePool, false);
-            
-            // Post-setup
-            lightingDronePool[0].transform.parent.localPosition = new Vector3(0, 10, 0);
-        
-            int counter = 0;
-            //var (rectWidth, rectHeight) = Utility.GetMostRectangular(lightingDronePool.Length);
-            var size = Mathf.Sqrt(lightingDronePool.Length);
-            var offset = size / 2;
-            
-            for (var y = 0; y < size; y++)
+            LightingDrone.InitializePrefab(() =>
             {
-                for (int x = 0; x < size; x++)
+                LightingDrone.Spawn(this, ref lightingDronePool, ref lightingDroneSpawnCount, ref splineContainer);
+                IsLightingDroneInitialized = true;
+                
+                TogglePool(lightingDronePool, false);
+                
+                // Post-setup
+                lightingDronePool[0].transform.parent.localPosition = new Vector3(0, 10, 0);
+            
+                int counter = 0;
+                //var (rectWidth, rectHeight) = Utility.GetMostRectangular(lightingDronePool.Length);
+                var size = Mathf.Sqrt(lightingDronePool.Length);
+                var offset = size / 2;
+                
+                for (var y = 0; y < size; y++)
                 {
-                    if (lightingDronePool.Length <= counter) return;
-                    var drone = lightingDronePool[counter];
-
-                    var c = counter % 5;
-                
-                    drone.transform.localPosition = new Vector3(x - offset, 700 + (c * 5), y - offset);
-
-                    switch (c)
+                    for (int x = 0; x < size; x++)
                     {
-                        case 0:
-                            drone.color = Color.red;
-                            break;
-                        case 1:
-                            drone.color = Color.yellow;
-                            break;
-                        case 2:
-                            drone.color = Color.green;
-                            break;
-                        case 3:
-                            drone.color = Color.cyan;
-                            break;
-                        case 4:
-                            drone.color = Color.blue;
-                            break;
+                        if (lightingDronePool.Length <= counter) return;
+                        var drone = lightingDronePool[counter];
+
+                        var c = counter % 5;
+                    
+                        drone.transform.localPosition = new Vector3(x - offset, 700 + (c * 5), y - offset);
+
+                        switch (c)
+                        {
+                            case 0:
+                                drone.color = Color.red;
+                                break;
+                            case 1:
+                                drone.color = Color.yellow;
+                                break;
+                            case 2:
+                                drone.color = Color.green;
+                                break;
+                            case 3:
+                                drone.color = Color.cyan;
+                                break;
+                            case 4:
+                                drone.color = Color.blue;
+                                break;
+                        }
+                    
+                        counter++;
                     }
-                
-                    counter++;
                 }
-            }
+            });
         }
 
         public void Awake()

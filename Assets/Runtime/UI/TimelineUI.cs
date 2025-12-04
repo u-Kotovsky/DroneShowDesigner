@@ -9,7 +9,7 @@ using Object = UnityEngine.Object;
 
 namespace Runtime.UI
 {
-    public abstract class TimelineUI
+    public static class TimelineUI
     {
         private static GameObject[] _currentPageObjects;
         private static RectTransform[] _currentTimelineObjects;
@@ -18,6 +18,8 @@ namespace Runtime.UI
         private static TextMeshProUGUI _pathToTimelineText, _timelineTitleText, _timeCodeText;
         private static Button _saveCurrentFileButton, _saveAsNewFileButton, _loadFromFileButton;
         private static Button _addCue, _editCue, _deleteCue;
+        
+        private const string Prefix = "TimelineUI";
         
         static TimelineUI()
         {
@@ -122,13 +124,13 @@ namespace Runtime.UI
         private static string _pathToTimelineFile;
         private static void SaveCurrentFile()
         {
-            Debug.Log($"Saving current file as '{_pathToTimelineFile}'");
+            Debug.Log($"'{Prefix}' Saving current file as '{_pathToTimelineFile}'");
             TimelineService.Save(_pathToTimelineFile);
         }
 
         private static void SaveAsFile()
         {
-            Debug.Log($"Saving new file as '{_pathToTimelineFile}'");
+            Debug.Log($"'{Prefix}' Saving new file as '{_pathToTimelineFile}'");
             // TODO: Select where to save popup
             TimelineService.Save(_pathToTimelineFile);
         }
@@ -137,14 +139,14 @@ namespace Runtime.UI
         {
             try
             {
-                Debug.Log($"Loading from file '{_pathToTimelineFile}'");
+                Debug.Log($"'{Prefix}' Loading from file '{_pathToTimelineFile}'");
                 // TODO: Select what to load popup
                 TimelineService.Load(_pathToTimelineFile);
             }
             catch (Exception e)
             {
                 Debug.LogException(e);
-                Debug.LogError($"Failed to load timeline from file '{_pathToTimelineFile}'. Reloading with default settings...");
+                Debug.LogError($"'{Prefix}' Failed to load timeline from file '{_pathToTimelineFile}'. Reloading with default settings...");
                 // Will not load, but instead save new config file so program won't throw errors anymore, unless there's a bug in it lol
                 SaveCurrentFile();
             }
@@ -153,17 +155,17 @@ namespace Runtime.UI
         
         private static void AddCue()
         {
-            Debug.Log("Add cue");
+            Debug.Log($"'{Prefix}' Add cue");
         }
 
         private static void EditCue()
         {
-            Debug.Log("Edit cue");
+            Debug.Log($"'{Prefix}' Edit cue");
         }
 
         private static void DeleteCue()
         {
-            Debug.Log("Delete cue");
+            Debug.Log($"'{Prefix}' Delete cue");
         }
     }
 }

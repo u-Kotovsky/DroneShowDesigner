@@ -1,3 +1,5 @@
+using System;
+using Runtime.Core.Resources;
 using Runtime.Dmx.Fixtures.Shared;
 using UnityEngine;
 
@@ -20,37 +22,46 @@ namespace Runtime.Dmx.Fixtures.Lights
             WriteDmxPosition(0, transform.position);
         }
 
-        public override void WriteDmxData()
-        {
-            //WriteDmxPosition(0, transform.position); // requires mainthread
-        }
+        public override void WriteDmxData() { }
 
         #region Static
-        // TODO: make a place to initialize and use these prefabs.
-        public static GameObject mobileLightPrefab = Resources.Load<GameObject>("MobileLight");
+        private static GameObject _mobileLightPrefab;
         private static GameObject _internalPool;
+        private const int GlobalDmxChannelOffset = 1077; // Start for mobile light.
+        private const string Prefix = "MobileLight";
+        
+        public static void InitializePrefab(Action callback = default)
+        {
+            if (_mobileLightPrefab != null) return;
+            AssetManager.Load("MobileLight", prefab =>
+            {
+                if (_mobileLightPrefab != null) return;
+                _mobileLightPrefab = prefab;
+                callback?.Invoke();
+            });
+        }
+
         
         public static void Spawn(FixtureSpawnManager spawnManager, ref MobileLight[] pool, ref int count)
         {
             if (_internalPool == null) _internalPool = new GameObject("MobileLightPool");
             pool = new MobileLight[count];
             MobileLight fixture = null;
-            int offset = 1077; // Start for mobile light.
 
             for (int i = 0; i < pool.Length; i++)
             {
-                Spawn(ref pool, ref i, ref offset, ref fixture);
+                Spawn(ref pool, ref i, GlobalDmxChannelOffset, ref fixture);
                 fixture.spawnManager = spawnManager;
             }
             
-            Debug.Log($"{pool.Length} mobile lights are instanced");
+            Debug.Log($"'{Prefix}' {pool.Length} mobile lights are instanced");
 
             SetPreset(pool, MobileLightPresetManager.presets[0]);
         }
 
-        private static void Spawn(ref MobileLight[] pool, ref int index, ref int offset, ref MobileLight fixture)
+        private static void Spawn(ref MobileLight[] pool, ref int index, int offset, ref MobileLight fixture)
         {
-            var instance = Instantiate(mobileLightPrefab, new Vector3(index, 2, 0), Quaternion.identity);
+            var instance = Instantiate(_mobileLightPrefab, new Vector3(index, 2, 0), Quaternion.identity);
             instance.transform.SetParent(_internalPool.transform);
             fixture = instance.AddComponent<MobileLight>();
             fixture.fixtureIndex = index;

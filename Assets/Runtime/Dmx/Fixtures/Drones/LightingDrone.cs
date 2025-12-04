@@ -1,3 +1,5 @@
+using System;
+using Runtime.Core.Resources;
 using Runtime.Dmx.Fixtures.Drones.Movers;
 using UnityEngine;
 using UnityEngine.Splines;
@@ -77,15 +79,27 @@ namespace Runtime.Dmx.Fixtures.Drones
         
         #region Static
         // TODO: make a place to initialize and use these prefabs.
-        public static GameObject lightingDronePrefab = Resources.Load<GameObject>("LightingDrone");
+        private static GameObject _lightingDronePrefab;
         private static GameObject _internalPool;
+        private const int GlobalDmxChannelOffset = (512 * 5) + 321 - 1; // 2880 is start for FX drone // Offset is probably correct (maybe?)
+        private const string Prefix = "LightingDrone";
+        
+        public static void InitializePrefab(Action callback = default)
+        {
+            if (_lightingDronePrefab != null) return;
+            AssetManager.Load("LightingDrone", prefab =>
+            {
+                if (_lightingDronePrefab != null) return;
+                _lightingDronePrefab = prefab;
+                callback?.Invoke();
+            });
+        }
         
         public static void Spawn(FixtureSpawnManager spawnManager, ref LightingDrone[] pool, ref int count, ref SplineContainer splineContainer)
         {
             if (_internalPool == null) _internalPool = new GameObject("LightingDronePool");
             pool = new LightingDrone[count];
             LightingDrone fixture = null;
-            int offset = (512 * 5) + 321 - 1; // 2880 is start for FX drone // Offset is probably correct (maybe?)
             
             // test mesh 
             var meshToDrones = FindFirstObjectByType<RendererToDrones>();
@@ -93,7 +107,7 @@ namespace Runtime.Dmx.Fixtures.Drones
 
             for (int i = 0; i < pool.Length; i++)
             {
-                Spawn(ref pool, ref i, ref offset, ref fixture);
+                Spawn(ref pool, ref i, GlobalDmxChannelOffset, ref fixture);
                 fixture.spawnManager = spawnManager;
                 //fixture.gameObject.AddComponent<DroneNavigation>();
                 //var pathNav = fixture.gameObject.AddComponent<DronePathNavigation>();
@@ -104,24 +118,24 @@ namespace Runtime.Dmx.Fixtures.Drones
                 //cartFollower.StartWithDelay(i * 0.2f, splineContainer);
             }
             
-            Debug.Log($"{pool.Length} lighting drones are instanced");
+            Debug.Log($"'{Prefix}' {pool.Length} lighting drones are instanced");
 
             if (meshToDrones != null && meshToDrones.isActiveAndEnabled)
             {
-                Debug.Log($"Setup Mesh To Drones");
+                Debug.Log($"'{Prefix}' Setup Mesh To Drones");
                 meshToDrones.SetupDronePoolToVertices(pool);
             }
 
             if (balloonDrones != null && balloonDrones.isActiveAndEnabled)
             {
-                Debug.Log($"Setup Balloon Drones");
+                Debug.Log($"'{Prefix}' Setup Balloon Drones");
                 balloonDrones.Setup(pool);
             }
         }
 
-        private static void Spawn(ref LightingDrone[] pool, ref int index, ref int offset, ref LightingDrone fixture)
+        private static void Spawn(ref LightingDrone[] pool, ref int index, int offset, ref LightingDrone fixture)
         {
-            var instance = Instantiate(lightingDronePrefab, new Vector3(index, 1, 0), Quaternion.identity);
+            var instance = Instantiate(_lightingDronePrefab, new Vector3(index, 1, 0), Quaternion.identity);
             instance.transform.SetParent(_internalPool.transform);
             fixture = instance.AddComponent<LightingDrone>();
             fixture.fixtureIndex = index;

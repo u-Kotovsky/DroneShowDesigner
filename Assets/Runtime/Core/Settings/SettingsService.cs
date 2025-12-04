@@ -11,11 +11,13 @@ namespace Runtime.Core.Settings
         
         public static SettingsData data = new();
 
+        private const string Prefix = "SettingsService";
+
         public static event Action<SettingsData> OnSettingsChanged = delegate { };
 
         public static void Load(string pathToFile)
         {
-            Debug.Log($"Loading settings from '{pathToFile}'");
+            Debug.Log($"'{Prefix}' Loading settings from '{pathToFile}'");
             if (!File.Exists(pathToFile))
                 throw new FileNotFoundException();
             
@@ -26,7 +28,7 @@ namespace Runtime.Core.Settings
 
         public static void Save(string pathToFile)
         {
-            Debug.Log($"Saving settings to '{pathToFile}'");
+            Debug.Log($"'{Prefix}' Saving settings to '{pathToFile}'");
             string json = JsonUtility.ToJson(data);
             
             // TODO: compression?

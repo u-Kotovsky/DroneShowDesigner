@@ -5,7 +5,6 @@ using ArtNet.Packets;
 using ArtNet.Sockets;
 using ArtNet.Enums;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace Unity_DMX.Core
 {
@@ -25,10 +24,9 @@ namespace Unity_DMX.Core
 
         private ArtNetSocket socket;
         private ArtNetDmxPacket dmxToSend;
-        private Dictionary<int, byte[]> dmxDataMap;
         
-        public event Action<short, byte[], byte[]> OnDmxDataChanged = delegate { };
-        private string prefix;
+        private const string Prefix = "DmxControlller";
+        private string ServerOrClient => isServer ? "server" : "client";
         
         public void SetRemote(string ip, int port)
         {
@@ -38,8 +36,6 @@ namespace Unity_DMX.Core
         
         private void Awake()
         {
-            prefix = gameObject.name;
-            
             StartArtNet();
             
             dmxToSend ??= new ArtNetDmxPacket();
@@ -51,7 +47,7 @@ namespace Unity_DMX.Core
 
         public void InitializeSocket()
         {
-            Debug.Log($"'{prefix}' '{remotePort}' is " + (isServer ? "server" : "client"));
+            Debug.Log($"'{Prefix}' '{remotePort}' is " + ServerOrClient);
             socket = new ArtNetSocket(remotePort);
             socket.NewPacket += OnNewPacketReceived;
             
@@ -69,29 +65,32 @@ namespace Unity_DMX.Core
             dmxBuffer.OnBufferUpdate += OnBufferUpdate;
         }
 
-        private bool isArtNetOn = false;
-        public bool IsArtNetOn => isArtNetOn;
-
+        #region ArtNet Toggle
+        public bool IsArtNetOn { get; private set; }
         public void StartArtNet()
         {
-            Debug.Log($"'{prefix}' '{remotePort}' as " + (isServer ? "server" : "client") + " is now requested to be started.");
-            if (isArtNetOn) return;
+            Debug.Log($"'{Prefix}' '{remotePort}' as " + ServerOrClient + " is now requested to be started.");
+            if (IsArtNetOn) return;
             InitializeSocket();
-            isArtNetOn = true;
+            IsArtNetOn = true;
         }
 
         public void StopArtNet()
         {
-            Debug.Log($"'{prefix}' '{remotePort}' as " + (isServer ? "server" : "client") + " is now requested to be stopped.");
-            if (!isArtNetOn) return;
+            Debug.Log($"'{Prefix}' '{remotePort}' as " + ServerOrClient + " is now requested to be stopped.");
+            if (!IsArtNetOn) return;
             socket.Close();
             socket.NewPacket -= OnNewPacketReceived;
             socket = null;
             remote = null;
-            isArtNetOn = false;
+            IsArtNetOn = false;
             dmxBuffer.OnBufferUpdate -= OnBufferUpdate;
         }
+        #endregion
 
+        #region Buffer or DMX512 data
+        private Dictionary<int, byte[]> dmxDataMap;
+        public event Action<short, byte[], byte[]> OnDmxDataChanged = delegate { };
         public void ForceBufferUpdate()
         {
             OnBufferUpdate(dmxBuffer.buffer);
@@ -108,7 +107,8 @@ namespace Unity_DMX.Core
                 SendDmxData(i);
             }
         }
-
+        #endregion
+        
         private void OnDestroy()
         {
             socket.Close();

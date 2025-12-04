@@ -25,6 +25,8 @@ namespace Runtime.UI
         private Camera targetCamera;
         private SpectatorCameraController cameraController;
 
+        private const string Prefix = "MainUIController";
+
         private void Awake()
         {
             try
@@ -34,7 +36,7 @@ namespace Runtime.UI
             catch (Exception e)
             {
                 Debug.LogException(e);
-                Debug.LogError($"Failed to refresh camera references");
+                Debug.LogError($"'{Prefix}' Failed to refresh camera references");
             }
             
             DefaultUISprite ??= defaultUISprite;
@@ -51,7 +53,7 @@ namespace Runtime.UI
                     CleanScreen();
                     SetHotBarButtons(true);
                     button.interactable = false;
-                    Debug.Log("Open About");
+                    Debug.Log($"'{Prefix}' Open About");
                     AboutUI.BuildUI(page);
                     cameraController?.DisableMovement();
                 });
@@ -67,13 +69,12 @@ namespace Runtime.UI
                     CleanScreen();
                     SetHotBarButtons(true);
                     button.interactable = false;
-                    Debug.Log("Open Setup");
+                    Debug.Log($"'{Prefix}' Open Setup");
                     SetupPatchUI.BuildUI(page);
                     cameraController?.DisableMovement();
                 });
                 
                 hotbarButtons.Add(button);
-                if (doNotShowPageAbout) button.onClick.Invoke();
             });
             
             UIUtility.AddButton(hotbar, "Console", buttonColor, textColor, button =>
@@ -83,7 +84,7 @@ namespace Runtime.UI
                     CleanScreen();
                     SetHotBarButtons(true);
                     button.interactable = false;
-                    Debug.Log("Open Console");
+                    Debug.Log($"'{Prefix}' Open Console");
                     cameraController?.DisableMovement();
                 });
                 
@@ -117,6 +118,7 @@ namespace Runtime.UI
                 });
                 
                 hotbarButtons.Add(button);
+                if (doNotShowPageAbout) button.onClick.Invoke(); 
             });
             
             UIUtility.AddButton(hotbar, "Timeline", buttonColor, textColor, button =>
@@ -133,8 +135,12 @@ namespace Runtime.UI
                 
                 hotbarButtons.Add(button);
             });
-            
+        }
+
+        private void Start()
+        {
             SettingsUI.Poke();
+            SettingsUI.Load();
         }
 
         public static void Open(int index)
@@ -161,16 +167,6 @@ namespace Runtime.UI
         {
             foreach (var button in hotbarButtons) // null
                 button.interactable = active;
-        }
-        
-        public void LoadHierarchy()
-        {
-            
-        }
-
-        public void InspectElement(GameObject element)
-        {
-            // TODO: load element components, parameters etc.
         }
     }
 }

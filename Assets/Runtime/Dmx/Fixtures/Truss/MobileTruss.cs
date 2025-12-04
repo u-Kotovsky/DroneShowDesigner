@@ -1,3 +1,5 @@
+using System;
+using Runtime.Core.Resources;
 using Runtime.Dmx.Fixtures.Shared;
 using UnityEngine;
 
@@ -23,37 +25,34 @@ namespace Runtime.Dmx.Fixtures.Truss
             WriteDmxRotation(6, transform.rotation.eulerAngles);
         }
 
-        public Vector3 GetMaxPosition()
-        {
-            return MaxPosition;
-        }
-
-        public float GetMaxAngle()
-        {
-            return MaxAngle;
-        }
-
-        public override void WriteDmxData()
-        {
-            //WriteDmxPosition(0, transform.localPosition); // requires mainthread
-            //WriteDmxRotation(6, transform.localRotation.eulerAngles);
-        }
+        public override void WriteDmxData() { }
 
         #region Static
-        // TODO: make a place to initialize and use these prefabs.
-        public static GameObject trussPrefab = Resources.Load<GameObject>("MobileTruss");
+        private static GameObject _trussPrefab;
         private static GameObject _internalPool;
+        private const int GlobalDmxChannelOffset = 6; // Start for mobile truss.
+        private const string Prefix = "MobileTruss";
+        
+        public static void InitializePrefab(Action callback = default)
+        {
+            if (_trussPrefab != null) return;
+            AssetManager.Load("MobileTruss", (prefab) =>
+            {
+                if (_trussPrefab != null) return;
+                _trussPrefab = prefab;
+                callback?.Invoke();
+            });
+        }
 
         public static void Spawn(FixtureSpawnManager spawnManager, ref MobileTruss[] pool, ref int count)
         {
             if (_internalPool == null) _internalPool = new GameObject("MobileTrussPool");
             pool = new MobileTruss[count];
             MobileTruss fixture = null;
-            int offset = 6; // Start for mobile truss.
 
             for (int i = 0; i < pool.Length; i++)
             {
-                Spawn(ref pool, ref i, ref offset, ref fixture);
+                Spawn(ref pool, ref i, GlobalDmxChannelOffset, ref fixture);
 
                 var nav = fixture.gameObject.AddComponent<MobileTrussNavigation>();
                 //nav.playTrussPresetSwap = true;
@@ -63,14 +62,14 @@ namespace Runtime.Dmx.Fixtures.Truss
                 nav.nextTrussPreset = 6;
             }
 
-            Debug.Log($"{pool.Length} mobile trusses are instanced");
+            Debug.Log($"'{Prefix}' {pool.Length} mobile trusses are instanced");
 
             SetPreset(pool, MobileTrussPresetManager.trussPresets[6]);
         }
 
-        private static void Spawn(ref MobileTruss[] pool, ref int index, ref int offset, ref MobileTruss fixture)
+        private static void Spawn(ref MobileTruss[] pool, ref int index, int offset, ref MobileTruss fixture)
         {
-            var instance = Instantiate(trussPrefab, new Vector3(index * 9, 2, 0), Quaternion.identity);
+            var instance = Instantiate(_trussPrefab, new Vector3(index * 9, 2, 0), Quaternion.identity);
             instance.transform.SetParent(_internalPool.transform);
             fixture = instance.AddComponent<MobileTruss>();
             fixture.fixtureIndex = index;

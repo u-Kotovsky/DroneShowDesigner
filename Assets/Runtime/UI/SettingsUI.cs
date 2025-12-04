@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using Runtime.Core.Resources;
 using Runtime.Core.Settings;
 using Runtime.Dmx.Fixtures;
 using TMPro;
@@ -10,7 +11,7 @@ using UnityEngine.UI;
 
 namespace Runtime.UI
 {
-    public abstract class SettingsUI
+    public static class SettingsUI
     {
         private static RectTransform _rootRect, _groupRect, _containerRect;
         private static TextMeshProUGUI _pathToFileText;
@@ -20,6 +21,8 @@ namespace Runtime.UI
 
         private static FixtureSpawnManager _fixtureSpawner;
         private static DmxController _dmxController;
+
+        private const string Prefix = "SettingsUI";
 
         static SettingsUI()
         {
@@ -36,19 +39,17 @@ namespace Runtime.UI
                 _dmxController = _fixtureSpawner.dmxController;
 
                 SettingsService.OnSettingsChanged += OnSettingsChanged;
-
-                Load();
             }
             catch (Exception e)
             {
                 Debug.LogException(e);
-                Debug.LogError("Failed to hook up settings updates");
+                Debug.LogError($"'{Prefix}' Failed to hook up settings updates");
             }
         }
 
         private static void OnSettingsChanged(SettingsData data)
         {
-            Debug.Log("Settings Changed");
+            Debug.Log($"'{Prefix}' OnSettingsChanged");
 
             try
             {
@@ -68,7 +69,7 @@ namespace Runtime.UI
                 _dmxController.redirectPackets = data.artNetConfig.enableOutput;
                         
                 if (_dmxController.redirectTo.IsArtNetOn) _dmxController.redirectTo.StopArtNet();
-                if (data.artNetConfig.enableInput) _dmxController.redirectTo.StartArtNet();
+                if (data.artNetConfig.enableOutput) _dmxController.redirectTo.StartArtNet();
                         
                 // Custom Fixtures
                 _fixtureSpawner.UseMobileTruss = data.enableMobileTruss;
@@ -79,7 +80,7 @@ namespace Runtime.UI
             catch (Exception e)
             {
                 Debug.LogException(e);
-                Debug.LogError("Failed to process new settings");
+                Debug.LogError($"'{Prefix}' Failed to process new settings");
             }
         }
 
@@ -187,7 +188,7 @@ namespace Runtime.UI
         #region RefreshUI
         public static void RefreshUI()
         {
-            Debug.Log("Refreshing Settings UI");
+            Debug.Log($"'{Prefix}' Refreshing..");
             RefreshFixturesUI();
             RefreshFramesPerSecondUI();
             RefreshPathToFileUI();
@@ -217,7 +218,7 @@ namespace Runtime.UI
         {
             if (SettingsService.data == null)
             {
-                Debug.LogError("Settings data is null");
+                Debug.LogError($"'{Prefix}' Settings data is null");
                 return;
             }
             
@@ -230,7 +231,7 @@ namespace Runtime.UI
         {
             if (SettingsService.data == null)
             {
-                Debug.LogError("Settings data is null");
+                Debug.LogError($"'{Prefix}' Settings data is null");
                 return;
             }
             
@@ -243,16 +244,16 @@ namespace Runtime.UI
         #region Save/Load
         private static string _pathToSettings;
         
-        private static void Save()
+        public static void Save()
         {
             SettingsService.Save(_pathToSettings);
         }
 
-        private static void Load()
+        public static void Load()
         {
             if (!File.Exists(_pathToSettings))
             {
-                Debug.LogError($"Settings file '{_pathToSettings}' does not exist, loading defaults.");
+                Debug.LogError($"'{Prefix}' Settings file '{_pathToSettings}' does not exist, loading defaults.");
                 Save();
             }
             
@@ -263,7 +264,7 @@ namespace Runtime.UI
             catch (Exception e)
             {
                 Debug.LogException(e);
-                Debug.LogError($"Failed to load settings from file '{_pathToSettings}'. Reloading with default settings...");
+                Debug.LogError($"'{Prefix}' Failed to load settings from file '{_pathToSettings}'. Reloading with default settings...");
                 // Will not load, but instead save new config file so program won't throw errors anymore, unless there's a bug in it lol
                 Save();
             }
