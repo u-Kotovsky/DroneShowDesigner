@@ -1,5 +1,8 @@
 using System.Collections.Generic;
 using Runtime.Core.Resources;
+using Runtime.Dmx.Fixtures.Drones;
+using Runtime.Dmx.Fixtures.Lights;
+using Runtime.Dmx.Fixtures.Truss;
 using UnityEngine;
 
 namespace Runtime.Core.Selection
@@ -12,33 +15,34 @@ namespace Runtime.Core.Selection
         public float timer;
         public int state;
         
-        public List<GameObject> gameObjects;
-        
-        private GameObject startObject;
-        private GameObject endObject;
+        public List<GameObject> selectedGameObjects = new(); // Selected objects
 
+        public List<MobileTruss> selectedMobileTrusses = new();
+        public List<MobileLight> selectedMobileLights = new();
+        public List<LightingDrone> selectedLightingDrones = new();
+        public List<PyroDrone> selectedPyroDrones = new();
+        
         public float timeToMultiSelect = 0.15f;
 
-        private Camera _mainCamera;
-        private bool _hasMainCamera;
+        private Camera mainCamera;
+        private bool hasMainCamera;
         private Camera MainCamera
         {
-            get
-            {
-                return _mainCamera;
-            }
+            get => mainCamera;
             set
             {
-                _mainCamera = value;
-                _hasMainCamera = value != null;
+                mainCamera = value;
+                hasMainCamera = value != null;
             }
         }
         
+        private Ray screenRay;
+        private RaycastHit hitPoint;
+        
+        private Vector3 cameraPositionAtMultiSelectStart;
+        
         private void Start()
         {
-            startObject = new GameObject("Start");
-            endObject = new GameObject("End");
-
             if (Camera.main != null)
             {
                 MainCamera = Camera.main;
@@ -69,7 +73,7 @@ namespace Runtime.Core.Selection
                     {
                         state = 1;
                         timer = 0;
-                        cameraPositionAtMultiSelectStart = Camera.main.transform.position;
+                        cameraPositionAtMultiSelectStart = MainCamera.transform.position;
                     }
                 }
 
@@ -82,7 +86,6 @@ namespace Runtime.Core.Selection
                 if (state == 2) // Update end position
                 {
                     endWorldPosition = mouseOnTransform;
-                    SetWorldPositions();
                 }
             }
 
@@ -91,25 +94,10 @@ namespace Runtime.Core.Selection
                 if (state != 0)
                 {
                     endWorldPosition = mouseOnTransform;
-                    SetWorldPositions();
                 }
                 else
                 {
-                    // Single object select
-                    directionPoint = mouseOnTransform;
-                    startPoint = Camera.main.transform.position;
-
-                    var fakeDirection = Vector3.Lerp(startPoint, directionPoint, 0.025f);
-                    var ray = new Ray(startPoint, fakeDirection);
-
-                    if (Physics.Raycast(ray, out hitPoint, 1000, Physics.AllLayers))
-                    {
-                        Debug.Log(hitPoint.transform.gameObject.name);
-                    }
-                    else
-                    {
-                        Debug.Log("Hit void!");
-                    }
+                    SelectSingleObject();
                 }
                 
                 // TODO: calculate rect
@@ -120,11 +108,106 @@ namespace Runtime.Core.Selection
             }
         }
 
-        private Vector3 directionPoint;
-        private Vector3 startPoint;
-        private RaycastHit hitPoint;
-        
-        private Vector3 cameraPositionAtMultiSelectStart;
+        private void SelectSingleObject()
+        {
+            screenRay = MainCamera.ScreenPointToRay(Input.mousePosition);
+
+            if (!Physics.Raycast(screenRay, out hitPoint, MainCamera.farClipPlane))
+            {
+                // Nothing was hit.
+                return;
+            }
+            
+            var targetGameObject = hitPoint.transform?.gameObject;
+            if (targetGameObject == null) return;
+            
+            Debug.Log(hitPoint.transform.gameObject.name);
+
+            var parentOfTarget = targetGameObject.transform.parent;
+            if (parentOfTarget != null && parentOfTarget.TryGetComponent<Selectable>(out var selectable))
+            {
+                // TODO: User experience below
+                // If user holds control, do not reset selection;
+                // If user holds A, select all objects of that type.
+                // If user holds control and object is already selected, deselect it.
+                
+                bool shiftKey = Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl);
+                bool aKey = Input.GetKey(KeyCode.A);
+                
+                if (parentOfTarget.TryGetComponent<MobileTruss>(out var mobileTruss))
+                {
+                    if (!shiftKey && !aKey)
+                    {
+                        selectedGameObjects.Clear();
+                        selectedMobileTrusses.Clear();
+                        Debug.Log($"Added '{parentOfTarget.gameObject.name}' to selectedMobileTrusses");
+                        selectedGameObjects.Add(parentOfTarget.gameObject);
+                        selectedMobileTrusses.Add(mobileTruss);
+                    }
+                    else if (shiftKey && !aKey)
+                    {
+                        Debug.Log($"Added '{parentOfTarget.gameObject.name}' to selectedMobileTrusses");
+                        selectedGameObjects.Add(parentOfTarget.gameObject);
+                        selectedMobileTrusses.Add(mobileTruss);
+                    }
+                }
+                else if (parentOfTarget.TryGetComponent<MobileLight>(out var mobileLight))
+                {
+                    if (!shiftKey && !aKey)
+                    {
+                        selectedGameObjects.Clear();
+                        selectedMobileLights.Clear();
+                        Debug.Log($"Added '{parentOfTarget.gameObject.name}' to selectedMobileLights");
+                        selectedGameObjects.Add(parentOfTarget.gameObject);
+                        selectedMobileLights.Add(mobileLight);
+                    }
+                    else if (shiftKey && !aKey)
+                    {
+                        Debug.Log($"Added '{parentOfTarget.gameObject.name}' to selectedMobileLights");
+                        selectedGameObjects.Add(parentOfTarget.gameObject);
+                        selectedMobileLights.Add(mobileLight);
+                    }
+                }
+                else if (parentOfTarget.TryGetComponent<LightingDrone>(out var lightingDrone))
+                {
+                    if (!shiftKey && !aKey)
+                    {
+                        selectedGameObjects.Clear();
+                        selectedLightingDrones.Clear();
+                        Debug.Log($"Added '{parentOfTarget.gameObject.name}' to selectedLightingDrones");
+                        selectedGameObjects.Add(parentOfTarget.gameObject);
+                        selectedLightingDrones.Add(lightingDrone);
+                    }
+                    else if (shiftKey && !aKey)
+                    {
+                        Debug.Log($"Added '{parentOfTarget.gameObject.name}' to selectedLightingDrones");
+                        selectedGameObjects.Add(parentOfTarget.gameObject);
+                        selectedLightingDrones.Add(lightingDrone);
+                    }
+                }
+                else if (parentOfTarget.TryGetComponent<PyroDrone>(out var pyroDrone))
+                {
+                    if (!shiftKey && !aKey)
+                    {
+                        selectedGameObjects.Clear();
+                        selectedPyroDrones.Clear();
+                        Debug.Log($"Added '{parentOfTarget.gameObject.name}' to selectedPyroDrones");
+                        selectedGameObjects.Add(parentOfTarget.gameObject);
+                        selectedPyroDrones.Add(pyroDrone);
+                    }
+                    else if (shiftKey && !aKey)
+                    {
+                        Debug.Log($"Added '{parentOfTarget.gameObject.name}' to selectedPyroDrones");
+                        selectedGameObjects.Add(parentOfTarget.gameObject);
+                        selectedPyroDrones.Add(pyroDrone);
+                    }
+                }
+                else
+                {
+                    // No supported component found.
+                }
+            }
+        }
         
         private static Vector3 mouseWorldPosOnNearClipPlane =>
             Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, Camera.main.nearClipPlane));
@@ -139,26 +222,14 @@ namespace Runtime.Core.Selection
             }
         }
 
-        private void SetWorldPositions()
-        {
-            startObject.transform.position = startWorldPosition;
-            endObject.transform.position = endWorldPosition;
-        }
-
         private void OnDrawGizmos()
         {
-            Debug.DrawLine(startWorldPosition, endWorldPosition, Color.orange);
+            Debug.DrawLine(startWorldPosition, endWorldPosition, Color.aquamarine);
             
             Debug.DrawLine(cameraPositionAtMultiSelectStart, startWorldPosition, Color.yellow);
             Debug.DrawLine(cameraPositionAtMultiSelectStart, endWorldPosition, Color.yellow);
 
-            if (directionPoint != null && startPoint != null)
-            {
-                Debug.DrawLine(startPoint, directionPoint, Color.blue);
-                Debug.DrawLine(directionPoint, directionPoint + Vector3.up, Color.blue);
-                //Debug.DrawLine(startPoint, hitPoint.point, Color.orange);
-                //Debug.DrawLine(startPoint, Vector3.LerpUnclamped(startPoint, directionPoint, Camera.main.farClipPlane), Color.magenta);
-            }
+            Debug.DrawLine(screenRay.origin, screenRay.direction, Color.blue);
         }
     }
 }

@@ -1,5 +1,4 @@
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -11,12 +10,12 @@ namespace Runtime.UI
         #region WithLayoutGroup
         public static HorizontalLayoutGroup WithHorizontalLayout(this RectTransform target)
         {
-            var layout = target.AddComponent<HorizontalLayoutGroup>();
+            var layout = target.gameObject.AddComponent<HorizontalLayoutGroup>();
             return layout;
         }
         public static VerticalLayoutGroup WithVerticalLayout(this RectTransform target)
         {
-            var layout = target.AddComponent<VerticalLayoutGroup>();
+            var layout = target.gameObject.AddComponent<VerticalLayoutGroup>();
             return layout;
         }
         #endregion
@@ -75,14 +74,14 @@ namespace Runtime.UI
         #region With@Component
         public static RectTransform WithImage(this RectTransform target, Color color)
         {
-            var image = target.AddComponent<Image>();
+            var image = target.gameObject.AddComponent<Image>();
             image.color = color;
             return target;
         }
 
         public static RectTransform WithImage(this RectTransform target, Sprite sprite = null)
         {
-            var image = target.AddComponent<Image>();
+            var image = target.gameObject.AddComponent<Image>();
             image.overrideSprite = sprite;
             return target;
         }

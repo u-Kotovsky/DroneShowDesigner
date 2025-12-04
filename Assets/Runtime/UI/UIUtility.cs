@@ -1,6 +1,5 @@
 using System;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -139,11 +138,11 @@ namespace Runtime.UI
             inputField.image.pixelsPerUnitMultiplier = 1.5f;
             
             var textArea = AddRect(obj, "TextArea");
-            var rectMask2d = textArea.AddComponent<RectMask2D>();
+            var rectMask2d = textArea.gameObject.AddComponent<RectMask2D>();
             rectMask2d.padding = new Vector4(-8, -8, -5, -5);
             
             var caret = AddRect(textArea, "Caret");
-            var selectionCaret = caret.AddComponent<TMP_SelectionCaret>();
+            var selectionCaret = caret.gameObject.AddComponent<TMP_SelectionCaret>();
             
             inputField.textViewport = textArea;
             SetAllStretch(textArea, 3, 3, -3, -3);

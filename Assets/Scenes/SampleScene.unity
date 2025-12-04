@@ -338,6 +338,7 @@ MonoBehaviour:
   m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
+  m_characterHorizontalScale: 1
   m_wordSpacing: 0
   m_lineSpacing: 0
   m_lineSpacingMax: 0
@@ -3466,7 +3467,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!23 &1567078998
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -3982,6 +3983,7 @@ MonoBehaviour:
   m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
+  m_characterHorizontalScale: 1
   m_wordSpacing: 0
   m_lineSpacing: 0
   m_lineSpacingMax: 0
@@ -4092,7 +4094,11 @@ MonoBehaviour:
   endWorldPosition: {x: 0, y: 0, z: 0}
   timer: 0
   state: 0
-  gameObjects: []
+  selectedGameObjects: []
+  selectedMobileTrusses: []
+  selectedMobileLights: []
+  selectedLightingDrones: []
+  selectedPyroDrones: []
   timeToMultiSelect: 0.25
 --- !u!4 &2028550477
 Transform:

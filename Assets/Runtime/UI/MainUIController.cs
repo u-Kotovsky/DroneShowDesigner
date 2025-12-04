@@ -98,7 +98,7 @@ namespace Runtime.UI
                     CleanScreen();
                     SetHotBarButtons(true);
                     button.interactable = false;
-                    Debug.Log("Open Settings");
+                    Debug.Log($"'{Prefix}' Open Settings");
                     SettingsUI.BuildUI(page);
                     cameraController?.DisableMovement();
                 });
@@ -113,7 +113,7 @@ namespace Runtime.UI
                     CleanScreen();
                     SetHotBarButtons(true);
                     button.interactable = false;
-                    Debug.Log("Open Editor");
+                    Debug.Log($"'{Prefix}' Open Editor");
                     cameraController?.EnableMovement();
                 });
                 
@@ -128,7 +128,7 @@ namespace Runtime.UI
                     CleanScreen();
                     SetHotBarButtons(true);
                     button.interactable = false;
-                    Debug.Log("Open Timeline");
+                    Debug.Log($"'{Prefix}' Open Timeline");
                     TimelineUI.BuildUI(page);
                     cameraController?.DisableMovement();
                 });
