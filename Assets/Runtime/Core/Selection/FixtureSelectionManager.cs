@@ -15,7 +15,7 @@ namespace Runtime.Core.Selection
         public float timer;
         public int state;
         
-        public List<GameObject> selectedGameObjects = new(); // Selected objects
+        public List<GameObject> selectedGameObjects = new();
 
         public List<MobileTruss> selectedMobileTrusses = new();
         public List<MobileLight> selectedMobileLights = new();
@@ -43,47 +43,34 @@ namespace Runtime.Core.Selection
         
         private void Start()
         {
-            if (Camera.main != null)
-            {
-                MainCamera = Camera.main;
-            }
+            if (Camera.main != null) MainCamera = Camera.main;
         }
 
         private void Update()
         {
-            // OnMouseDown
-            // - Save mouse position
-            // - Set state
-            // - Timer WAIT FOR FEW SECONDS TO ENSURE IT'S NOT JUST SINGLE SHORT CLICK
-            //
-            // OnMouseUp
-            // - Save mouse position2
-            // - Reset state
-            // - Find rectangle/bound box
-            // - Find all objects that are intersecting this bound box
-            // - Put em all in selection pool
-            // - On each fixture OnObjectSelected
-            
             if (Input.GetMouseButton(0))
             {
                 if (state == 0)
                 {
                     timer += Time.deltaTime;
-                    if (timer >= timeToMultiSelect) // Wait before action to not mistake for single click
+                    // Wait before action to not mistake for single click
+                    if (timer >= timeToMultiSelect) 
                     {
                         state = 1;
                         timer = 0;
                         cameraPositionAtMultiSelectStart = MainCamera.transform.position;
                     }
                 }
-
-                if (state == 1) // Update start position once
+                
+                // Update start position once
+                if (state == 1) 
                 {
                     startWorldPosition = mouseOnTransform;
                     state = 2;
                 }
-
-                if (state == 2) // Update end position
+                
+                // Update end position
+                if (state == 2) 
                 {
                     endWorldPosition = mouseOnTransform;
                 }
@@ -112,9 +99,9 @@ namespace Runtime.Core.Selection
         {
             screenRay = MainCamera.ScreenPointToRay(Input.mousePosition);
 
+            // Nothing was hit.
             if (!Physics.Raycast(screenRay, out hitPoint, MainCamera.farClipPlane))
             {
-                // Nothing was hit.
                 ClearAllSelection();
                 return;
             }
@@ -156,16 +143,9 @@ namespace Runtime.Core.Selection
 
         private void OnObjectHit<T>(ref List<GameObject> gameObjects, ref List<T> fixturesOfType, ref Selectable selectable, ref T component) where T : Component
         {
-            // TODO: User experience below
-            // If user holds control, do not reset selection;
-            // If user holds A, select all objects of that type.
-            // If user holds control and object is already selected, deselect it.
-                
             bool controlKey = Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl);
             bool aKey = Input.GetKey(KeyCode.A);
             
-            // TODO: foreach all gameObjects, get selectable component and call OnObjectDeselect
-
             // Clear all and select new
             if (!controlKey && !aKey)
             {
@@ -207,10 +187,10 @@ namespace Runtime.Core.Selection
                     }
                 }
             }
+            // Select all objects of current type (Replace)
             else if (!controlKey && aKey)
             {
                 Debug.Log($"OnObjectHit: Select all objects of current type (Replace)");
-                // Select all objects of current type (Replace)
                 ClearSelection(ref gameObjects, ref fixturesOfType);
                 
                 var components = FindObjectsByType<T>(FindObjectsSortMode.None);
@@ -240,7 +220,6 @@ namespace Runtime.Core.Selection
             Debug.Log($"ClearSelection");
             for (var i = 0; i < gameObjects.Count; i++)
             {
-                // TODO: maybe look for object instead of index?
                 var obj = gameObjects[i];
                 var fixture1 = obj.GetComponent<T>();
 
@@ -252,7 +231,8 @@ namespace Runtime.Core.Selection
                 }
             }
         }
-        
+
+        #region Cursor in world space
         private static Vector3 mouseWorldPosOnNearClipPlane =>
             Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, Camera.main.nearClipPlane));
 
@@ -265,6 +245,7 @@ namespace Runtime.Core.Selection
                        (Vector3.Dot(Camera.main.transform.forward, camToTransform) / Vector3.Dot(Camera.main.transform.forward, cameraToMouse));
             }
         }
+        #endregion
 
         private void OnDrawGizmos()
         {
