@@ -6,6 +6,7 @@ namespace Runtime.Core.Resources
 {
     public class AssetManager : MonoBehaviour
     {
+        // TODO: Use unity bundles instead of internal resources.
         public static Queue<AssetRequest<GameObject>> gameObjectQueue { get; private set; } = new();
         private const string Prefix = "AssetManager";
         
