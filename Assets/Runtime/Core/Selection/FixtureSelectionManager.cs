@@ -115,6 +115,7 @@ namespace Runtime.Core.Selection
             if (!Physics.Raycast(screenRay, out hitPoint, MainCamera.farClipPlane))
             {
                 // Nothing was hit.
+                ClearAllSelection();
                 return;
             }
             
