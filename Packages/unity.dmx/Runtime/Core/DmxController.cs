@@ -156,8 +156,10 @@ namespace Unity_DMX.Core
         /// <param name="universe"></param>
         private void SendDmxData(short universe)
         {
-            if (redirectPackets && redirectTo != null) // TODO: look into comparing redirectTo component in a different way (optimization)
-                BufferUtility.SendUniverseFromGlobalBuffer(redirectTo, universe, dmxBuffer.buffer);
+            if (!redirectPackets) return;
+            // TODO: look into comparing redirectTo component in a different way (optimization)
+            if (redirectTo == null) return;
+            BufferUtility.SendUniverseFromGlobalBuffer(redirectTo, universe, dmxBuffer.buffer);
         }
         
         public void Send(short universe, byte[] dmxData)

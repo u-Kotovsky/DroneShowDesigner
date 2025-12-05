@@ -8,7 +8,6 @@ namespace Runtime.Core.Settings
     public class SettingsService
     {
         public static SettingsService instance = new();
-        
         public static SettingsData data = new();
 
         private const string Prefix = "SettingsService";
@@ -31,7 +30,7 @@ namespace Runtime.Core.Settings
             Debug.Log($"'{Prefix}' Saving settings to '{pathToFile}'");
             string json = JsonUtility.ToJson(data);
             
-            // TODO: compression?
+            // TODO: compress settings data
             
             File.WriteAllText(pathToFile, json, Encoding.UTF8);
             OnSettingsChanged?.Invoke(data);
