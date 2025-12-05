@@ -14,13 +14,8 @@ namespace Runtime.Core.Selection
 
         public float timer;
         public int state;
-        
-        public List<GameObject> selectedGameObjects = new();
 
-        public List<MobileTruss> selectedMobileTrusses = new();
-        public List<MobileLight> selectedMobileLights = new();
-        public List<LightingDrone> selectedLightingDrones = new();
-        public List<PyroDrone> selectedPyroDrones = new();
+        private List<SelectionEntry> selection = new();
         
         public float timeToMultiSelect = 0.15f;
 
@@ -65,14 +60,14 @@ namespace Runtime.Core.Selection
                 // Update start position once
                 if (state == 1) 
                 {
-                    startWorldPosition = mouseOnTransform;
+                    startWorldPosition = MouseOnTransform;
                     state = 2;
                 }
                 
                 // Update end position
                 if (state == 2) 
                 {
-                    endWorldPosition = mouseOnTransform;
+                    endWorldPosition = MouseOnTransform;
                 }
             }
 
@@ -80,7 +75,7 @@ namespace Runtime.Core.Selection
             {
                 if (state != 0)
                 {
-                    endWorldPosition = mouseOnTransform;
+                    endWorldPosition = MouseOnTransform;
                     // TODO: calculate cone-like rectangle to check what is selected and what is not
                     // or just a rectangle on screen and check what does hit this rectangle when raycasting(?)
                 }
@@ -135,19 +130,19 @@ namespace Runtime.Core.Selection
 
             if (parentOfTarget.TryGetComponent<MobileTruss>(out var mobileTruss))
             {
-                OnObjectHit(ref selectedGameObjects, ref selectedMobileTrusses, ref selectable, ref mobileTruss);
+                OnObjectHit(ref selection, ref selectable, ref mobileTruss);
             }
             else if (parentOfTarget.TryGetComponent<MobileLight>(out var mobileLight))
             {
-                OnObjectHit(ref selectedGameObjects, ref selectedMobileLights, ref selectable, ref mobileLight);
+                OnObjectHit(ref selection, ref selectable, ref mobileLight);
             }
             else if (parentOfTarget.TryGetComponent<LightingDrone>(out var lightingDrone))
             {
-                OnObjectHit(ref selectedGameObjects, ref selectedLightingDrones, ref selectable, ref lightingDrone);
+                OnObjectHit(ref selection, ref selectable, ref lightingDrone);
             }
             else if (parentOfTarget.TryGetComponent<PyroDrone>(out var pyroDrone))
             {
-                OnObjectHit(ref selectedGameObjects, ref selectedPyroDrones, ref selectable, ref pyroDrone);
+                OnObjectHit(ref selection, ref selectable, ref pyroDrone);
             }
             else
             {
@@ -157,7 +152,7 @@ namespace Runtime.Core.Selection
             }
         }
 
-        private void OnObjectHit<T>(ref List<GameObject> gameObjects, ref List<T> fixturesOfType, ref Selectable selectable, ref T component) where T : Component
+        private static void OnObjectHit<T>(ref List<SelectionEntry> selection, ref Selectable selectable, ref T component) where T : Component
         {
             bool controlKey = Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl);
             bool aKey = Input.GetKey(KeyCode.A);
@@ -165,51 +160,74 @@ namespace Runtime.Core.Selection
             // Clear all and select new
             if (!controlKey && !aKey)
             {
-                ClearSelection(ref gameObjects, ref fixturesOfType);
-                
-                fixturesOfType.Add(component);
-                gameObjects.Add(component.gameObject);
-                selectable.OnObjectSelected();
+                ClearSelection(ref selection);
+                AddSelection(ref selection, new SelectionEntry(component.gameObject));
             }
             // Do not reset, add new
             else if (controlKey && !aKey)
             {
-                fixturesOfType.Add(component);
-                gameObjects.Add(component.gameObject);
-                selectable.OnObjectSelected();
+                AddSelection(ref selection, new SelectionEntry(component.gameObject));
             }
             // Select all objects of current type (Additive)
             else if (controlKey && aKey)
             {
                 var components = FindObjectsByType<T>(FindObjectsSortMode.None);
-                for (var i = 0; i < gameObjects.Count; i++)
+                
+                foreach (var component1 in components)
                 {
-                    var fixture = fixturesOfType[i];
+                    var obj = component1.gameObject;
+                    var flag1 = false;
 
-                    foreach (var fixture2 in components)
+                    foreach (var selection2 in selection)
                     {
-                        if (fixture == fixture2) continue;
-                        
-                        gameObjects.Add(fixture2.gameObject);
-                        fixturesOfType.Add(fixture2);
-                        if (fixture2.TryGetComponent<Selectable>(out var selectable2))
+                        if (obj.gameObject.GetInstanceID() == selection2.GameObject.GetInstanceID())
                         {
-                            selectable2.OnObjectSelected();
+                            flag1 = true;
                         }
+                    }
+
+                    if (!flag1)
+                    {
+                        AddSelection(ref selection, new SelectionEntry(component1.gameObject));
                     }
                 }
             }
             // Select all objects of current type (Replace)
             else if (!controlKey && aKey)
             {
-                ClearSelection(ref gameObjects, ref fixturesOfType);
+                ClearSelection(ref selection);
                 
                 var components = FindObjectsByType<T>(FindObjectsSortMode.None);
                 foreach (var fixture in components)
                 {
-                    fixturesOfType.Add(fixture);
-                    gameObjects.Add(fixture.gameObject);
-                    if (fixture.TryGetComponent<Selectable>(out var selectable2))
+                    AddSelection(ref selection, new SelectionEntry(fixture.gameObject));
+                }
+            }
+        }
+
+        private void ClearAllSelection()
+        {
+            ClearSelection(ref selection);
+        }
+
+        private static void AddSelection(ref List<SelectionEntry> selection, SelectionEntry newSelection)
+        {
+            lock (selection)
+            {
+                var flag1 = false;
+                
+                foreach (var selection2 in selection)
+                {
+                    if (selection2.GameObject.GetInstanceID() == newSelection.GameObject.GetInstanceID())
+                    {
+                        flag1 = true;
+                    }
+                }
+                
+                if (!flag1)
+                {
+                    selection.Add(newSelection);
+                    if (newSelection.GameObject.TryGetComponent<Selectable>(out var selectable2))
                     {
                         selectable2.OnObjectSelected();
                     }
@@ -217,44 +235,33 @@ namespace Runtime.Core.Selection
             }
         }
 
-        private void ClearAllSelection()
+        private static void ClearSelection(ref List<SelectionEntry> selection)
         {
-            ClearSelection(ref selectedGameObjects, ref selectedMobileTrusses);
-            ClearSelection(ref selectedGameObjects, ref selectedMobileLights);
-            ClearSelection(ref selectedGameObjects, ref selectedLightingDrones);
-            ClearSelection(ref selectedGameObjects, ref selectedPyroDrones);
-        }
-
-        private void ClearSelection<T>(ref List<GameObject> gameObjects, ref List<T> selectedObjects) where T : Component
-        {
-            // TODO: redo indexing part as it is not right way of doing it.
-            for (var i = 0; i < gameObjects.Count; i++)
+            lock (selection)
             {
-                var obj = gameObjects[i];
-                if (obj.TryGetComponent<T>(out var fixture1))
+                foreach (var obj in selection)
                 {
-                    if (obj.TryGetComponent<Selectable>(out var selectable))
+                    if (obj.GameObject.TryGetComponent<Selectable>(out var selectable))
                     {
-                        gameObjects.RemoveAt(i);
-                        selectedObjects.Remove(fixture1);
                         selectable.OnObjectDeselected();
                     }
                 }
 
+                selection.Clear();
             }
         }
 
         #region Cursor in world space
-        private static Vector3 mouseWorldPosOnNearClipPlane =>
+        private static Vector3 MouseWorldPosOnNearClipPlane =>
             Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, Camera.main.nearClipPlane));
 
-        private static Vector3 cameraToMouse => mouseWorldPosOnNearClipPlane - Camera.main.transform.position;
+        private static Vector3 CameraToMouse => MouseWorldPosOnNearClipPlane - Camera.main.transform.position;
 
-        private Vector3 mouseOnTransform {
+        private Vector3 MouseOnTransform {
             get {
                 Vector3 camToTransform = transform.position - Camera.main.transform.position;
-                return Camera.main.transform.position + cameraToMouse * 
-                       (Vector3.Dot(Camera.main.transform.forward, camToTransform) / Vector3.Dot(Camera.main.transform.forward, cameraToMouse));
+                return Camera.main.transform.position + CameraToMouse * 
+                       (Vector3.Dot(Camera.main.transform.forward, camToTransform) / Vector3.Dot(Camera.main.transform.forward, CameraToMouse));
             }
         }
         #endregion
