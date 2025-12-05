@@ -18,11 +18,13 @@ namespace Runtime.Core.Timeline
             return currentTimelineData ??= new TimelineData();
         }
 
-        private static ulong _currentTime = 0;
-        public static ulong GetCurrentTime()
+        private static long _currentTime = 0;
+        public static long GetCurrentTime()
         {
             return _currentTime;
         }
+
+        public static event Action<long> OnCurrentTimeChanged = (time) => { };
         
         private static MidiTimeCodeReceiver _midiTimeCodeReceiver;
         public static void Initialize()
@@ -44,16 +46,18 @@ namespace Runtime.Core.Timeline
 
         private static void MidiTimeCodeReceiverOnOnTimeCodeReceived(MidiTimeCodeReceivedEventArgs e)
         {
-            // Hours, Minutes, Seconds, Frames is what we need to use.
-
             try
             {
                 var hoursToFrames = e.Hours * 3600 * 30;
                 var minutesToFrames = e.Minutes * 60 * 30;
                 var secondsToFrames = e.Seconds * 30;
                 
-                var totalTime = hoursToFrames + secondsToFrames + minutesToFrames + e.Frames;
+                long totalTime = hoursToFrames + secondsToFrames + minutesToFrames + e.Frames;
                 Debug.Log($"MidiTimeCode totalTime: {totalTime}");
+                
+                OnCurrentTimeChanged?.Invoke(totalTime);
+                
+                _currentTime = totalTime;
             }
             catch (Exception exception)
             {

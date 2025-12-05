@@ -112,6 +112,11 @@ namespace Runtime.UI.Setup.Patch
             
             UIExist = true;
         }
+        
+        public static void DeconstructUI()
+        {
+            
+        }
 
         public static void DeleteUI()
         {

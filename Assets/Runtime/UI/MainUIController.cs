@@ -26,9 +26,13 @@ namespace Runtime.UI
         private SpectatorCameraController cameraController;
 
         private const string Prefix = "MainUIController";
+        
+        public static MainUIController Instance { get; private set; }
 
         private void Awake()
         {
+            Instance = this;
+            
             try
             {
                 RefreshCameraReferences();
@@ -50,6 +54,8 @@ namespace Runtime.UI
             {
                 button.OnClick(() =>
                 {
+                    OnDeconstructUI?.Invoke();
+                    OnDeconstructUI += AboutUI.DeconstructUI;
                     CleanScreen();
                     SetHotBarButtons(true);
                     button.interactable = false;
@@ -66,6 +72,8 @@ namespace Runtime.UI
             {
                 button.OnClick(() =>
                 {
+                    OnDeconstructUI?.Invoke();
+                    OnDeconstructUI += SetupPatchUI.DeconstructUI;
                     CleanScreen();
                     SetHotBarButtons(true);
                     button.interactable = false;
@@ -81,6 +89,8 @@ namespace Runtime.UI
             {
                 button.OnClick(() =>
                 {
+                    OnDeconstructUI?.Invoke();
+                    //OnDeconstructUI += ConsoleUI.DeconstructUI;
                     CleanScreen();
                     SetHotBarButtons(true);
                     button.interactable = false;
@@ -95,6 +105,8 @@ namespace Runtime.UI
             {
                 button.OnClick(() =>
                 {
+                    OnDeconstructUI?.Invoke();
+                    //OnDeconstructUI += SettingsUI.DeconstructUI;
                     CleanScreen();
                     SetHotBarButtons(true);
                     button.interactable = false;
@@ -110,6 +122,8 @@ namespace Runtime.UI
             {
                 button.OnClick(() =>
                 {
+                    OnDeconstructUI?.Invoke();
+                    //OnDeconstructUI += EditorUI.DeconstructUI;
                     CleanScreen();
                     SetHotBarButtons(true);
                     button.interactable = false;
@@ -125,6 +139,8 @@ namespace Runtime.UI
             {
                 button.OnClick(() =>
                 {
+                    OnDeconstructUI?.Invoke();
+                    OnDeconstructUI += TimelineUI.DeconstructUI;
                     CleanScreen();
                     SetHotBarButtons(true);
                     button.interactable = false;
@@ -140,11 +156,19 @@ namespace Runtime.UI
             //EffectUI.SetBoxSelectionActive(false);
         }
 
+        private event Action OnDeconstructUI = () => { };
+        public event Action OnUpdate = () => { };
+
         private void Start()
         {
             SettingsUI.Poke();
             SettingsUI.Load();
             TimelineUI.Poke();
+        }
+
+        private void Update()
+        {
+            OnUpdate?.Invoke();
         }
 
         public static void Open(int index)

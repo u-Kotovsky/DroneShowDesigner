@@ -44,5 +44,10 @@ namespace Runtime.UI
             PlayerPrefs.SetInt("DoNotShowPageAbout", 1);
             MainUIController.Open(1);
         }
+
+        public static void DeconstructUI()
+        {
+            
+        }
     }
 }

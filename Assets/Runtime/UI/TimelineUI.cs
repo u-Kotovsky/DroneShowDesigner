@@ -87,8 +87,28 @@ namespace Runtime.UI
                 .OnClick(DeleteCue);
             
             UIUtility.AddItemToList(_timelineListRect, 0, 20, "Index", "Name", "Object Count"); // Header
+            
+            TimelineService.OnCurrentTimeChanged += OnCurrentTimeChanged;
+            MainUIController.Instance.OnUpdate += Update;
 
             RefreshUI();
+        }
+
+        public static void DeconstructUI()
+        {
+            TimelineService.OnCurrentTimeChanged -= OnCurrentTimeChanged;
+            MainUIController.Instance.OnUpdate -= Update;
+        }
+
+        private static void OnCurrentTimeChanged(long newTime)
+        {
+            // TODO: put in Update method
+            //_timeCodeText.text = $"TimeCode: {newTime}";
+        }
+
+        private static void Update()
+        {
+            _timeCodeText.text = $"TimeCode: {TimelineService.GetCurrentTime()}";
         }
 
         #region RefreshUI
