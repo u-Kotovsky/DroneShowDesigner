@@ -3,6 +3,7 @@ using Runtime.Core.Resources;
 using Runtime.Dmx.Fixtures.Drones;
 using Runtime.Dmx.Fixtures.Lights;
 using Runtime.Dmx.Fixtures.Truss;
+using Runtime.UI;
 using UnityEngine;
 
 namespace Runtime.Core.Selection
@@ -11,6 +12,8 @@ namespace Runtime.Core.Selection
     {
         public Vector3 startWorldPosition;
         public Vector3 endWorldPosition;
+        public Vector2 startScreenPosition;
+        public Vector2 endScreenPosition;
 
         public float timer;
         public int state;
@@ -60,14 +63,18 @@ namespace Runtime.Core.Selection
                 // Update start position once
                 if (state == 1) 
                 {
+                    startScreenPosition = Input.mousePosition;
                     startWorldPosition = MouseOnTransform;
                     state = 2;
+                    EffectUI.SetBoxSelectionActive(true);
                 }
                 
                 // Update end position
                 if (state == 2) 
                 {
+                    endScreenPosition = Input.mousePosition;
                     endWorldPosition = MouseOnTransform;
+                    EffectUI.SetBoxSelectionPosition(startScreenPosition, endScreenPosition);
                 }
             }
 
@@ -75,9 +82,12 @@ namespace Runtime.Core.Selection
             {
                 if (state != 0)
                 {
+                    endScreenPosition = Input.mousePosition;
                     endWorldPosition = MouseOnTransform;
                     // TODO: calculate cone-like rectangle to check what is selected and what is not
                     // or just a rectangle on screen and check what does hit this rectangle when raycasting(?)
+                    EffectUI.SetBoxSelectionPosition(startScreenPosition, endScreenPosition);
+                    EffectUI.SetBoxSelectionActive(false);
                 }
                 else
                 {

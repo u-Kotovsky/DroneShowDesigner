@@ -135,6 +135,9 @@ namespace Runtime.UI
                 
                 hotbarButtons.Add(button);
             });
+            
+            //EffectUI.AddBoxSelection(page.parent.GetComponent<RectTransform>());
+            //EffectUI.SetBoxSelectionActive(false);
         }
 
         private void Start()
