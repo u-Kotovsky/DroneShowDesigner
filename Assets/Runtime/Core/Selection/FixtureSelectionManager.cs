@@ -81,6 +81,8 @@ namespace Runtime.Core.Selection
                 if (state != 0)
                 {
                     endWorldPosition = mouseOnTransform;
+                    // TODO: calculate cone-like rectangle to check what is selected and what is not
+                    // or just a rectangle on screen and check what does hit this rectangle when raycasting(?)
                 }
                 else
                 {
@@ -97,9 +99,14 @@ namespace Runtime.Core.Selection
 
         private void SelectSingleObject()
         {
+            if (!hasMainCamera)
+            {
+                ClearAllSelection();
+                return;
+            }
+            
             screenRay = MainCamera.ScreenPointToRay(Input.mousePosition);
 
-            // Nothing was hit.
             if (!Physics.Raycast(screenRay, out hitPoint, MainCamera.farClipPlane))
             {
                 ClearAllSelection();
@@ -107,36 +114,45 @@ namespace Runtime.Core.Selection
             }
             
             var targetGameObject = hitPoint.transform?.gameObject;
-            if (targetGameObject == null) return;
+            if (targetGameObject == null)
+            {
+                ClearAllSelection();
+                return;
+            }
 
             var parentOfTarget = targetGameObject.transform.parent;
-            if (parentOfTarget != null && parentOfTarget.TryGetComponent<Selectable>(out var selectable))
+            if (parentOfTarget == null)
             {
-                if (parentOfTarget.TryGetComponent<MobileTruss>(out var mobileTruss))
-                {
-                    OnObjectHit(ref selectedGameObjects, ref selectedMobileTrusses, ref selectable, ref mobileTruss);
-                }
-                else if (parentOfTarget.TryGetComponent<MobileLight>(out var mobileLight))
-                {
-                    OnObjectHit(ref selectedGameObjects, ref selectedMobileLights, ref selectable, ref mobileLight);
-                }
-                else if (parentOfTarget.TryGetComponent<LightingDrone>(out var lightingDrone))
-                {
-                    OnObjectHit(ref selectedGameObjects, ref selectedLightingDrones, ref selectable, ref lightingDrone);
-                }
-                else if (parentOfTarget.TryGetComponent<PyroDrone>(out var pyroDrone))
-                {
-                    OnObjectHit(ref selectedGameObjects, ref selectedPyroDrones, ref selectable, ref pyroDrone);
-                }
-                else
-                {
-                    // No supported component found.
-                    
-                    ClearAllSelection();
-                }
+                ClearAllSelection();
+                return;
+            }
+
+            if (!parentOfTarget.TryGetComponent<Selectable>(out var selectable))
+            {
+                ClearAllSelection();
+                return;
+            }
+
+            if (parentOfTarget.TryGetComponent<MobileTruss>(out var mobileTruss))
+            {
+                OnObjectHit(ref selectedGameObjects, ref selectedMobileTrusses, ref selectable, ref mobileTruss);
+            }
+            else if (parentOfTarget.TryGetComponent<MobileLight>(out var mobileLight))
+            {
+                OnObjectHit(ref selectedGameObjects, ref selectedMobileLights, ref selectable, ref mobileLight);
+            }
+            else if (parentOfTarget.TryGetComponent<LightingDrone>(out var lightingDrone))
+            {
+                OnObjectHit(ref selectedGameObjects, ref selectedLightingDrones, ref selectable, ref lightingDrone);
+            }
+            else if (parentOfTarget.TryGetComponent<PyroDrone>(out var pyroDrone))
+            {
+                OnObjectHit(ref selectedGameObjects, ref selectedPyroDrones, ref selectable, ref pyroDrone);
             }
             else
             {
+                // No supported component found.
+
                 ClearAllSelection();
             }
         }
@@ -149,7 +165,6 @@ namespace Runtime.Core.Selection
             // Clear all and select new
             if (!controlKey && !aKey)
             {
-                Debug.Log($"OnObjectHit: (Replace)");
                 ClearSelection(ref gameObjects, ref fixturesOfType);
                 
                 fixturesOfType.Add(component);
@@ -159,7 +174,6 @@ namespace Runtime.Core.Selection
             // Do not reset, add new
             else if (controlKey && !aKey)
             {
-                Debug.Log($"OnObjectHit: (Additive)");
                 fixturesOfType.Add(component);
                 gameObjects.Add(component.gameObject);
                 selectable.OnObjectSelected();
@@ -167,22 +181,20 @@ namespace Runtime.Core.Selection
             // Select all objects of current type (Additive)
             else if (controlKey && aKey)
             {
-                Debug.Log($"OnObjectHit: Select all objects of current type (Additive)");
-                T[] components = FindObjectsByType<T>(FindObjectsSortMode.None);
+                var components = FindObjectsByType<T>(FindObjectsSortMode.None);
                 for (var i = 0; i < gameObjects.Count; i++)
                 {
                     var fixture = fixturesOfType[i];
 
                     foreach (var fixture2 in components)
                     {
-                        if (fixture != fixture2)
+                        if (fixture == fixture2) continue;
+                        
+                        gameObjects.Add(fixture2.gameObject);
+                        fixturesOfType.Add(fixture2);
+                        if (fixture2.TryGetComponent<Selectable>(out var selectable2))
                         {
-                            gameObjects.Add(fixture2.gameObject);
-                            fixturesOfType.Add(fixture2);
-                            if (fixture2.TryGetComponent<Selectable>(out var selectable2))
-                            {
-                                selectable2.OnObjectSelected();
-                            }
+                            selectable2.OnObjectSelected();
                         }
                     }
                 }
@@ -190,7 +202,6 @@ namespace Runtime.Core.Selection
             // Select all objects of current type (Replace)
             else if (!controlKey && aKey)
             {
-                Debug.Log($"OnObjectHit: Select all objects of current type (Replace)");
                 ClearSelection(ref gameObjects, ref fixturesOfType);
                 
                 var components = FindObjectsByType<T>(FindObjectsSortMode.None);
@@ -208,7 +219,6 @@ namespace Runtime.Core.Selection
 
         private void ClearAllSelection()
         {
-            Debug.Log("ClearAllSelection");
             ClearSelection(ref selectedGameObjects, ref selectedMobileTrusses);
             ClearSelection(ref selectedGameObjects, ref selectedMobileLights);
             ClearSelection(ref selectedGameObjects, ref selectedLightingDrones);
@@ -217,18 +227,20 @@ namespace Runtime.Core.Selection
 
         private void ClearSelection<T>(ref List<GameObject> gameObjects, ref List<T> selectedObjects) where T : Component
         {
-            Debug.Log($"ClearSelection");
+            // TODO: redo indexing part as it is not right way of doing it.
             for (var i = 0; i < gameObjects.Count; i++)
             {
                 var obj = gameObjects[i];
-                var fixture1 = obj.GetComponent<T>();
-
-                if (obj.TryGetComponent<Selectable>(out var selectable))
+                if (obj.TryGetComponent<T>(out var fixture1))
                 {
-                    gameObjects.RemoveAt(i);
-                    selectedObjects.Remove(fixture1);
-                    selectable.OnObjectDeselected();
+                    if (obj.TryGetComponent<Selectable>(out var selectable))
+                    {
+                        gameObjects.RemoveAt(i);
+                        selectedObjects.Remove(fixture1);
+                        selectable.OnObjectDeselected();
+                    }
                 }
+
             }
         }
 

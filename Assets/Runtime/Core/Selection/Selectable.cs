@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -26,30 +25,25 @@ namespace Runtime.Core.Selection
 
             if (autoCollectRenderers)
             {
-                Renderer[] renderersInChilds = gameObject.GetComponentsInChildren<Renderer>();
+                var renderersInChilds = gameObject.GetComponentsInChildren<Renderer>();
                 renderers.AddRange(renderersInChilds);
             }
 
             foreach (var renderer1 in renderers)
             {
                 foreach (var renderer1Material in renderer1.materials)
-                {
                     originalMaterials.Add(renderer1Material);
-                }
             }
         }
 
         public void OnObjectSelected()
         {
-            Debug.Log(gameObject.name + ".OnObjectSelected");
             foreach (var renderer1 in renderers)
             {
-                Material[] materials = renderer1.sharedMaterials;
+                var materials = renderer1.sharedMaterials;
 
                 for (var i = 0; i < materials.Length; i++)
-                {
                     materials[i] = selectedMaterial;
-                }
                 
                 renderer1.sharedMaterials = materials;
             }
@@ -57,20 +51,14 @@ namespace Runtime.Core.Selection
 
         public void OnObjectDeselected()
         {
-            Debug.Log(gameObject.name + ".OnObjectDeselected");
-            int j = 0;
-            
-            for (var i = 0; i < renderers.Count; i++)
+            foreach (var t in renderers)
             {
-                Material[] materials = renderers[i].sharedMaterials;
+                var materials = t.sharedMaterials;
                 
                 for (var i1 = 0; i1 < materials.Length; i1++)
-                {
                     materials[i1] = originalMaterials[i1];
-                    j++;
-                }
                 
-                renderers[i].sharedMaterials = materials;
+                t.sharedMaterials = materials;
             }
         }
     }
