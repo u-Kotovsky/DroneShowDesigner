@@ -3855,26 +3855,15 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1771466606}
-  - component: {fileID: 1771466605}
+  - component: {fileID: 1771466607}
+  - component: {fileID: 1771466608}
   m_Layer: 0
-  m_Name: MidiController
+  m_Name: MidiTimeCodeReceiver
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1771466605
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1771466604}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ee10846465791db47b5ef8679b21f856, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Runtime.Midi.MidiController
 --- !u!4 &1771466606
 Transform:
   m_ObjectHideFlags: 0
@@ -3890,6 +3879,31 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1771466607
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1771466604}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3db012d269c702b44a4adcb5b95d9f7c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Runtime.Midi.MidiTimeCodeReceiver
+  midiReceiver: {fileID: 1771466608}
+--- !u!114 &1771466608
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1771466604}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0776cfc2ce5c4cf47bf95e701a482500, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Runtime.Midi.MidiReceiver
 --- !u!1 &1775778122
 GameObject:
   m_ObjectHideFlags: 0
@@ -4130,6 +4144,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Runtime.Core.Selection.FixtureSelectionManager
   startWorldPosition: {x: 0, y: 0, z: 0}
   endWorldPosition: {x: 0, y: 0, z: 0}
+  startScreenPosition: {x: 0, y: 0}
+  endScreenPosition: {x: 0, y: 0}
   timer: 0
   state: 0
   timeToMultiSelect: 0.25
@@ -4422,7 +4438,7 @@ SceneRoots:
   - {fileID: 1411168930}
   - {fileID: 14959310}
   - {fileID: 744814755}
-  - {fileID: 1771466606}
   - {fileID: 2028550477}
   - {fileID: 1483878672}
   - {fileID: 407016400}
+  - {fileID: 1771466606}

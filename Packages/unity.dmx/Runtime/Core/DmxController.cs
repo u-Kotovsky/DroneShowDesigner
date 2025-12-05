@@ -69,7 +69,7 @@ namespace Unity_DMX.Core
         public bool IsArtNetOn { get; private set; }
         public void StartArtNet()
         {
-            Debug.Log($"'{Prefix}' '{remotePort}' as " + ServerOrClient + " is now requested to be started.");
+            Debug.Log($"'{Prefix}' '{remotePort}' ({ServerOrClient}) was requested to be started.");
             if (IsArtNetOn) return;
             InitializeSocket();
             IsArtNetOn = true;
@@ -77,7 +77,7 @@ namespace Unity_DMX.Core
 
         public void StopArtNet()
         {
-            Debug.Log($"'{Prefix}' '{remotePort}' as " + ServerOrClient + " is now requested to be stopped.");
+            Debug.Log($"'{Prefix}' '{remotePort}' ({ServerOrClient}) was requested to be stopped.");
             if (!IsArtNetOn) return;
             socket.Close();
             socket.NewPacket -= OnNewPacketReceived;

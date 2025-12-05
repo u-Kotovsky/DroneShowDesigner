@@ -23,13 +23,29 @@ namespace Runtime.UI
         
         static TimelineUI()
         {
-            var pathToData =Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "DroneShowDesigner");
+            Debug.Log("TimelineUI initialize");
 
-            if (!Directory.Exists(pathToData)) Directory.CreateDirectory(pathToData);
-            _pathToTimelineFile = Path.Join(pathToData, "Timeline.json");
-            
-            if (!File.Exists(_pathToTimelineFile)) SaveCurrentFile();
-            LoadFromFile();
+            try
+            {
+                var pathToData =Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "DroneShowDesigner");
+
+                if (!Directory.Exists(pathToData)) Directory.CreateDirectory(pathToData);
+                _pathToTimelineFile = Path.Join(pathToData, "Timeline.json");
+                
+                if (!File.Exists(_pathToTimelineFile)) SaveCurrentFile();
+                LoadFromFile();
+                
+                TimelineService.Initialize();
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+            }
+        }
+
+        public static void Poke()
+        {
+            // Initialize static part
         }
         
         public static void BuildUI(Transform parent)

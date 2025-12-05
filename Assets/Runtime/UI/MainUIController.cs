@@ -144,6 +144,7 @@ namespace Runtime.UI
         {
             SettingsUI.Poke();
             SettingsUI.Load();
+            TimelineUI.Poke();
         }
 
         public static void Open(int index)
