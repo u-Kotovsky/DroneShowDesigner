@@ -185,25 +185,34 @@ namespace Runtime.Dmx.Fixtures
         
         private void WriteDmxData(ref DmxData buffer)
         {
-            // TODO: Once a feature turned off, send data that cancels these features in dmx buffer
-            if (UseMobileTruss && IsMobileTrussInitialized)
+            try
             {
-                MobileTruss.WriteDataToGlobalBuffer(ref mobileTrussPool, ref buffer);
-            }
 
-            if (UseMobileLight && IsMobileLightInitialized)
-            {
-                MobileLight.WriteDataToGlobalBuffer(ref mobileLightPool, ref buffer);
-            }
-            
-            if (UsePyroDrone && IsPyroDroneInitialized)
-            {
-                PyroDrone.WriteDataToGlobalBuffer(ref pyroDronePool, ref buffer);
-            }
+                // TODO: Once a feature turned off, send data that cancels these features in dmx buffer
+                if (UseMobileTruss && IsMobileTrussInitialized)
+                {
+                    MobileTruss.WriteDataToGlobalBuffer(ref mobileTrussPool, ref buffer);
+                }
 
-            if (UseLightingDrone && IsLightingDroneInitialized)
+                if (UseMobileLight && IsMobileLightInitialized)
+                {
+                    MobileLight.WriteDataToGlobalBuffer(ref mobileLightPool, ref buffer);
+                }
+                
+                if (UsePyroDrone && IsPyroDroneInitialized)
+                {
+                    PyroDrone.WriteDataToGlobalBuffer(ref pyroDronePool, ref buffer);
+                }
+
+                if (UseLightingDrone && IsLightingDroneInitialized)
+                {
+                    LightingDrone.WriteDataToGlobalBuffer(ref lightingDronePool, ref buffer);
+                }
+            }
+            catch (Exception e)
             {
-                LightingDrone.WriteDataToGlobalBuffer(ref lightingDronePool, ref buffer);
+                Debug.LogException(e);
+                throw;
             }
         }
     }

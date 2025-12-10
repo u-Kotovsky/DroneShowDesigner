@@ -167,18 +167,18 @@ namespace Runtime.Dmx.Fixtures.Drones
                 globalDmxBuffer.SetRange(fixture.globalChannelStart, data);
             }
 
-            WriteSpecialData(globalDmxBuffer);
+            WriteSpecialData(ref globalDmxBuffer);
         }
         
-        private static void WriteSpecialData(DmxData buffer)
+        private static void WriteSpecialData(ref DmxData buffer)
         {
-            int offset = 512 * 5 - 1; // 2560 - 1 = 2559
+            int offset = 512 * 5; // 2560 - 1 = 2559
 
             buffer.EnsureCapacity(offset + 246 + 1);
-            buffer.Set(offset + 39, 255); // 2598 // Enable
-            buffer.Set(offset + 40, 0); // 2599 // Part of 39 (Turn off)
-            buffer.Set(offset + 243, 255); // 2802 // Enable Misc Fixture
-            buffer.Set(offset + 244, 0); // 2803 // Make sure we don't turn off Misc Fixture
+            //buffer.Set(offset + 39, 255); // 2598 // Enable
+            //buffer.Set(offset + 40, 0); // 2599 // Part of 39 (Turn off)
+            buffer.Set(offset + 243, 255); // 2802 // Enable Misc Control
+            buffer.Set(offset + 244, 0); // 2803 // Enable Misc Control (Off)
             buffer.Set(offset + 245, 255); // 2804 // Enable Huge Drone Map
             //buffer.Set(offset + 246, 255); // 2805 // Delete World
         }

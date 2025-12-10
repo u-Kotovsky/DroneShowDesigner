@@ -245,9 +245,9 @@ namespace Runtime.UI
 
         public static RectTransform AddRect(Transform parent, string name = "GameObject", bool worldPositionStays = false)
         {
-            var rectObj = new GameObject(name);
+            var rectObj = new GameObject(name, typeof(RectTransform));
             rectObj.transform.SetParent(parent.transform, worldPositionStays);
-            var rect = rectObj.AddComponent<RectTransform>();
+            var rect = rectObj.GetComponent<RectTransform>();
             return rect;
         }
         #endregion

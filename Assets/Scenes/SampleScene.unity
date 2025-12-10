@@ -466,11 +466,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 2b410ad5998ae4e41b4de9218d71006f, type: 3}
   m_PrefabInstance: {fileID: 82397290}
   m_PrefabAsset: {fileID: 0}
---- !u!23 &82397292 stripped
-MeshRenderer:
-  m_CorrespondingSourceObject: {fileID: -7511558181221131132, guid: 2b410ad5998ae4e41b4de9218d71006f, type: 3}
-  m_PrefabInstance: {fileID: 82397290}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &145548089
 GameObject:
   m_ObjectHideFlags: 0
@@ -548,13 +543,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d62b94c5a2e98b842974bd8db0577620, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Runtime.Dmx.Fixtures.Drones.Movers.MeshToDrone.DroneFromMesh
-  targets:
-  - renderer: {fileID: 82397292}
-    meshFilter: {fileID: 0}
-    vertices: []
-  - renderer: {fileID: 1570811515}
-    meshFilter: {fileID: 0}
-    vertices: []
+  targets: []
   drones: []
 --- !u!1 &309909617
 GameObject:

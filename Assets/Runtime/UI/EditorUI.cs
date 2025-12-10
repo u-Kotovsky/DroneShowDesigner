@@ -147,9 +147,10 @@ namespace Runtime.UI
 
         private static IEnumerator LoadVisualComponents(List<SelectionEntry> selection)
         {
+            if (_inspector == null) yield break;
+            
             foreach (var selectionEntry in selection)
             {
-                if (_inspector == null) yield break;
                 // TODO: ONLY LOAD THOSE THAT ARE IN VIEW, OTHERS SHOULD BE IGNORED OR WE'LL HAVE PERFORMANCE ISSUES
                 // TODO: Put load of these components into Coroutine and make sure to turn it off when page changed so we don't do weird stuff
                 var componentRoot = UIUtility.AddRect(_inspector, $"Component from '{selectionEntry.GameObject.name}'")
@@ -194,7 +195,6 @@ namespace Runtime.UI
 
                 AddTransformControls(componentRoot, selectionEntry.GameObject.transform);
             }
-            
             
             yield return null;
         }

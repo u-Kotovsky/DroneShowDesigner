@@ -8,7 +8,7 @@ namespace Runtime.Dmx.Fixtures.Drones.Editor
     [CustomEditor(typeof(PyroDrone))]
     public class PyroDroneEditor : UnityEditor.Editor
     {
-        private bool updateOnValidate = true;
+        //private bool updateOnValidate = true;
         private int pitch = 0;
         private int yaw = 0;
         private int roll = 0;
@@ -25,7 +25,7 @@ namespace Runtime.Dmx.Fixtures.Drones.Editor
             if (fixture == null) fixture = (PyroDrone)target;
             if (_elements == null) _elements = Enum.GetNames(typeof(PyroFxType));
 
-            GUILayout.Space(10);
+            /*GUILayout.Space(10);
             GUILayout.Label("Editor-only preview features");
 
             updateOnValidate = EditorGUILayout.Toggle("Update on Validate", updateOnValidate);
@@ -41,7 +41,7 @@ namespace Runtime.Dmx.Fixtures.Drones.Editor
             if (GUILayout.Button("SetPyroEffect"))
             {
                 WriteDataToDrone();
-            }
+            }*/
         
             GUILayout.Space(10);
             GUILayout.Label("Editor-only preview features");

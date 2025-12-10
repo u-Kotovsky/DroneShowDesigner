@@ -101,10 +101,10 @@ namespace Runtime.Dmx.Fixtures.Truss
                 globalDmxBuffer.SetRange(fixture.globalChannelStart, data);
             }
             
-            WriteSpecialData(globalDmxBuffer);
+            WriteSpecialData(ref globalDmxBuffer);
         }
         
-        private static void WriteSpecialData(DmxData buffer)
+        private static void WriteSpecialData(ref DmxData buffer)
         {
             buffer.EnsureCapacity(5 + 1);
             buffer.Set(5, 255);

@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Threading;
 using Runtime.Core.Resources;
-using Unity_DMX;
 using Unity_DMX.Core;
 using UnityEngine;
 
@@ -28,8 +26,17 @@ namespace Runtime.Dmx.Fixtures.Drones
 
         private void Update()
         {
-            WriteDmxPosition(0, transform.position, true);
-            WriteDmxRotation(transform.rotation.eulerAngles);
+            try
+            {
+
+                WriteDmxPosition(0, transform.position, true);
+                WriteDmxRotation(transform.rotation.eulerAngles);
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+                throw;
+            }
         }
 
         private void WriteDmxRotation(Vector3 eulerAngles)
@@ -118,20 +125,27 @@ namespace Runtime.Dmx.Fixtures.Drones
                 globalDmxBuffer.SetRange(fixture.globalChannelStart, data);
             }
 
-            WriteSpecialData(globalDmxBuffer);
+            WriteSpecialData(ref globalDmxBuffer);
         }
         
-        private static void WriteSpecialData(DmxData buffer) // TODO: explain each setter
+        private static void WriteSpecialData(ref DmxData buffer) // TODO: explain each setter
         {
-            int offset = 512 * 5 - 1; // 2560 - 1
+            //int offset = 512 * 5 - 1; // 2560 - 1
             
-            buffer.EnsureCapacity(offset + 246 + 1);
-            buffer.Set(offset + 39, 255); // 2598 // Enable
-            buffer.Set(offset + 40, 0); // 2599 // Part of 39 (Turn off)
-            buffer.Set(offset + 243, 255); // 2802 // Enable Misc Fixture
-            buffer.Set(offset + 244, 0); // 2803 // Make sure we don't turn off Misc Fixture
-            buffer.Set(offset + 245, 255); // 2804 // Enable Huge Drone Map
-            //buffer.Set(offset + 246, 255); // 2805 // Delete World
+            //buffer.EnsureCapacity(offset + 246 + 1);
+            
+            // FX Drone:
+            // 2600 or 6 uni
+            
+            //int offset = 512 * 5 - 1; // 2560
+            //buffer.EnsureCapacity(offset + 512);
+            //buffer.Set(offset + 39, 255); // 2598 // Enable FX Drone
+            //buffer.Set(offset + 40, 0);
+            //buffer.Set(offset + 201, 0); // end of last drone
+            
+            buffer.EnsureCapacity(512 * 6);
+            buffer.Set(2598, 255); // 2598 // Enable FX Drone
+            buffer.Set(2599, 0);
         }
         
         #endregion
