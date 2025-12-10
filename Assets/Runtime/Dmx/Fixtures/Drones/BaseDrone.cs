@@ -19,7 +19,7 @@ namespace Runtime.Dmx.Fixtures.Drones
         
         private void Start()
         {
-            List<Renderer> renderers = new List<Renderer>();
+            var renderers = new List<Renderer>();
             
             foreach (Transform childs in transform)
                 if (childs.gameObject.TryGetComponent(out Renderer droneRenderer))

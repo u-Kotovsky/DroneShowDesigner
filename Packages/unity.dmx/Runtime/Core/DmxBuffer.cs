@@ -1,13 +1,14 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Unity_DMX.Core
 {
     public class DmxBuffer : MonoBehaviour
     {
-        public byte[] buffer; // TODO: hide this variable and use methods to control data
+        public DmxData Buffer;
         
-        public event Action<byte[]> OnBufferUpdate = delegate { };
+        public event Action<DmxData> OnBufferUpdate = delegate { };
 
 #if UNITY_EDITOR
         public ulong bufferUpdates = 0;
@@ -15,7 +16,7 @@ namespace Unity_DMX.Core
 
         private void Awake()
         {
-            buffer = new byte[512 * 40];
+            Buffer = new DmxData(0);
             
 #if UNITY_EDITOR
             OnBufferUpdate += BufferUpdate;
@@ -23,7 +24,7 @@ namespace Unity_DMX.Core
         }
 
 #if UNITY_EDITOR
-        private void BufferUpdate(byte[] data)
+        private void BufferUpdate(DmxData data)
         {
             bufferUpdates++;
             if (bufferUpdates >= ulong.MaxValue) bufferUpdates = ulong.MinValue;
@@ -32,7 +33,7 @@ namespace Unity_DMX.Core
 
         private void Update()
         {
-            OnBufferUpdate?.Invoke(buffer);
+            OnBufferUpdate?.Invoke(Buffer);
         }
     }
 }

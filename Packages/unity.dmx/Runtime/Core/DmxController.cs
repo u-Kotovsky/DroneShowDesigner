@@ -36,8 +36,6 @@ namespace Unity_DMX.Core
         
         private void Awake()
         {
-            StartArtNet();
-            
             dmxToSend ??= new ArtNetDmxPacket();
             dmxToSend.DmxData ??= new byte[512];
             dmxDataMap = new Dictionary<int, byte[]>();
@@ -90,20 +88,23 @@ namespace Unity_DMX.Core
 
         #region Buffer or DMX512 data
         private Dictionary<int, byte[]> dmxDataMap;
-        public event Action<short, byte[], byte[]> OnDmxDataChanged = delegate { };
+        public event Action<short, DmxData, DmxData> OnDmxDataChanged = delegate { };
         public void ForceBufferUpdate()
         {
-            OnBufferUpdate(dmxBuffer.buffer);
+            OnBufferUpdate(dmxBuffer.Buffer);
         }
 
-        private void OnBufferUpdate(byte[] buffer)
+        private void OnBufferUpdate(DmxData buffer)
         {
-            var universeCount = (short)(dmxBuffer.buffer.Length / 512);
-
+            // Ensure we have at least one universe
+            dmxBuffer.Buffer.EnsureCapacity(512);
+            
+            var universeCount = (short)(dmxBuffer.Buffer.Count / 512);
+            
             for (short i = 0; i < universeCount; i++)
             {
-                var universeBuffer = BufferUtility.TakeUniverseFromGlobalBuffer(i, dmxBuffer.buffer);
-                OnDmxDataChanged?.Invoke(i, universeBuffer, dmxBuffer.buffer);
+                var universeBuffer = BufferUtility.TakeUniverseFromGlobalBuffer(i, dmxBuffer.Buffer);
+                OnDmxDataChanged?.Invoke(i, universeBuffer, dmxBuffer.Buffer);
                 SendDmxData(i);
             }
         }
@@ -111,6 +112,7 @@ namespace Unity_DMX.Core
         
         private void OnDestroy()
         {
+            if (socket == null) return;
             socket.Close();
         }
         
@@ -138,9 +140,9 @@ namespace Unity_DMX.Core
                 dmxDataMap[packet.Universe] = packet.DmxData;
             
                 // Server only?
-                BufferUtility.WriteDmxToGlobalBuffer(ref dmxBuffer.buffer, ref packet, (universe, data) =>
+                BufferUtility.WriteDmxToGlobalBuffer(ref dmxBuffer.Buffer, ref packet, (universe, data) =>
                 {
-                    OnDmxDataChanged?.Invoke(universe, data, dmxBuffer.buffer);
+                    OnDmxDataChanged?.Invoke(universe, data, dmxBuffer.Buffer);
                     SendDmxData(universe);
                 });
             }
@@ -159,21 +161,20 @@ namespace Unity_DMX.Core
             if (!redirectPackets) return;
             // TODO: look into comparing redirectTo component in a different way (optimization)
             if (redirectTo == null) return;
-            BufferUtility.SendUniverseFromGlobalBuffer(redirectTo, universe, dmxBuffer.buffer);
+            BufferUtility.SendUniverseFromGlobalBuffer(redirectTo, universe, dmxBuffer.Buffer);
         }
         
-        public void Send(short universe, byte[] dmxData)
+        public void Send(short universe, DmxData dmxData)
         {
             if (dmxData == null) throw new Exception("Dmx data is null");
-            if (dmxData.Length != 512) throw new Exception("Dmx data length is not 512");
+            if (dmxData.Count != 512) throw new Exception($"Dmx data length is outside of bounds {dmxData.Count}/512");
             if (dmxToSend == null) throw new Exception("Dmx to send is null");
             if (dmxToSend.DmxData == null) throw new Exception("Dmx data to send is null");
             if (socket == null) return; // ignore that
             
             dmxToSend.Universe = universe;
+            dmxToSend.DmxData.BlockCopy(dmxData.GetBufferArray(), 0, 0, 512);
             
-            Buffer.BlockCopy(dmxData, 0, dmxToSend.DmxData, 0, dmxData.Length);
-
             if (useBroadcast && isServer)
             {
                 socket.Send(dmxToSend);

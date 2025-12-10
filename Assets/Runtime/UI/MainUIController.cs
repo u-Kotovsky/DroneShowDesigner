@@ -55,6 +55,7 @@ namespace Runtime.UI
                 button.OnClick(() =>
                 {
                     OnDeconstructUI?.Invoke();
+                    OnDeconstructUI = () => { };
                     OnDeconstructUI += AboutUI.DeconstructUI;
                     CleanScreen();
                     SetHotBarButtons(true);
@@ -73,6 +74,7 @@ namespace Runtime.UI
                 button.OnClick(() =>
                 {
                     OnDeconstructUI?.Invoke();
+                    OnDeconstructUI = () => { };
                     OnDeconstructUI += SetupPatchUI.DeconstructUI;
                     CleanScreen();
                     SetHotBarButtons(true);
@@ -90,6 +92,7 @@ namespace Runtime.UI
                 button.OnClick(() =>
                 {
                     OnDeconstructUI?.Invoke();
+                    OnDeconstructUI = () => { };
                     //OnDeconstructUI += ConsoleUI.DeconstructUI;
                     CleanScreen();
                     SetHotBarButtons(true);
@@ -106,6 +109,7 @@ namespace Runtime.UI
                 button.OnClick(() =>
                 {
                     OnDeconstructUI?.Invoke();
+                    OnDeconstructUI = () => { };
                     //OnDeconstructUI += SettingsUI.DeconstructUI;
                     CleanScreen();
                     SetHotBarButtons(true);
@@ -123,12 +127,14 @@ namespace Runtime.UI
                 button.OnClick(() =>
                 {
                     OnDeconstructUI?.Invoke();
-                    //OnDeconstructUI += EditorUI.DeconstructUI;
+                    OnDeconstructUI = () => { };
+                    OnDeconstructUI += EditorUI.DeconstructUI;
                     CleanScreen();
                     SetHotBarButtons(true);
                     button.interactable = false;
                     Debug.Log($"'{Prefix}' Open Editor");
                     cameraController?.EnableMovement();
+                    EditorUI.BuildUI(page);
                 });
                 
                 hotbarButtons.Add(button);
@@ -140,6 +146,7 @@ namespace Runtime.UI
                 button.OnClick(() =>
                 {
                     OnDeconstructUI?.Invoke();
+                    OnDeconstructUI = () => { };
                     OnDeconstructUI += TimelineUI.DeconstructUI;
                     CleanScreen();
                     SetHotBarButtons(true);

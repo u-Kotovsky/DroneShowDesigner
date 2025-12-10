@@ -1,6 +1,9 @@
 using System;
+using System.Collections.Generic;
 using Runtime.Core.Resources;
 using Runtime.Dmx.Fixtures.Drones.Movers;
+using Runtime.Dmx.Fixtures.Drones.Movers.MeshToDrone;
+using Unity_DMX.Core;
 using UnityEngine;
 using UnityEngine.Splines;
 
@@ -9,15 +12,27 @@ namespace Runtime.Dmx.Fixtures.Drones
     // TODO: Boundary box visuals/limit for editor usage
     public class LightingDrone : BaseDrone
     {
-        public RendererToDrones meshToDrones;
-        
+        //public RendererToDrones meshToDrones;
+
+        private DroneFromMesh droneFromMesh;
+        private bool isDroneFromMeshNull = true;
+        public DroneFromMesh DroneFromMesh
+        {
+            get => droneFromMesh;
+            set
+            {
+                isDroneFromMeshNull = value == null;
+                droneFromMesh = value;
+            }
+        }
+
         #region Color
         private static readonly int BaseColor = Shader.PropertyToID("_BaseColor");
         private byte r;
         private byte g;
         private byte b;
         
-        public Color color = new Color(0, 0, 0, 1);
+        public Color color = new(0, 0, 0, 1);
 
         public void WriteDmxColor(Color value)
         {
@@ -42,22 +57,22 @@ namespace Runtime.Dmx.Fixtures.Drones
         {
             Buffer = new byte[9]; // (0 -> 6) Position Coarse + Fine, (7 -> 9) Color
 
-            MinPosition = new Vector3(-800, -800, -800);
-            MaxPosition = new Vector3(800, 800, 800);
+            minPosition = new Vector3(-800, -800, -800);
+            maxPosition = new Vector3(800, 800, 800);
         }
 
         private void Update()
         {
-            if (meshToDrones != null && meshToDrones.isActiveAndEnabled)
+            if (!isDroneFromMeshNull && DroneFromMesh.isActiveAndEnabled)
             {
-                meshToDrones.SetDronePosition(this);
+                DroneFromMesh.SetTransform(this);
             }
             
             WriteDmxPosition(0, transform.position, true);
             UpdateMaterial();
         }
 
-        public void UpdateMaterial()
+        private void UpdateMaterial()
         {
             if (DroneRenderers == null) return;
             
@@ -78,7 +93,6 @@ namespace Runtime.Dmx.Fixtures.Drones
         }
         
         #region Static
-        // TODO: make a place to initialize and use these prefabs.
         private static GameObject _lightingDronePrefab;
         private static GameObject _internalPool;
         private const int GlobalDmxChannelOffset = (512 * 5) + 321 - 1; // 2880 is start for FX drone // Offset is probably correct (maybe?)
@@ -102,7 +116,7 @@ namespace Runtime.Dmx.Fixtures.Drones
             LightingDrone fixture = null;
             
             // test mesh 
-            var meshToDrones = FindFirstObjectByType<RendererToDrones>();
+            var droneFromMesh = FindFirstObjectByType<DroneFromMesh>();
             var balloonDrones = FindFirstObjectByType<BalloonDrones>();
 
             for (int i = 0; i < pool.Length; i++)
@@ -112,18 +126,17 @@ namespace Runtime.Dmx.Fixtures.Drones
                 //fixture.gameObject.AddComponent<DroneNavigation>();
                 //var pathNav = fixture.gameObject.AddComponent<DronePathNavigation>();
                 //pathNav.waitBeforeStart = i * 0.25f;
-                fixture.meshToDrones = meshToDrones;
-                
+                fixture.DroneFromMesh = droneFromMesh;
                 //var cartFollower = fixture.gameObject.AddComponent<DroneSplineCartFollower>();
                 //cartFollower.StartWithDelay(i * 0.2f, splineContainer);
             }
             
             Debug.Log($"'{Prefix}' {pool.Length} lighting drones are instanced");
 
-            if (meshToDrones != null && meshToDrones.isActiveAndEnabled)
+            if (droneFromMesh != null && droneFromMesh.isActiveAndEnabled)
             {
-                Debug.Log($"'{Prefix}' Setup Mesh To Drones");
-                meshToDrones.SetupDronePoolToVertices(pool);
+                Debug.Log($"'{Prefix}' Setup DroneFromMesh");
+                droneFromMesh.OnAllDronesReady(pool);
             }
 
             if (balloonDrones != null && balloonDrones.isActiveAndEnabled)
@@ -144,28 +157,30 @@ namespace Runtime.Dmx.Fixtures.Drones
             pool[index] = fixture;
         }
         
-        public static void WriteDataToGlobalBuffer(ref LightingDrone[] pool, ref byte[] globalDmxBuffer)
+        public static void WriteDataToGlobalBuffer(ref LightingDrone[] pool, ref DmxData globalDmxBuffer)
         {
             foreach (var fixture in pool)
             {
-                if (fixture == null) continue; // TODO: check if drones are ready instead.
-                var droneData = fixture.GetDmxData();
+                var data = new List<byte>(fixture.GetDmxData());
 
-                System.Buffer.BlockCopy(droneData, 0, globalDmxBuffer, fixture.globalChannelStart, droneData.Length);
+                globalDmxBuffer.EnsureCapacity(fixture.globalChannelStart + data.Count);
+                globalDmxBuffer.SetRange(fixture.globalChannelStart, data);
             }
 
             WriteSpecialData(globalDmxBuffer);
         }
         
-        private static void WriteSpecialData(byte[] buffer)
+        private static void WriteSpecialData(DmxData buffer)
         {
-            int offset = 512 * 5 - 1; // 2560 - 1
-            buffer[offset + 39] = 255; // 2559 + 39 = 2598 // Enable ???? Why do I need this? TODO: test it
-            buffer[offset + 40] = 0; // 2599 // Enable ???? Why do I need this? TODO: test it
-            buffer[offset + 243] = 255; // 2802 // Enable Misc Fixture
-            buffer[offset + 244] = 0; // 2803 // Make sure we don't turn off Misc Fixture
-            buffer[offset + 245] = 255; // 2804 // Enable Huge Drone Map
-            //buffer[offset + 246] = 255; // 2805 // Delete World
+            int offset = 512 * 5 - 1; // 2560 - 1 = 2559
+
+            buffer.EnsureCapacity(offset + 246 + 1);
+            buffer.Set(offset + 39, 255); // 2598 // Enable
+            buffer.Set(offset + 40, 0); // 2599 // Part of 39 (Turn off)
+            buffer.Set(offset + 243, 255); // 2802 // Enable Misc Fixture
+            buffer.Set(offset + 244, 0); // 2803 // Make sure we don't turn off Misc Fixture
+            buffer.Set(offset + 245, 255); // 2804 // Enable Huge Drone Map
+            //buffer.Set(offset + 246, 255); // 2805 // Delete World
         }
         #endregion
     }

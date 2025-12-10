@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Runtime.Dmx.Fixtures.Shared
 {
@@ -19,19 +20,19 @@ namespace Runtime.Dmx.Fixtures.Shared
         protected byte ZPositionCoarse;
         protected byte ZPositionFine;
 
-        protected Vector3 MinPosition = new(-50, -50, -50);
-        protected Vector3 MaxPosition = new(50, 50, 50);
+        public Vector3 minPosition = new(-50, -50, -50);
+        public Vector3 maxPosition = new(50, 50, 50);
     
         public void WriteDmxPosition(int offset, Vector3 position, bool flipYtoZ = false)
         {
-            XPositionCoarse = Utility.GetCoarse(position.x, MinPosition.x, MaxPosition.x);
-            XPositionFine = Utility.GetFine(position.x, MinPosition.x, MaxPosition.x);
+            XPositionCoarse = Utility.GetCoarse(position.x, minPosition.x, maxPosition.x);
+            XPositionFine = Utility.GetFine(position.x, minPosition.x, maxPosition.x);
         
-            YPositionCoarse = Utility.GetCoarse(position.y, MinPosition.y, MaxPosition.y);
-            YPositionFine = Utility.GetFine(position.y, MinPosition.y, MaxPosition.y);
+            YPositionCoarse = Utility.GetCoarse(position.y, minPosition.y, maxPosition.y);
+            YPositionFine = Utility.GetFine(position.y, minPosition.y, maxPosition.y);
         
-            ZPositionCoarse = Utility.GetCoarse(position.z, MinPosition.z, MaxPosition.z);
-            ZPositionFine = Utility.GetFine(position.z, MinPosition.z, MaxPosition.z);
+            ZPositionCoarse = Utility.GetCoarse(position.z, minPosition.z, maxPosition.z);
+            ZPositionFine = Utility.GetFine(position.z, minPosition.z, maxPosition.z);
         
             Buffer[offset + 0] = XPositionCoarse;
             Buffer[offset + 1] = XPositionFine;

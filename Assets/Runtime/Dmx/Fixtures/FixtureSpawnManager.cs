@@ -1,4 +1,7 @@
+using System;
+using System.Collections.Generic;
 using Runtime.Dmx.Fixtures.Drones;
+using Runtime.Dmx.Fixtures.Drones.Movers;
 using Runtime.Dmx.Fixtures.Lights;
 using Runtime.Dmx.Fixtures.Truss;
 using Unity_DMX.Core;
@@ -86,7 +89,7 @@ namespace Runtime.Dmx.Fixtures
         public int mobileLightSpawnCount = 8;
         public MobileLight[] mobileLightPool;
 
-        public void InitializeMobileTruss()
+        private void InitializeMobileTruss()
         {
             MobileTruss.InitializePrefab(() =>
             {
@@ -96,7 +99,7 @@ namespace Runtime.Dmx.Fixtures
             });
         }
 
-        public void InitializeMobileLight()
+        private void InitializeMobileLight()
         {
             MobileLight.InitializePrefab(() =>
             {
@@ -106,7 +109,7 @@ namespace Runtime.Dmx.Fixtures
             });
         }
 
-        public void InitializePyroDrones()
+        private void InitializePyroDrones()
         {
             PyroDrone.InitializePrefab(() =>
             {
@@ -116,7 +119,7 @@ namespace Runtime.Dmx.Fixtures
             });
         }
 
-        public void InitializeLightingDrones()
+        private void InitializeLightingDrones()
         {
             LightingDrone.InitializePrefab(() =>
             {
@@ -126,46 +129,36 @@ namespace Runtime.Dmx.Fixtures
                 TogglePool(lightingDronePool, false);
                 
                 // Post-setup
-                lightingDronePool[0].transform.parent.localPosition = new Vector3(0, 10, 0);
-            
-                int counter = 0;
-                //var (rectWidth, rectHeight) = Utility.GetMostRectangular(lightingDronePool.Length);
+                //lightingDronePool[0].transform.parent.localPosition = new Vector3(0, 10, 0);
+                
+                /*for (var i = 0; i < lightingDronePool.Length; i++)
+                {
+                    var drone = lightingDronePool[i];
+                    var component = drone.gameObject.AddComponent<DroneTakeoff>();
+                }*/
+                
+                /*var counter = 0;
                 var size = Mathf.Sqrt(lightingDronePool.Length);
                 var offset = size / 2;
                 
-                for (var y = 0; y < size; y++)
+                for (var z = 0; z < size; z++)
                 {
-                    for (int x = 0; x < size; x++)
+                    for (var x = 0; x < size; x++)
                     {
                         if (lightingDronePool.Length <= counter) return;
                         var drone = lightingDronePool[counter];
+                        //var component = drone.gameObject.AddComponent<DroneTakeoff>();
 
-                        var c = counter % 5;
-                    
-                        drone.transform.localPosition = new Vector3(x - offset, 700 + (c * 5), y - offset);
+                        //component.xIndex = x;
+                        //component.zIndex = z;
 
-                        switch (c)
-                        {
-                            case 0:
-                                drone.color = Color.red;
-                                break;
-                            case 1:
-                                drone.color = Color.yellow;
-                                break;
-                            case 2:
-                                drone.color = Color.green;
-                                break;
-                            case 3:
-                                drone.color = Color.cyan;
-                                break;
-                            case 4:
-                                drone.color = Color.blue;
-                                break;
-                        }
+                        //var c = counter % 5;
+                        //transform.localPosition = new Vector3(x - offset, 10.6f, y - offset); // 700 + (c * 5)
+                        //component.SetPositionTakeoffStart(lightingDronePool.Length, size, offset, x, 0.6f, z);
                     
                         counter++;
                     }
-                }
+                }*/
             });
         }
 
@@ -181,17 +174,18 @@ namespace Runtime.Dmx.Fixtures
 
         private void Update()
         {
-            WriteDmxData(ref dmxController.dmxBuffer.buffer); // makes everything update each unity frame
-            dmxController.ForceBufferUpdate();
+            WriteDmxData(ref dmxController.dmxBuffer.Buffer); // makes everything update each unity frame
+            dmxController.ForceBufferUpdate(); // Maybe causing random dmx shuffle
         }
 
-        private void OnDmxDataChanged(short universe, byte[] data, byte[] globalDmxBuffer)
+        private void OnDmxDataChanged(short universe, DmxData data, DmxData globalDmxBuffer)
         {
             WriteDmxData(ref globalDmxBuffer);
         }
         
-        private void WriteDmxData(ref byte[] buffer)
+        private void WriteDmxData(ref DmxData buffer)
         {
+            // TODO: Once a feature turned off, send data that cancels these features in dmx buffer
             if (UseMobileTruss && IsMobileTrussInitialized)
             {
                 MobileTruss.WriteDataToGlobalBuffer(ref mobileTrussPool, ref buffer);

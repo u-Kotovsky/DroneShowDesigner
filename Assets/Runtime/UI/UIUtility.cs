@@ -270,7 +270,9 @@ namespace Runtime.UI
         public static RectTransform CreateVerticalList(Transform parent, string name)
         {
             var listRect = AddRect(parent, name);
-            var listLayout = listRect.gameObject.AddComponent<VerticalLayoutGroup>().ForceExpand(true, false);
+            var listLayout = listRect
+                .WithVerticalLayout()
+                .ForceExpand(true, false);
             listLayout.childControlHeight = false;
             
             return listRect;
@@ -279,8 +281,9 @@ namespace Runtime.UI
         // List is vertical
         public static RectTransform AddItemToList(Transform parent, int internalIndex, float height, params string[] values)
         {
-            var elementRect = AddRect(parent, $"Element {internalIndex}");
-            elementRect.gameObject.AddComponent<HorizontalLayoutGroup>();
+            var elementRect = AddRect(parent, $"Element {internalIndex}")
+                .WithHorizontalLayout()
+                .GetRect();
             elementRect.sizeDelta = new Vector2(0, height);
             
             var image = elementRect.gameObject.AddComponent<Image>();

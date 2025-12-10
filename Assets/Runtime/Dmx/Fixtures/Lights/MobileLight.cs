@@ -1,6 +1,9 @@
 using System;
+using System.Collections.Generic;
 using Runtime.Core.Resources;
 using Runtime.Dmx.Fixtures.Shared;
+using Unity_DMX;
+using Unity_DMX.Core;
 using UnityEngine;
 
 namespace Runtime.Dmx.Fixtures.Lights
@@ -13,8 +16,8 @@ namespace Runtime.Dmx.Fixtures.Lights
             Buffer = new byte[6];
 
             Vector3 offset = new Vector3(0, 21f, 0);
-            MinPosition = new Vector3(-52.5f, -22.5f, -52.5f) + offset;
-            MaxPosition = new Vector3(52.5f, 22.5f, 52.5f) + offset;
+            minPosition = new Vector3(-52.5f, -22.5f, -52.5f) + offset;
+            maxPosition = new Vector3(52.5f, 22.5f, 52.5f) + offset;
         }
         
         private void Update()
@@ -70,23 +73,24 @@ namespace Runtime.Dmx.Fixtures.Lights
             pool[index] = fixture;
         }
         
-        public static void WriteDataToGlobalBuffer(ref MobileLight[] pool, ref byte[] globalDmxBuffer)
+        public static void WriteDataToGlobalBuffer(ref MobileLight[] pool, ref DmxData globalDmxBuffer)
         {
             foreach (var fixture in pool)
             {
-                byte[] data = fixture.GetDmxData();
-                
-                System.Buffer.BlockCopy(data, 0, 
-                    globalDmxBuffer, fixture.globalChannelStart, data.Length);
+                var data = new List<byte>(fixture.GetDmxData());
+
+                globalDmxBuffer.EnsureCapacity(fixture.globalChannelStart + data.Count);
+                globalDmxBuffer.SetRange(fixture.globalChannelStart, data);
             }
 
             WriteSpecialData(globalDmxBuffer);
         }
 
-        private static void WriteSpecialData(byte[] buffer)
+        private static void WriteSpecialData(DmxData buffer)
         {
             // 1229 206 16 Way Selector. 0 = No Action; 1 = Hide Search Light mesh [lights can still function]; Rest undefined.
-            buffer[1229] = 0;
+            buffer.EnsureCapacity(1229 + 1);
+            buffer.Set(1229, 0);
         }
         
         private static void SetPreset(MobileLight[] pool, MobileLightPreset[] preset)

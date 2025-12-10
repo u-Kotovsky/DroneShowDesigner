@@ -29,13 +29,9 @@ namespace Runtime.Core.Timeline
         private static MidiTimeCodeReceiver _midiTimeCodeReceiver;
         public static void Initialize()
         {
-            Debug.Log("Initializing TimelineService");
             try
             {
-                // hook OnMidiTimeCode event
                 _midiTimeCodeReceiver = Object.FindFirstObjectByType<MidiTimeCodeReceiver>();
-                Debug.Log(_midiTimeCodeReceiver == null);
-                
                 _midiTimeCodeReceiver.OnTimeCodeReceived += MidiTimeCodeReceiverOnOnTimeCodeReceived;
             }
             catch (Exception e)
@@ -53,7 +49,7 @@ namespace Runtime.Core.Timeline
                 var secondsToFrames = e.Seconds * 30;
                 
                 long totalTime = hoursToFrames + secondsToFrames + minutesToFrames + e.Frames;
-                Debug.Log($"MidiTimeCode totalTime: {totalTime}");
+                //Debug.Log($"MidiTimeCode totalTime: {totalTime}");
                 
                 OnCurrentTimeChanged?.Invoke(totalTime);
                 

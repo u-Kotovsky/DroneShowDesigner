@@ -1,5 +1,5 @@
+using System;
 using System.Collections.Generic;
-using Runtime.Core.Resources;
 using Runtime.Dmx.Fixtures.Drones;
 using Runtime.Dmx.Fixtures.Lights;
 using Runtime.Dmx.Fixtures.Truss;
@@ -19,6 +19,7 @@ namespace Runtime.Core.Selection
         public int state;
 
         private List<SelectionEntry> selection = new();
+        public List<SelectionEntry> Selection => selection;
         
         public float timeToMultiSelect = 0.15f;
 
@@ -39,13 +40,47 @@ namespace Runtime.Core.Selection
         
         private Vector3 cameraPositionAtMultiSelectStart;
         
+        public static FixtureSelectionManager Instance { get; private set; }
+        
+        public event Action<List<SelectionEntry>> OnSelectionChanged = (selection) => { };
+        public event Action<SelectionEntry> OnObjectSelected = (selection) => { };
+        public event Action<SelectionEntry> OnObjectDeselected = (selection) => { };
+
+        private void Awake()
+        {
+            if (Instance != null)
+            {
+                Debug.LogError("More than one instance of FixtureSelectionManager found.");
+                return;
+            }
+            
+            Instance = this;
+        }
+
+        public static void InsertInstanceIfNotExist()
+        {
+            if (Instance != null)
+            {
+                return;
+            }
+            
+            var obj = new GameObject("FixtureSelectionManager (Instance)");
+            var component = obj.AddComponent<FixtureSelectionManager>();
+            Instance = component;
+        }
+        
         private void Start()
         {
             if (Camera.main != null) MainCamera = Camera.main;
         }
 
+        private bool _doLockSelection = false;
+
         private void Update()
         {
+            if (Input.GetKeyDown(KeyCode.P)) _doLockSelection = !_doLockSelection;
+            if (_doLockSelection) return;
+            
             if (Input.GetMouseButton(0))
             {
                 if (state == 0)
@@ -157,12 +192,11 @@ namespace Runtime.Core.Selection
             else
             {
                 // No supported component found.
-
                 ClearAllSelection();
             }
         }
 
-        private static void OnObjectHit<T>(ref List<SelectionEntry> selection, ref Selectable selectable, ref T component) where T : Component
+        private void OnObjectHit<T>(ref List<SelectionEntry> selection, ref Selectable selectable, ref T component) where T : Component
         {
             bool controlKey = Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl);
             bool aKey = Input.GetKey(KeyCode.A);
@@ -220,7 +254,7 @@ namespace Runtime.Core.Selection
             ClearSelection(ref selection);
         }
 
-        private static void AddSelection(ref List<SelectionEntry> selection, SelectionEntry newSelection)
+        private void AddSelection(ref List<SelectionEntry> selection, SelectionEntry newSelection)
         {
             lock (selection)
             {
@@ -243,22 +277,28 @@ namespace Runtime.Core.Selection
                     }
                 }
             }
+            
+            OnObjectSelected?.Invoke(newSelection);
+            OnSelectionChanged?.Invoke(selection);
         }
 
-        private static void ClearSelection(ref List<SelectionEntry> selection)
+        private void ClearSelection(ref List<SelectionEntry> currentSelection)
         {
-            lock (selection)
+            lock (currentSelection)
             {
-                foreach (var obj in selection)
+                foreach (var selectionEntry in currentSelection)
                 {
-                    if (obj.GameObject.TryGetComponent<Selectable>(out var selectable))
+                    if (selectionEntry.GameObject.TryGetComponent<Selectable>(out var selectable))
                     {
                         selectable.OnObjectDeselected();
+                        OnObjectDeselected?.Invoke(selectionEntry);
                     }
                 }
 
-                selection.Clear();
+                currentSelection.Clear();
             }
+            
+            OnSelectionChanged?.Invoke(currentSelection);
         }
 
         #region Cursor in world space

@@ -69,6 +69,19 @@ namespace Runtime.UI
             inputField.onValueChanged.AddListener(callback);
             return inputField;
         }
+
+        public static TMP_InputField WithText(this TMP_InputField inputField, string text)
+        {
+            inputField.text = text;
+            return inputField;
+        }
+
+        public static TMP_InputField WithPlaceholder(this TMP_InputField inputField, string text)
+        {
+            var placeholder = (TextMeshProUGUI)(inputField.placeholder);
+            placeholder.text = text;
+            return inputField;
+        }
         #endregion
 
         #region With@Component
@@ -120,9 +133,27 @@ namespace Runtime.UI
 
         #endregion
         
-        public static RectTransform GetRect(this LayoutGroup rect, Vector4 offset = new())
+        public static RectTransform GetRect(this LayoutGroup rect)
         {
             return rect.GetComponent<RectTransform>();
+        }
+        
+        public static RectTransform GetRect(this Image image)
+        {
+            return image.rectTransform;
+        }
+        
+        public static RectTransform GetRect(this TextMeshProUGUI text)
+        {
+            return text.rectTransform;
+            //return rect.GetComponent<RectTransform>();
+        }
+        
+        public static RectTransform WithSizeDelta(this RectTransform rect, Vector2 sizeDelta = new())
+        {
+            rect.sizeDelta = sizeDelta;
+            
+            return rect;
         }
         
         public static RectTransform SetHeight(this RectTransform rect, float height)

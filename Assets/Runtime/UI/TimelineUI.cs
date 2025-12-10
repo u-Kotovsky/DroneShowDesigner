@@ -23,8 +23,6 @@ namespace Runtime.UI
         
         static TimelineUI()
         {
-            Debug.Log("TimelineUI initialize");
-
             try
             {
                 var pathToData =Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "DroneShowDesigner");

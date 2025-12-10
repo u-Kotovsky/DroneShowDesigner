@@ -1,6 +1,9 @@
 using System;
+using System.Collections.Generic;
 using Runtime.Core.Resources;
 using Runtime.Dmx.Fixtures.Shared;
+using Unity_DMX;
+using Unity_DMX.Core;
 using UnityEngine;
 
 namespace Runtime.Dmx.Fixtures.Truss
@@ -15,8 +18,8 @@ namespace Runtime.Dmx.Fixtures.Truss
             MinAngle = -270;
             MaxAngle = 270;
 
-            MinPosition = new Vector3(-50, -50, -50);
-            MaxPosition = new Vector3(50, 50, 50);
+            minPosition = new Vector3(-50, -50, -50);
+            maxPosition = new Vector3(50, 50, 50);
         }
 
         private void Update()
@@ -88,22 +91,23 @@ namespace Runtime.Dmx.Fixtures.Truss
             }
         }
         
-        public static void WriteDataToGlobalBuffer(ref MobileTruss[] pool, ref byte[] globalDmxBuffer)
+        public static void WriteDataToGlobalBuffer(ref MobileTruss[] pool, ref DmxData globalDmxBuffer)
         {
-            foreach (var truss in pool)
+            foreach (var fixture in pool)
             {
-                byte[] trussData = truss.GetDmxData();
-                
-                System.Buffer.BlockCopy(trussData, 0, 
-                    globalDmxBuffer, truss.globalChannelStart, trussData.Length);
+                var data = new List<byte>(fixture.GetDmxData());
+
+                globalDmxBuffer.EnsureCapacity(fixture.globalChannelStart + data.Count);
+                globalDmxBuffer.SetRange(fixture.globalChannelStart, data);
             }
             
             WriteSpecialData(globalDmxBuffer);
         }
         
-        private static void WriteSpecialData(byte[] buffer)
+        private static void WriteSpecialData(DmxData buffer)
         {
-            buffer[5] = 255;
+            buffer.EnsureCapacity(5 + 1);
+            buffer.Set(5, 255);
         }
         #endregion
     }

@@ -13,7 +13,7 @@ namespace Runtime.Core.Resources
         public static void Load(string path, Action<GameObject> callback)
         {
             var request = new AssetRequest<GameObject>(path, callback);
-            Debug.Log($"'{Prefix}' Added resource request '{request.Path}' to gameObject queue.");
+            //Debug.Log($"'{Prefix}' Added resource request '{request.Path}' to gameObject queue.");
             GameObjectQueue.Enqueue(request);
         }
 
@@ -24,7 +24,7 @@ namespace Runtime.Core.Resources
                 try
                 {
                     AssetRequest<GameObject> request = GameObjectQueue.Dequeue();
-                    Debug.Log($"'{Prefix}' load '{request.Path}' prefab");
+                    //Debug.Log($"'{Prefix}' load '{request.Path}' prefab");
                     var asset = UnityEngine.Resources.Load<GameObject>(request.Path);
                     if (asset == null) throw new Exception($"'{Prefix}' Failed to load resource request '{request.Path}'.");
                     request.Callback(asset);

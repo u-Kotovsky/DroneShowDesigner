@@ -1,37 +1,22 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using ArtNet.Packets;
 using Unity_DMX.Core;
 
 namespace Unity_DMX
 {
-    public abstract class BufferUtility
+    public static class BufferUtility
     {
-        /// <summary>
-        /// This will send whole global buffer to the target.
-        /// </summary>
-        /// <param name="dmxController"></param>
-        /// <param name="buffer"></param>
-        public static void SendGlobalBuffer(DmxController target, byte[] buffer)
-        {
-            byte[] dmxBuffer = new byte[512];
-            
-            for (var i = 0; i < buffer.Length / 512; i++)
-            {
-                Buffer.BlockCopy(buffer, i * 512, dmxBuffer, 0, 512);
-                target.Send((short)i, dmxBuffer);
-            }
-        }
-        
         /// <summary>
         /// This will send a whole universe to a target from global buffer.
         /// </summary>
         /// <param name="target"></param>
         /// <param name="universe"></param>
         /// <param name="buffer"></param>
-        public static void SendUniverseFromGlobalBuffer(DmxController target, short universe, byte[] buffer)
+        public static void SendUniverseFromGlobalBuffer(DmxController target, short universe, DmxData buffer)
         {
-            byte[] dmxData = TakeUniverseFromGlobalBuffer(universe, buffer);
+            var dmxData = TakeUniverseFromGlobalBuffer(universe, buffer);
             
             target.Send(universe, dmxData);
         }
@@ -53,27 +38,19 @@ namespace Unity_DMX
         }
 
         /// <summary>
-        /// Is all channels are zero in buffer?
-        /// </summary>
-        /// <param name="buffer"></param>
-        /// <returns></returns>
-        public static bool IsAllZero(byte[] buffer) => buffer.All(channel => channel == 0);
-        
-        /// <summary>
         /// This will write a ArtNetDmxPacket into global buffer and then invokes a callback with changed universe.
         /// </summary>
-        /// <param name="buffer"></param>
+        /// <param name="globalDmxBuffer"></param>
         /// <param name="packet"></param>
         /// <param name="callback"></param>
-        public static void WriteDmxToGlobalBuffer(ref byte[] buffer, ref ArtNetDmxPacket packet, Action<short, byte[]> callback)
+        public static void WriteDmxToGlobalBuffer(ref DmxData globalDmxBuffer, ref ArtNetDmxPacket packet, Action<short, DmxData> callback)
         {
-            //EnsureCapacity(ref buffer, (packet.Universe + 1) * 512);
-            
             int offset = packet.Universe * 512;
 
-            Buffer.BlockCopy(packet.DmxData, 0, buffer, offset, packet.DmxData.Length);
+            DmxData dmxData = new DmxData(packet.DmxData);
+            globalDmxBuffer.SetRange(offset, dmxData);
             
-            callback?.Invoke(packet.Universe, TakeUniverseFromGlobalBuffer(packet.Universe, buffer));
+            callback?.Invoke(packet.Universe, TakeUniverseFromGlobalBuffer(packet.Universe, globalDmxBuffer));
         }
 
         /// <summary>
@@ -82,14 +59,44 @@ namespace Unity_DMX
         /// <param name="universe"></param>
         /// <param name="globalDmxBuffer"></param>
         /// <returns></returns>
-        public static byte[] TakeUniverseFromGlobalBuffer(short universe, byte[] globalDmxBuffer)
+        public static DmxData TakeUniverseFromGlobalBuffer(short universe, DmxData globalDmxBuffer)
         {
-            int offset = universe * 512;
-            byte[] dmxBuffer = new byte[512];
+            int srcOffset = universe * 512;
+            DmxData buffer = new DmxData(512);
+
+            buffer.SetRange(0, globalDmxBuffer, srcOffset, 512);
             
-            Buffer.BlockCopy(globalDmxBuffer, offset, dmxBuffer, 0, dmxBuffer.Length);
+            return buffer;
+        }
+
+        public static List<byte> EnsureCapacity(this List<byte> buffer, int capacity)
+        {
+            if (buffer.Count >= capacity) return buffer;
             
-            return dmxBuffer;
+            int range = capacity - buffer.Count;
+            buffer.AddRange(new byte[range]);
+            
+            return buffer;
+        }
+
+        public static List<byte> BlockCopy(this List<byte> dstBuffer, int dstOffset, List<byte> srcBuffer, int srcOffset, int length)
+        {
+            for (int i = 0; i < length; i++)
+            {
+                dstBuffer[i + dstOffset] = srcBuffer[i + srcOffset];
+            }
+            
+            return dstBuffer;
+        }
+
+        public static List<byte> BlockCopy(this List<byte> dstBuffer, int dstOffset, byte[] srcBuffer, int srcOffset, int length)
+        {
+            for (int i = srcOffset; i < length; i++)
+            {
+                dstBuffer[i + dstOffset] = srcBuffer[i + srcOffset];
+            }
+            
+            return dstBuffer;
         }
     }
 }
