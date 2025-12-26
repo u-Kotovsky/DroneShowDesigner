@@ -47,7 +47,7 @@ namespace Runtime.UI
 
         public static void DeconstructUI()
         {
-            
+            MainUIController.Instance.OnDeconstructUI -= DeconstructUI;
         }
     }
 }

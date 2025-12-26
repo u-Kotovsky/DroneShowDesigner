@@ -94,6 +94,7 @@ namespace Runtime.UI
 
         public static void DeconstructUI()
         {
+            MainUIController.Instance.OnDeconstructUI -= DeconstructUI;
             TimelineService.OnCurrentTimeChanged -= OnCurrentTimeChanged;
             MainUIController.Instance.OnUpdate -= Update;
         }

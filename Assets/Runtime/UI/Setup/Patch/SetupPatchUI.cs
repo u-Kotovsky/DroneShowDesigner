@@ -115,7 +115,7 @@ namespace Runtime.UI.Setup.Patch
         
         public static void DeconstructUI()
         {
-            
+            MainUIController.Instance.OnDeconstructUI -= DeconstructUI;
         }
 
         public static void DeleteUI()

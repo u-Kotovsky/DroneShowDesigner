@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using Runtime.Core.Selection;
 using Runtime.Dmx.Fixtures.Drones;
@@ -86,10 +87,14 @@ namespace Runtime.UI
             try
             {
                 if (FixtureSelectionManager.Instance == null)
+                {
                     throw new Exception("FixtureSelectionManager.Instance is null.");
-                
+                }
+
                 if (Instance == null)
+                {
                     throw new Exception("EditorUI.Instance is null.");
+                }
                 
                 FixtureSelectionManager.Instance.OnSelectionChanged += Instance.OnSelectionChanged;
             }
@@ -101,6 +106,8 @@ namespace Runtime.UI
 
         private static void ClearInspector()
         {
+            if (_inspector.transform.childCount < 1) return;
+            if (_inspector == null) return;
             foreach (Transform child in _inspector.transform)
             {
                 Destroy(child.gameObject);
@@ -152,13 +159,13 @@ namespace Runtime.UI
                 //return;
             }
 
-            if (hasMultipleComponentsOfOneType)
+            /*if (hasMultipleComponentsOfOneType)
             {
                 // We dont handle multiple components of one type yet.
                 //UIUtility.AddText(_inspector, "Multiple components of one type found. We don't handle this situation yet.", Color.red);
                 errors.AppendLine("Multiple components of one type found. We don't handle this situation yet.");
                 //return;
-            }
+            }*/
 
             if (errors.Length > 0)
             {
@@ -170,54 +177,105 @@ namespace Runtime.UI
             // TODO: use a separate "combined" version of handling multiple components of one type. (Basic Copy, Save, Paste, Edit?)
 
             // Very very WIP, unoptimized, buggy and so on.
-            StartCoroutine(LoadVisualComponents(selection));
+            LoadVisualComponents(selection, hasMultipleComponentsOfOneType);
         }
 
-        private static IEnumerator LoadVisualComponents(List<SelectionEntry> selection)
+        private static void LoadVisualComponents(List<SelectionEntry> selection, bool hasMultipleComponentsOfOneType)
         {
-            if (_inspector == null) yield break;
+            if (_inspector == null) return;
             
             // TODO: Ensure that user clicked on UI, and not on any other collider if UI is in front to not accidentally deselect all items.
-            
-            foreach (var selectionEntry in selection)
-            {
-                // TODO: ONLY LOAD THOSE THAT ARE IN VIEW, OTHERS SHOULD BE IGNORED OR WE'LL HAVE PERFORMANCE ISSUES
-                // TODO: Put load of these components into Coroutine and make sure to turn it off when page changed so we don't do weird stuff
-                var componentRoot = UIUtility.AddRect(_inspector, $"Component from '{selectionEntry.GameObject.name}'")
-                    .WithVerticalLayout()
-                    //.SetAllStretch(Vector4.zero)
-                    .ControlChildSize(true, false)
-                    .ForceExpand(true, false)
-                    .GetRect()
-                    .WithImage(Color.white * 0.2f);
-                
-                if (selectionEntry.GameObject.TryGetComponent<MobileTruss>(out var mobileTruss))
-                {
-                    MobileTrussInspector.OnInspector(componentRoot, mobileTruss);
-                }
-                else if (selectionEntry.GameObject.TryGetComponent<MobileLight>(out var mobileLight))
-                {
-                    MobileLightInspector.OnInspector(componentRoot, mobileLight);
-                }
-                else if (selectionEntry.GameObject.TryGetComponent<LightingDrone>(out var lightingDrone))
-                {
-                    LightingDroneInspector.OnInspector(componentRoot, lightingDrone);
-                }
-                else if (selectionEntry.GameObject.TryGetComponent<PyroDrone>(out var pyroDrone))
-                {
-                    PyroDroneInspector.OnInspector(componentRoot, pyroDrone);
-                }
-                else
-                {
-                    UIUtility.AddText(componentRoot, "No supported components found in selection", Color.red)
-                        .GetRect()
-                        .WithSizeDelta(new Vector2(0, 20));
-                }
 
-                TransformInspector.OnInspector(componentRoot, selectionEntry.GameObject.transform);
+            if (hasMultipleComponentsOfOneType)
+            {
+                CreateMultiComponentInspectorOfOneType(selection);
             }
+            else
+            {
+                foreach (var selectionEntry in selection)
+                {
+                    CreateSingleComponentInspector(selectionEntry);
+                }
+            }
+        }
+
+        private static void CreateMultiComponentInspectorOfOneType(List<SelectionEntry> selection)
+        {
+            var componentRoot = UIUtility.AddRect(_inspector, $"Multi-Component")
+                .WithVerticalLayout()
+                //.SetAllStretch(Vector4.zero)
+                .ControlChildSize(true, false)
+                .ForceExpand(true, false)
+                .GetRect()
+                .WithImage(Color.white * 0.2f);
             
-            yield return null;
+            var obj = selection[0].GameObject;
+
+            if (obj.GetComponent<MobileTruss>())
+            {
+                var pool = selection.Select(x => x.GameObject.GetComponent<MobileTruss>()).ToArray();
+                MobileTrussInspector.OnInspector(componentRoot, pool);
+                return;
+            }
+
+            if (obj.GetComponent<MobileLight>())
+            {
+                var pool = selection.Select(x => x.GameObject.GetComponent<MobileLight>()).ToArray();
+                MobileLightInspector.OnInspector(componentRoot, pool);
+                return;
+            }
+
+            if (obj.GetComponent<LightingDrone>())
+            {
+                var pool = selection.Select(x => x.GameObject.GetComponent<LightingDrone>()).ToArray();
+                LightingDroneInspector.OnInspector(componentRoot, pool);
+                return;
+            }
+
+            if (obj.GetComponent<PyroDrone>())
+            {
+                var pool = selection.Select(x => x.GameObject.GetComponent<PyroDrone>()).ToArray();
+                PyroDroneInspector.OnInspector(componentRoot, pool);
+                return;
+            }
+        }
+
+        private static void CreateSingleComponentInspector(SelectionEntry selection)
+        {
+            // TODO: ONLY LOAD THOSE THAT ARE IN VIEW, OTHERS SHOULD BE IGNORED OR WE'LL HAVE PERFORMANCE ISSUES
+            // TODO: Put load of these components into Coroutine and make sure to turn it off when page changed so we don't do weird stuff
+            var componentRoot = UIUtility.AddRect(_inspector, $"Component from '{selection.GameObject.name}'")
+                .WithVerticalLayout()
+                //.SetAllStretch(Vector4.zero)
+                .ControlChildSize(true, false)
+                .ForceExpand(true, false)
+                .GetRect()
+                .WithImage(Color.white * 0.2f);
+                
+            if (selection.GameObject.TryGetComponent<MobileTruss>(out var mobileTruss))
+            {
+                MobileTrussInspector.OnInspector(componentRoot, mobileTruss);
+            }
+            else if (selection.GameObject.TryGetComponent<MobileLight>(out var mobileLight))
+            {
+                MobileLightInspector.OnInspector(componentRoot, mobileLight);
+            }
+            else if (selection.GameObject.TryGetComponent<LightingDrone>(out var lightingDrone))
+            {
+                LightingDroneInspector.OnInspector(componentRoot, lightingDrone);
+            }
+            else if (selection.GameObject.TryGetComponent<PyroDrone>(out var pyroDrone))
+            {
+                PyroDroneInspector.OnInspector(componentRoot, pyroDrone);
+            }
+            else
+            {
+                UIUtility.AddText(componentRoot, "No supported components found in selection", Color.red)
+                    .GetRect()
+                    .WithSizeDelta(new Vector2(0, 20));
+            }
+
+            //TransformInspector.OnInspector(componentRoot, selection.GameObject.transform);
         }
 
         private static void AddVector3(RectTransform parent, string title, Vector3 vector3)
@@ -251,8 +309,8 @@ namespace Runtime.UI
 
         public static void DeconstructUI()
         {
-            // TODO: unhook from OnobjectSelected
-            
+            MainUIController.Instance.OnDeconstructUI -= DeconstructUI;
+            FixtureSelectionManager.Instance.OnSelectionChanged -= Instance.OnSelectionChanged;
         }
     }
 }

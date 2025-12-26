@@ -194,11 +194,11 @@ namespace Runtime.Dmx.Fixtures
         }
 
         /// <summary>
-        /// Copy all DMX512 data with offset as "UNVIERSE.CHANNEL VALUE"
+        /// Get all DMX512 data with offset as "UNVIERSE.CHANNEL VALUE"
         /// </summary>
         /// <param name="dmxData"></param>
         /// <param name="globalChannelStart"></param>
-        public static void CopyAllDmxValuesAsMa3Representation(byte[] dmxData, int globalChannelStart)
+        public static string GetAllDmxValuesAsMa3Representation(byte[] dmxData, int globalChannelStart)
         {
             int universe = (int)Mathf.Floor(globalChannelStart / 512) + 1;
             int addressStart = (globalChannelStart % 512) + 1;
@@ -209,7 +209,39 @@ namespace Runtime.Dmx.Fixtures
                 values[i] = $"{universe}.{addressStart + i} {dmxData[i]}";
             }
 
-            CopyValuesAsArray(values);
+            return string.Join("\n", values);
+        }
+
+        /// <summary>
+        /// Copy all DMX512 data with offset as "UNVIERSE.CHANNEL VALUE"
+        /// </summary>
+        /// <param name="dmxData"></param>
+        /// <param name="globalChannelStart"></param>
+        public static void CopyAllDmxValuesAsMa3Representation(byte[] dmxData, int globalChannelStart)
+        {
+            string values = GetAllDmxValuesAsMa3Representation(dmxData, globalChannelStart);
+            CopyValue(values);
+        }
+
+        /// <summary>
+        /// Get selected DMX512 data with offset as "UNVIERSE.CHANNEL VALUE"
+        /// </summary>
+        /// <param name="dmxData"></param>
+        /// <param name="globalChannelStart"></param>
+        /// <param name="offset"></param>
+        /// <param name="size"></param>
+        public static string GetDmxValuesWithOffsetAsMa3Representation(byte[] dmxData, int globalChannelStart, int offset, int size)
+        {
+            byte[] bytes = dmxData.GetRange(offset, size);
+            
+            int universe = (int)Mathf.Floor(globalChannelStart / 512) + 1;
+            int addressStart = (globalChannelStart % 512) + 1;
+            string[] values = new string[bytes.Length];
+            
+            for (var i = 0; i < values.Length; i++)
+                values[i] = $"{universe}.{addressStart + i} {bytes[i]}";
+
+            return string.Join("\n", values);
         }
 
         /// <summary>
@@ -221,16 +253,9 @@ namespace Runtime.Dmx.Fixtures
         /// <param name="size"></param>
         public static void CopyDmxValuesWithOffsetAsMa3Representation(byte[] dmxData, int globalChannelStart, int offset, int size)
         {
-            byte[] bytes = dmxData.GetRange(offset, size);
-            
-            int universe = (int)Mathf.Floor(globalChannelStart / 512) + 1;
-            int addressStart = (globalChannelStart % 512) + 1;
-            string[] values = new string[bytes.Length];
-            
-            for (var i = 0; i < values.Length; i++)
-                values[i] = $"{universe}.{addressStart + i} {bytes[i]}";
+            string values = GetDmxValuesWithOffsetAsMa3Representation(dmxData, globalChannelStart, offset, size);
 
-            CopyValuesAsArray(values);
+            CopyValue(values);
         }
         
         /// <summary>

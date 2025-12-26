@@ -141,33 +141,32 @@ namespace Runtime.Core.Selection
         {
             if (!hasMainCamera)
             {
-                ClearAllSelection();
                 return;
             }
             
             screenRay = MainCamera.ScreenPointToRay(Input.mousePosition);
 
-            if (!Physics.Raycast(screenRay, out hitPoint, MainCamera.farClipPlane))
+            if (!Physics.Raycast(screenRay, out hitPoint, MainCamera.farClipPlane)) // No hit = ClearSelection
             {
                 ClearAllSelection();
                 return;
             }
             
             var targetGameObject = hitPoint.transform?.gameObject;
-            if (targetGameObject == null)
+            if (targetGameObject == null) // No Hit = ClearSelection
             {
                 ClearAllSelection();
                 return;
             }
 
             var parentOfTarget = targetGameObject.transform.parent;
-            if (parentOfTarget == null)
+            if (parentOfTarget == null) // No Parent = ClearSelection
             {
                 ClearAllSelection();
                 return;
             }
 
-            if (!parentOfTarget.TryGetComponent<Selectable>(out var selectable))
+            if (!parentOfTarget.TryGetComponent<Selectable>(out var selectable)) // No Selectable = ClearSelection
             {
                 ClearAllSelection();
                 return;
@@ -176,24 +175,29 @@ namespace Runtime.Core.Selection
             if (parentOfTarget.TryGetComponent<MobileTruss>(out var mobileTruss))
             {
                 OnObjectHit(ref selection, ref selectable, ref mobileTruss);
+                return;
             }
-            else if (parentOfTarget.TryGetComponent<MobileLight>(out var mobileLight))
+            
+            if (parentOfTarget.TryGetComponent<MobileLight>(out var mobileLight))
             {
                 OnObjectHit(ref selection, ref selectable, ref mobileLight);
+                return;
             }
-            else if (parentOfTarget.TryGetComponent<LightingDrone>(out var lightingDrone))
+            
+            if (parentOfTarget.TryGetComponent<LightingDrone>(out var lightingDrone))
             {
                 OnObjectHit(ref selection, ref selectable, ref lightingDrone);
+                return;
             }
-            else if (parentOfTarget.TryGetComponent<PyroDrone>(out var pyroDrone))
+            
+            if (parentOfTarget.TryGetComponent<PyroDrone>(out var pyroDrone))
             {
                 OnObjectHit(ref selection, ref selectable, ref pyroDrone);
+                return;
             }
-            else
-            {
-                // No supported component found.
-                ClearAllSelection();
-            }
+            
+            Debug.LogWarning("No supported component found.");
+            ClearAllSelection();
         }
 
         private void OnObjectHit<T>(ref List<SelectionEntry> selection, ref Selectable selectable, ref T component) where T : Component
@@ -204,16 +208,22 @@ namespace Runtime.Core.Selection
             // Clear all and select new
             if (!controlKey && !aKey)
             {
-                ClearSelection(ref selection);
-                AddSelection(ref selection, new SelectionEntry(component.gameObject));
+                if (selection.Count > 0) ClearSelection(ref selection, true);
+                AddSelection(ref selection, new SelectionEntry(component.gameObject), true);
+                OnSelectionChanged?.Invoke(selection);
+                return;
             }
+            
             // Do not reset, add new
-            else if (controlKey && !aKey)
+            if (controlKey && !aKey)
             {
-                AddSelection(ref selection, new SelectionEntry(component.gameObject));
+                AddSelection(ref selection, new SelectionEntry(component.gameObject), true);
+                OnSelectionChanged?.Invoke(selection);
+                return;
             }
+            
             // Select all objects of current type (Additive)
-            else if (controlKey && aKey)
+            if (controlKey && aKey)
             {
                 var components = FindObjectsByType<T>(FindObjectsSortMode.None);
                 
@@ -232,29 +242,37 @@ namespace Runtime.Core.Selection
 
                     if (!flag1)
                     {
-                        AddSelection(ref selection, new SelectionEntry(component1.gameObject));
+                        AddSelection(ref selection, new SelectionEntry(component1.gameObject), true);
                     }
                 }
+
+                OnSelectionChanged?.Invoke(selection);
+                return;
             }
+            
             // Select all objects of current type (Replace)
-            else if (!controlKey && aKey)
+            if (!controlKey && aKey)
             {
-                ClearSelection(ref selection);
+                if (selection.Count > 0) ClearSelection(ref selection);
                 
                 var components = FindObjectsByType<T>(FindObjectsSortMode.None);
                 foreach (var fixture in components)
                 {
-                    AddSelection(ref selection, new SelectionEntry(fixture.gameObject));
+                    AddSelection(ref selection, new SelectionEntry(fixture.gameObject), true);
                 }
+                
+                OnSelectionChanged?.Invoke(selection);
+
+                return;
             }
         }
 
-        private void ClearAllSelection()
+        private void ClearAllSelection(bool doNotCallSelectionChanged = false)
         {
-            ClearSelection(ref selection);
+            if (selection.Count > 0) ClearSelection(ref selection, doNotCallSelectionChanged);
         }
 
-        private void AddSelection(ref List<SelectionEntry> selection, SelectionEntry newSelection)
+        private void AddSelection(ref List<SelectionEntry> selection, SelectionEntry newSelection, bool doNotCallSelectionChanged = false)
         {
             lock (selection)
             {
@@ -279,10 +297,10 @@ namespace Runtime.Core.Selection
             }
             
             OnObjectSelected?.Invoke(newSelection);
-            OnSelectionChanged?.Invoke(selection);
+            if (!doNotCallSelectionChanged) OnSelectionChanged?.Invoke(selection);
         }
 
-        private void ClearSelection(ref List<SelectionEntry> currentSelection)
+        private void ClearSelection(ref List<SelectionEntry> currentSelection, bool doNotCallSelectionChanged = false)
         {
             lock (currentSelection)
             {
@@ -298,7 +316,7 @@ namespace Runtime.Core.Selection
                 currentSelection.Clear();
             }
             
-            OnSelectionChanged?.Invoke(currentSelection);
+            if (!doNotCallSelectionChanged) OnSelectionChanged?.Invoke(currentSelection); // upd here 1
         }
 
         #region Cursor in world space

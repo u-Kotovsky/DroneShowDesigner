@@ -55,8 +55,8 @@ namespace Runtime.UI
                 button.OnClick(() =>
                 {
                     OnDeconstructUI?.Invoke();
-                    OnDeconstructUI = () => { };
                     OnDeconstructUI += AboutUI.DeconstructUI;
+                    //OnDeconstructUI += () => { OnDeconstructUI -= AboutUI.DeconstructUI; };
                     CleanScreen();
                     SetHotBarButtons(true);
                     button.interactable = false;
@@ -74,8 +74,8 @@ namespace Runtime.UI
                 button.OnClick(() =>
                 {
                     OnDeconstructUI?.Invoke();
-                    OnDeconstructUI = () => { };
                     OnDeconstructUI += SetupPatchUI.DeconstructUI;
+                    //OnDeconstructUI += () => { OnDeconstructUI -= SetupPatchUI.DeconstructUI; };
                     CleanScreen();
                     SetHotBarButtons(true);
                     button.interactable = false;
@@ -92,8 +92,8 @@ namespace Runtime.UI
                 button.OnClick(() =>
                 {
                     OnDeconstructUI?.Invoke();
-                    OnDeconstructUI = () => { };
                     //OnDeconstructUI += ConsoleUI.DeconstructUI;
+                    //OnDeconstructUI += () => { OnDeconstructUI -= ConsoleUI.DeconstructUI; };
                     CleanScreen();
                     SetHotBarButtons(true);
                     button.interactable = false;
@@ -109,8 +109,8 @@ namespace Runtime.UI
                 button.OnClick(() =>
                 {
                     OnDeconstructUI?.Invoke();
-                    OnDeconstructUI = () => { };
                     //OnDeconstructUI += SettingsUI.DeconstructUI;
+                    //OnDeconstructUI += () => { OnDeconstructUI -= SettingsUI.DeconstructUI; };
                     CleanScreen();
                     SetHotBarButtons(true);
                     button.interactable = false;
@@ -127,8 +127,8 @@ namespace Runtime.UI
                 button.OnClick(() =>
                 {
                     OnDeconstructUI?.Invoke();
-                    OnDeconstructUI = () => { };
                     OnDeconstructUI += EditorUI.DeconstructUI;
+                    //OnDeconstructUI += () => { OnDeconstructUI -= EditorUI.DeconstructUI; };
                     CleanScreen();
                     SetHotBarButtons(true);
                     button.interactable = false;
@@ -146,8 +146,8 @@ namespace Runtime.UI
                 button.OnClick(() =>
                 {
                     OnDeconstructUI?.Invoke();
-                    OnDeconstructUI = () => { };
                     OnDeconstructUI += TimelineUI.DeconstructUI;
+                    //OnDeconstructUI += () => { OnDeconstructUI -= TimelineUI.DeconstructUI; };
                     CleanScreen();
                     SetHotBarButtons(true);
                     button.interactable = false;
@@ -162,9 +162,9 @@ namespace Runtime.UI
             //EffectUI.AddBoxSelection(page.parent.GetComponent<RectTransform>());
             //EffectUI.SetBoxSelectionActive(false);
         }
-
-        private event Action OnDeconstructUI = () => { };
-        public event Action OnUpdate = () => { };
+        
+        public event Action OnDeconstructUI = delegate { };
+        public event Action OnUpdate = delegate { };
 
         private void Start()
         {
