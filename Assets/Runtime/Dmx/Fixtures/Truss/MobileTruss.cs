@@ -39,7 +39,7 @@ namespace Runtime.Dmx.Fixtures.Truss
         public static void InitializePrefab(Action callback = default)
         {
             if (_trussPrefab != null) return;
-            AssetManager.Load("MobileTruss", (prefab) =>
+            AssetManager.Load("MobileTruss", prefab =>
             {
                 if (_trussPrefab != null) return;
                 _trussPrefab = prefab;
@@ -49,13 +49,13 @@ namespace Runtime.Dmx.Fixtures.Truss
 
         public static void Spawn(FixtureSpawnManager spawnManager, ref MobileTruss[] pool, ref int count)
         {
-            if (_internalPool == null) _internalPool = new GameObject("MobileTrussPool");
+            _internalPool ??= new GameObject("MobileTrussPool");
             pool = new MobileTruss[count];
             MobileTruss fixture = null;
 
             for (int i = 0; i < pool.Length; i++)
             {
-                Spawn(ref pool, ref i, GlobalDmxChannelOffset, ref fixture);
+                Spawn(ref pool, ref i, GlobalDmxChannelOffset, out fixture);
 
                 var nav = fixture.gameObject.AddComponent<MobileTrussNavigation>();
                 //nav.playTrussPresetSwap = true;
@@ -70,7 +70,7 @@ namespace Runtime.Dmx.Fixtures.Truss
             SetPreset(pool, MobileTrussPresetManager.trussPresets[6]);
         }
 
-        private static void Spawn(ref MobileTruss[] pool, ref int index, int offset, ref MobileTruss fixture)
+        private static void Spawn(ref MobileTruss[] pool, ref int index, int offset, out MobileTruss fixture)
         {
             var instance = Instantiate(_trussPrefab, new Vector3(index * 9, 2, 0), Quaternion.identity);
             instance.transform.SetParent(_internalPool.transform);

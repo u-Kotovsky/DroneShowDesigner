@@ -33,7 +33,7 @@ namespace Runtime.Dmx.Fixtures.Lights
         private const int GlobalDmxChannelOffset = 1077; // Start for mobile light.
         private const string Prefix = "MobileLight";
         
-        public static void InitializePrefab(Action callback = default)
+        public static void InitializePrefab(Action callback = null)
         {
             if (_mobileLightPrefab != null) return;
             AssetManager.Load("MobileLight", prefab =>
@@ -53,7 +53,7 @@ namespace Runtime.Dmx.Fixtures.Lights
 
             for (int i = 0; i < pool.Length; i++)
             {
-                Spawn(ref pool, ref i, GlobalDmxChannelOffset, ref fixture);
+                Spawn(ref pool, ref i, GlobalDmxChannelOffset, out fixture);
                 fixture.spawnManager = spawnManager;
             }
             
@@ -62,7 +62,7 @@ namespace Runtime.Dmx.Fixtures.Lights
             SetPreset(pool, MobileLightPresetManager.presets[0]);
         }
 
-        private static void Spawn(ref MobileLight[] pool, ref int index, int offset, ref MobileLight fixture)
+        private static void Spawn(ref MobileLight[] pool, ref int index, int offset, out MobileLight fixture)
         {
             var instance = Instantiate(_mobileLightPrefab, new Vector3(index, 2, 0), Quaternion.identity);
             instance.transform.SetParent(_internalPool.transform);

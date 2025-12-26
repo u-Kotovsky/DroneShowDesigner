@@ -121,7 +121,7 @@ namespace Runtime.Dmx.Fixtures.Drones
 
             for (int i = 0; i < pool.Length; i++)
             {
-                Spawn(ref pool, ref i, GlobalDmxChannelOffset, ref fixture);
+                Spawn(ref pool, ref i, GlobalDmxChannelOffset, out fixture);
                 fixture.spawnManager = spawnManager;
                 //fixture.gameObject.AddComponent<DroneNavigation>();
                 //var pathNav = fixture.gameObject.AddComponent<DronePathNavigation>();
@@ -146,7 +146,7 @@ namespace Runtime.Dmx.Fixtures.Drones
             }
         }
 
-        private static void Spawn(ref LightingDrone[] pool, ref int index, int offset, ref LightingDrone fixture)
+        private static void Spawn(ref LightingDrone[] pool, ref int index, int offset, out LightingDrone fixture)
         {
             var instance = Instantiate(_lightingDronePrefab, new Vector3(index, 1, 0), Quaternion.identity);
             instance.transform.SetParent(_internalPool.transform);

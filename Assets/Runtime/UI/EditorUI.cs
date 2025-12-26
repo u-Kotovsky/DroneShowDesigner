@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using Runtime.Core.Selection;
 using Runtime.Dmx.Fixtures.Drones;
 using Runtime.Dmx.Fixtures.Lights;
@@ -102,14 +103,7 @@ namespace Runtime.UI
         {
             foreach (Transform child in _inspector.transform)
             {
-                try
-                {
-                    Object.Destroy(child.gameObject);
-                }
-                catch (Exception e)
-                {
-                    Debug.LogException(e);
-                }
+                Destroy(child.gameObject);
             }
         }
 
@@ -119,27 +113,61 @@ namespace Runtime.UI
 
             Type type = null;
             bool hasMultipleTypes = false;
+            bool hasMultipleComponentsOfOneType = false;
 
-            foreach (var selectionEntry in selection)
+            for (var i = 0; i < selection.Count; i++)
             {
+                var selection1 = selection[i];
                 if (type == null)
                 {
-                    type = selectionEntry.GetType();
+                    type = selection1.GetType();
                     continue;
                 }
 
-                if (selectionEntry.GetType() != type)
+                if (selection1.GetType() != type)
                 {
                     hasMultipleTypes = true;
                 }
+
+                if (!hasMultipleComponentsOfOneType)
+                {
+                    for (var j = 0; j < selection.Count; j++)
+                    {
+                        var selection2 = selection[j];
+                        if (selection1.GetType() == selection2.GetType() && i != j)
+                        {
+                            hasMultipleComponentsOfOneType = true;
+                        }
+                    }
+                }
             }
+
+            var errors = new StringBuilder();
 
             if (hasMultipleTypes)
             {
                 // We dont handle multiple types yet.
-                UIUtility.AddText(_inspector, "Multiple components of different types found. We don't handle this situation yet.", Color.red);
+                //UIUtility.AddText(_inspector, "Multiple components of different types found. We don't handle this situation yet.", Color.red);
+                errors.AppendLine("Multiple components of different types found. We don't handle this situation yet.");
+                //return;
+            }
+
+            if (hasMultipleComponentsOfOneType)
+            {
+                // We dont handle multiple components of one type yet.
+                //UIUtility.AddText(_inspector, "Multiple components of one type found. We don't handle this situation yet.", Color.red);
+                errors.AppendLine("Multiple components of one type found. We don't handle this situation yet.");
+                //return;
+            }
+
+            if (errors.Length > 0)
+            {
+                UIUtility.AddText(_inspector, "Failed to load inspector:\n" + errors.ToString(), Color.red);
+                errors.Clear();
                 return;
             }
+            
+            // TODO: use a separate "combined" version of handling multiple components of one type. (Basic Copy, Save, Paste, Edit?)
 
             // Very very WIP, unoptimized, buggy and so on.
             StartCoroutine(LoadVisualComponents(selection));
@@ -148,6 +176,8 @@ namespace Runtime.UI
         private static IEnumerator LoadVisualComponents(List<SelectionEntry> selection)
         {
             if (_inspector == null) yield break;
+            
+            // TODO: Ensure that user clicked on UI, and not on any other collider if UI is in front to not accidentally deselect all items.
             
             foreach (var selectionEntry in selection)
             {
@@ -161,30 +191,21 @@ namespace Runtime.UI
                     .GetRect()
                     .WithImage(Color.white * 0.2f);
                 
-                
                 if (selectionEntry.GameObject.TryGetComponent<MobileTruss>(out var mobileTruss))
                 {
-                    UIUtility.AddText(componentRoot, "MobileTruss", Color.white)
-                        .GetRect()
-                        .WithSizeDelta(new Vector2(0, 20));
+                    MobileTrussInspector.OnInspector(componentRoot, mobileTruss);
                 }
                 else if (selectionEntry.GameObject.TryGetComponent<MobileLight>(out var mobileLight))
                 {
-                    UIUtility.AddText(componentRoot, "MobileLight", Color.white)
-                        .GetRect()
-                        .WithSizeDelta(new Vector2(0, 20));
+                    MobileLightInspector.OnInspector(componentRoot, mobileLight);
                 }
                 else if (selectionEntry.GameObject.TryGetComponent<LightingDrone>(out var lightingDrone))
                 {
-                    UIUtility.AddText(componentRoot, "LightingDrone", Color.white)
-                        .GetRect()
-                        .WithSizeDelta(new Vector2(0, 20));
+                    LightingDroneInspector.OnInspector(componentRoot, lightingDrone);
                 }
                 else if (selectionEntry.GameObject.TryGetComponent<PyroDrone>(out var pyroDrone))
                 {
-                    UIUtility.AddText(componentRoot, "PyroDrone", Color.white)
-                        .GetRect()
-                        .WithSizeDelta(new Vector2(0, 20));
+                    PyroDroneInspector.OnInspector(componentRoot, pyroDrone);
                 }
                 else
                 {
@@ -193,62 +214,10 @@ namespace Runtime.UI
                         .WithSizeDelta(new Vector2(0, 20));
                 }
 
-                AddTransformControls(componentRoot, selectionEntry.GameObject.transform);
+                TransformInspector.OnInspector(componentRoot, selectionEntry.GameObject.transform);
             }
             
             yield return null;
-        }
-
-        private static void AddTransformControls(RectTransform parent, Transform transform)
-        {
-            var positionInfo = UIUtility.AddItemToList(parent, 0, 15, "Position");
-            var positionRoot = UIUtility.AddItemToList(parent, 0, 20);
-
-            Color elementColor = Color.white * 0.2f;
-            Color textColor = Color.white;
-            
-            // May not properly update origin, need to look into other solution for that.
-            // TODO: fix alignment
-            
-            UIUtility.AddInputField(positionRoot, elementColor, textColor)
-                .WithText(transform.localPosition.x.ToString())
-                .WithPlaceholder("X")
-                .OnValueChanged(value => { transform.localPosition.Set(float.Parse(value), transform.localPosition.y, transform.localPosition.z); });
-            UIUtility.AddInputField(positionRoot, elementColor,textColor)
-                .WithText(transform.localPosition.y.ToString())
-                .WithPlaceholder("Y")
-                .OnValueChanged(value => { transform.localPosition.Set(transform.localPosition.x, float.Parse(value), transform.localPosition.z); });
-            UIUtility.AddInputField(positionRoot, elementColor, textColor)
-                .WithText(transform.localPosition.z.ToString())
-                .WithPlaceholder("Z")
-                .OnValueChanged(value => { transform.localPosition.Set(transform.localPosition.x, transform.localPosition.y, float.Parse(value)); });
-            
-            /*var rotationInfo = UIUtility.AddItemToList(parent, 0, 15, "Rotation");
-            var rotationRoot = UIUtility.AddItemToList(parent, 0, 20);
-            
-            UIUtility.AddInputField(rotationRoot, elementColor, textColor)
-                .WithText(transform.localRotation.eulerAngles.x.ToString())
-                .WithPlaceholder("X")
-                .OnValueChanged(value => { transform.localRotation.eulerAngles.Set(float.Parse(value), transform.localRotation.eulerAngles.y, transform.localRotation.eulerAngles.z); });
-            UIUtility.AddInputField(rotationRoot, elementColor,textColor)
-                .WithText(transform.localRotation.eulerAngles.y.ToString())
-                .WithPlaceholder("Y")
-                .OnValueChanged(value => { transform.localRotation.eulerAngles.Set(transform.localRotation.eulerAngles.x, float.Parse(value), transform.localRotation.eulerAngles.z); });
-            UIUtility.AddInputField(rotationRoot, elementColor, textColor)
-                .WithText(transform.localRotation.eulerAngles.z.ToString())
-                .WithPlaceholder("Z")
-                .OnValueChanged(value => { transform.localRotation.eulerAngles.Set(transform.localRotation.eulerAngles.x, transform.localRotation.eulerAngles.y, float.Parse(value)); });*/
-            
-            
-            /*Vector3 position = Vector3.zero;
-            Quaternion rotation = Quaternion.identity;
-            
-            transform.GetPositionAndRotation(out position, out rotation);
-            
-            Vector3 eulerAngles = transform.localRotation.eulerAngles;
-            // Questionable, not sure if it'll update original part of transform
-            AddVector3(rect, "Position", position);
-            AddVector3(rect, "Rotation", eulerAngles);*/
         }
 
         private static void AddVector3(RectTransform parent, string title, Vector3 vector3)

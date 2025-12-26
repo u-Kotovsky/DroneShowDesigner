@@ -28,7 +28,6 @@ namespace Runtime.Dmx.Fixtures.Drones
         {
             try
             {
-
                 WriteDmxPosition(0, transform.position, true);
                 WriteDmxRotation(transform.rotation.eulerAngles);
             }
@@ -66,7 +65,7 @@ namespace Runtime.Dmx.Fixtures.Drones
         private const int GlobalDmxChannelOffset = (512 * 5) + 41 - 1; // 2600 is start for pyro drone.
         private const string Prefix = "PyroDrone";
 
-        public static void InitializePrefab(Action callback = default)
+        public static void InitializePrefab(Action callback = null)
         {
             if (_pyroDronePrefab != null) return;
             AssetManager.Load("PyroDrone", prefab =>
@@ -85,7 +84,7 @@ namespace Runtime.Dmx.Fixtures.Drones
 
             for (int i = 0; i < pool.Length; i++)
             {
-                Spawn(ref pool, ref i, GlobalDmxChannelOffset, ref fixture);
+                Spawn(ref pool, ref i, GlobalDmxChannelOffset, out fixture);
                 fixture.spawnManager = spawnManager;
             }
             
@@ -94,7 +93,7 @@ namespace Runtime.Dmx.Fixtures.Drones
             SetPreset(pool, PyroDronePresetManager.presets[0]);
         }
 
-        private static void Spawn(ref PyroDrone[] pool, ref int index, int offset, ref PyroDrone fixture)
+        private static void Spawn(ref PyroDrone[] pool, ref int index, int offset, out PyroDrone fixture)
         {
             var instance = Instantiate(_pyroDronePrefab, new Vector3(index, 2, 0), Quaternion.identity);
             instance.transform.SetParent(_internalPool.transform);
