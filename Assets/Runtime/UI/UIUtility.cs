@@ -19,11 +19,12 @@ namespace Runtime.UI
         }
 
         #region UI Elements (Button, InputField, Toggle etc.)
-        public static void AddButton(RectTransform rect, string title, Color buttonColor, Color textColor,
+        public static Button AddButton(RectTransform rect, string title, Color buttonColor, Color textColor,
             Action<Button> callback)
         {
             var button = AddButton(rect, title, buttonColor, textColor);
             callback?.Invoke(button);
+            return button;
         }
 
         public static Button AddButton(RectTransform rect, string title, Color buttonColor, Color textColor)

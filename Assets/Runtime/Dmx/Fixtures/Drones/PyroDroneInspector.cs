@@ -12,18 +12,27 @@ namespace Runtime.Dmx.Fixtures.Drones
                 .GetRect()
                 .WithSizeDelta(new Vector2(0, 20));
             
-            UIUtility.AddButton(parent, "Copy All", Color.white, Color.black, button =>
-            {
-                Utility.CopyAllDmxValuesAsMa3Representation(fixture.GetDmxData(), fixture.globalChannelStart);
-            });
-            UIUtility.AddButton(parent, "Copy Position", Color.white, Color.black, button =>
-            {
-                Utility.CopyDmxValuesWithOffsetAsMa3Representation(fixture.GetDmxData(), fixture.globalChannelStart, 0, 6);
-            });
-            UIUtility.AddButton(parent, "Copy Pitch Yaw Roll", Color.white, Color.black, button =>
-            { 
-                Utility.CopyDmxValuesWithOffsetAsMa3Representation(fixture.GetDmxData(), fixture.globalChannelStart, 6, 3);
-            });
+            UIUtility.AddButton(parent, "Copy All", Color.white, Color.black)
+                .OnClick(() =>
+                {
+                    Utility.CopyAllDmxValuesAsMa3Representation(fixture.GetDmxData(), fixture.globalChannelStart);
+                })
+                .GetRect()
+                .WithSizeDelta(new Vector2(0, 20));
+            UIUtility.AddButton(parent, "Copy Position", Color.white, Color.black)
+                .OnClick(() =>
+                {
+                    Utility.CopyDmxValuesWithOffsetAsMa3Representation(fixture.GetDmxData(), fixture.globalChannelStart, 0, 6);
+                })
+                .GetRect()
+                .WithSizeDelta(new Vector2(0, 20));
+            UIUtility.AddButton(parent, "Copy Pitch Yaw Roll", Color.white, Color.black)
+                .OnClick(() =>
+                { 
+                    Utility.CopyDmxValuesWithOffsetAsMa3Representation(fixture.GetDmxData(), fixture.globalChannelStart, 6, 3);
+                })
+                .GetRect()
+                .WithSizeDelta(new Vector2(0, 20));
         }
     }
 }

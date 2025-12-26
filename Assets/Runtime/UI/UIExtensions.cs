@@ -146,7 +146,11 @@ namespace Runtime.UI
         public static RectTransform GetRect(this TextMeshProUGUI text)
         {
             return text.rectTransform;
-            //return rect.GetComponent<RectTransform>();
+        }
+        
+        public static RectTransform GetRect(this Button text)
+        {
+            return text.GetComponent<RectTransform>();
         }
         
         public static RectTransform WithSizeDelta(this RectTransform rect, Vector2 sizeDelta = new())

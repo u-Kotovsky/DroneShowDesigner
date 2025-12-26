@@ -1,4 +1,5 @@
 using System;
+using System.Text;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -178,7 +179,18 @@ namespace Runtime.Dmx.Fixtures
         /// <param name="separator"></param>
         public static void CopyValuesAsArray(string[] buffer, string separator = "\n")
         {
-            GUIUtility.systemCopyBuffer = string.Join(separator, buffer); 
+            string data = string.Join(separator, buffer); 
+            GUIUtility.systemCopyBuffer = data;
+        }
+
+        /// <summary>
+        /// Copy string
+        /// </summary>
+        /// <param name="value"></param>
+        public static void CopyValue(string value)
+        {
+            string data = value;
+            GUIUtility.systemCopyBuffer = data; // Like why the hell it copying only 3 lines and then fucks it up?
         }
 
         /// <summary>
@@ -191,9 +203,11 @@ namespace Runtime.Dmx.Fixtures
             int universe = (int)Mathf.Floor(globalChannelStart / 512) + 1;
             int addressStart = (globalChannelStart % 512) + 1;
             string[] values = new string[dmxData.Length];
-            
-            for (var i = 0; i < values.Length; i++)
+
+            for (var i = 0; i < dmxData.Length; i++)
+            {
                 values[i] = $"{universe}.{addressStart + i} {dmxData[i]}";
+            }
 
             CopyValuesAsArray(values);
         }

@@ -140,6 +140,7 @@ namespace Unity_DMX.Core
                 dmxDataMap[packet.Universe] = packet.DmxData;
             
                 // Server only?
+                dmxBuffer.Buffer.EnsureCapacity((packet.Universe + 1) * 512);
                 BufferUtility.WriteDmxToGlobalBuffer(ref dmxBuffer.Buffer, ref packet, (universe, data) =>
                 {
                     OnDmxDataChanged?.Invoke(universe, data, dmxBuffer.Buffer);
