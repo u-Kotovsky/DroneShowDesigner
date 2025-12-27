@@ -209,7 +209,7 @@ namespace Runtime.Core.Selection
             if (!controlKey && !aKey)
             {
                 if (selection.Count > 0) ClearSelection(ref selection, true);
-                AddSelection(ref selection, new SelectionEntry(component.gameObject), true);
+                AddSelection(ref selection, new SelectionEntry(component.gameObject, component.GetType()), true);
                 OnSelectionChanged?.Invoke(selection);
                 return;
             }
@@ -217,7 +217,7 @@ namespace Runtime.Core.Selection
             // Do not reset, add new
             if (controlKey && !aKey)
             {
-                AddSelection(ref selection, new SelectionEntry(component.gameObject), true);
+                AddSelection(ref selection, new SelectionEntry(component.gameObject, component.GetType()), true);
                 OnSelectionChanged?.Invoke(selection);
                 return;
             }
@@ -242,7 +242,7 @@ namespace Runtime.Core.Selection
 
                     if (!flag1)
                     {
-                        AddSelection(ref selection, new SelectionEntry(component1.gameObject), true);
+                        AddSelection(ref selection, new SelectionEntry(component1.gameObject, component.GetType()), true);
                     }
                 }
 
@@ -258,7 +258,7 @@ namespace Runtime.Core.Selection
                 var components = FindObjectsByType<T>(FindObjectsSortMode.None);
                 foreach (var fixture in components)
                 {
-                    AddSelection(ref selection, new SelectionEntry(fixture.gameObject), true);
+                    AddSelection(ref selection, new SelectionEntry(fixture.gameObject, component.GetType()), true);
                 }
                 
                 OnSelectionChanged?.Invoke(selection);

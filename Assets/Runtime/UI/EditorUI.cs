@@ -118,54 +118,35 @@ namespace Runtime.UI
         {
             var selection = FixtureSelectionManager.Instance.Selection;
 
-            Type type = null;
-            bool hasMultipleTypes = false;
             bool hasMultipleComponentsOfOneType = false;
+            bool hasMultipleComponentsOfMultipleTypes = false;
 
             for (var i = 0; i < selection.Count; i++)
             {
                 var selection1 = selection[i];
-                if (type == null)
-                {
-                    type = selection1.GetType();
-                    continue;
-                }
 
-                if (selection1.GetType() != type)
+                for (var j = 0; j < selection.Count; j++)
                 {
-                    hasMultipleTypes = true;
-                }
-
-                if (!hasMultipleComponentsOfOneType)
-                {
-                    for (var j = 0; j < selection.Count; j++)
+                    var selection2 = selection[j];
+                    if (selection1.Type == selection2.Type && i != j) // If types are the same when index doesnt match (different objects, same types)
                     {
-                        var selection2 = selection[j];
-                        if (selection1.GetType() == selection2.GetType() && i != j)
-                        {
-                            hasMultipleComponentsOfOneType = true;
-                        }
+                        hasMultipleComponentsOfOneType = true;
+                    }
+                    
+                    if (selection1.Type != selection2.Type)
+                    {
+                        hasMultipleComponentsOfMultipleTypes = true;
                     }
                 }
             }
 
             var errors = new StringBuilder();
 
-            if (hasMultipleTypes)
+            if (hasMultipleComponentsOfMultipleTypes)
             {
-                // We dont handle multiple types yet.
-                //UIUtility.AddText(_inspector, "Multiple components of different types found. We don't handle this situation yet.", Color.red);
+                // We dont handle multiple different types yet.
                 errors.AppendLine("Multiple components of different types found. We don't handle this situation yet.");
-                //return;
             }
-
-            /*if (hasMultipleComponentsOfOneType)
-            {
-                // We dont handle multiple components of one type yet.
-                //UIUtility.AddText(_inspector, "Multiple components of one type found. We don't handle this situation yet.", Color.red);
-                errors.AppendLine("Multiple components of one type found. We don't handle this situation yet.");
-                //return;
-            }*/
 
             if (errors.Length > 0)
             {
