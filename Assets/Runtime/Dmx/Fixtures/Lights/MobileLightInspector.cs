@@ -14,6 +14,7 @@ namespace Runtime.Dmx.Fixtures.Lights
                 .GetRect()
                 .WithSizeDelta(new Vector2(0, 20));
             
+            var info = UIUtility.AddItemToList(parent, 0, 15, "DMX Copy");
             UIUtility.AddButton(parent, "Copy Position", Color.white, Color.black)
                 .OnClick(() =>
                 {
@@ -29,6 +30,7 @@ namespace Runtime.Dmx.Fixtures.Lights
                 .GetRect()
                 .WithSizeDelta(new Vector2(0, 20));
             
+            var info = UIUtility.AddItemToList(parent, 0, 15, "DMX Copy");
             UIUtility.AddButton(parent, $"Copy Position ({fixtures.Length})", Color.white, Color.black)
                 .OnClick(() =>
                 {

@@ -9,12 +9,15 @@ namespace Runtime.Dmx.Fixtures.Drones
     {
         private const string Name = "PyroDrone";
         
+        // TODO: add inputfields to adjust pitch/yaw/roll for pyro direction
+        
         public static void OnInspector(RectTransform parent, PyroDrone fixture)
         {
             UIUtility.AddText(parent, Name, Color.white)
                 .GetRect()
                 .WithSizeDelta(new Vector2(0, 20));
             
+            var info = UIUtility.AddItemToList(parent, 0, 15, "DMX Copy");
             UIUtility.AddButton(parent, "Copy All", Color.white, Color.black)
                 .OnClick(() =>
                 {
@@ -44,6 +47,7 @@ namespace Runtime.Dmx.Fixtures.Drones
                 .GetRect()
                 .WithSizeDelta(new Vector2(0, 20));
             
+            var info = UIUtility.AddItemToList(parent, 0, 15, "DMX Copy");
             UIUtility.AddButton(parent, $"Copy All ({fixtures.Length})", Color.white, Color.black)
                 .OnClick(() =>
                 {

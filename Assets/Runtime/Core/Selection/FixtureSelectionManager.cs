@@ -205,6 +205,8 @@ namespace Runtime.Core.Selection
             bool controlKey = Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl);
             bool aKey = Input.GetKey(KeyCode.A);
             
+            // TODO: When selecting already selected object with control => deselect that object, or based on keybinds it's cases.
+            
             // Clear all and select new
             if (!controlKey && !aKey)
             {
@@ -316,7 +318,7 @@ namespace Runtime.Core.Selection
                 currentSelection.Clear();
             }
             
-            if (!doNotCallSelectionChanged) OnSelectionChanged?.Invoke(currentSelection); // upd here 1
+            if (!doNotCallSelectionChanged) OnSelectionChanged?.Invoke(currentSelection);
         }
 
         #region Cursor in world space

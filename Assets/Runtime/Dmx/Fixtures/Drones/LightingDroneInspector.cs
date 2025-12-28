@@ -14,6 +14,7 @@ namespace Runtime.Dmx.Fixtures.Drones
                 .GetRect()
                 .WithSizeDelta(new Vector2(0, 20));
 
+            var info = UIUtility.AddItemToList(parent, 0, 15, "DMX Copy");
             UIUtility.AddButton(parent, "Copy All", Color.white, Color.black)
                 .OnClick(() =>
                 {
@@ -43,6 +44,7 @@ namespace Runtime.Dmx.Fixtures.Drones
                 .GetRect()
                 .WithSizeDelta(new Vector2(0, 20));
             
+            var info = UIUtility.AddItemToList(parent, 0, 15, "DMX Copy");
             UIUtility.AddButton(parent, $"Copy All ({fixtures.Length})", Color.white, Color.black)
                 .OnClick(() =>
                 {

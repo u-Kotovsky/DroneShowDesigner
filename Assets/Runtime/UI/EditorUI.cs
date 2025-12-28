@@ -195,6 +195,8 @@ namespace Runtime.UI
             if (obj.GetComponent<MobileTruss>())
             {
                 var pool = selection.Select(x => x.GameObject.GetComponent<MobileTruss>()).ToArray();
+                var poolT = selection.Select(x => x.GameObject.transform).ToArray();
+                TransformInspector.OnInspector(componentRoot, poolT);
                 MobileTrussInspector.OnInspector(componentRoot, pool);
                 return;
             }
@@ -202,6 +204,8 @@ namespace Runtime.UI
             if (obj.GetComponent<MobileLight>())
             {
                 var pool = selection.Select(x => x.GameObject.GetComponent<MobileLight>()).ToArray();
+                var poolT = selection.Select(x => x.GameObject.transform).ToArray();
+                TransformInspector.OnInspector(componentRoot, poolT);
                 MobileLightInspector.OnInspector(componentRoot, pool);
                 return;
             }
@@ -209,6 +213,8 @@ namespace Runtime.UI
             if (obj.GetComponent<LightingDrone>())
             {
                 var pool = selection.Select(x => x.GameObject.GetComponent<LightingDrone>()).ToArray();
+                var poolT = selection.Select(x => x.GameObject.transform).ToArray();
+                TransformInspector.OnInspector(componentRoot, poolT);
                 LightingDroneInspector.OnInspector(componentRoot, pool);
                 return;
             }
@@ -216,6 +222,8 @@ namespace Runtime.UI
             if (obj.GetComponent<PyroDrone>())
             {
                 var pool = selection.Select(x => x.GameObject.GetComponent<PyroDrone>()).ToArray();
+                var poolT = selection.Select(x => x.GameObject.transform).ToArray();
+                TransformInspector.OnInspector(componentRoot, poolT);
                 PyroDroneInspector.OnInspector(componentRoot, pool);
                 return;
             }
@@ -256,29 +264,7 @@ namespace Runtime.UI
                     .WithSizeDelta(new Vector2(0, 20));
             }
 
-            //TransformInspector.OnInspector(componentRoot, selection.GameObject.transform);
-        }
-
-        private static void AddVector3(RectTransform parent, string title, Vector3 vector3)
-        {
-            Color elementColor = Color.white * 0.2f;
-            Color textColor = Color.white;
-            
-            var rotationInfo = UIUtility.AddItemToList(parent, 0, 15, title);
-            var rotationRoot = UIUtility.AddItemToList(parent, 0, 20);
-            
-            UIUtility.AddInputField(rotationRoot, elementColor, textColor)
-                .WithText(vector3.x.ToString())
-                .WithPlaceholder("X")
-                .OnValueChanged(value => { vector3.Set(float.Parse(value), vector3.y, vector3.z); });
-            UIUtility.AddInputField(rotationRoot, elementColor,textColor)
-                .WithText(vector3.y.ToString())
-                .WithPlaceholder("Y")
-                .OnValueChanged(value => { vector3.Set(vector3.x, float.Parse(value), vector3.z); });
-            UIUtility.AddInputField(rotationRoot, elementColor, textColor)
-                .WithText(vector3.z.ToString())
-                .WithPlaceholder("Z")
-                .OnValueChanged(value => { vector3.Set(vector3.x, vector3.y, float.Parse(value)); });
+            TransformInspector.OnInspector(componentRoot, selection.GameObject.transform);
         }
 
         private void OnSelectionChanged(List<SelectionEntry> obj)

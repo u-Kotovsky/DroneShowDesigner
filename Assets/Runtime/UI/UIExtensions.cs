@@ -57,6 +57,12 @@ namespace Runtime.UI
             button.onClick.AddListener(callback);
             return button;
         }
+        
+        public static TMP_Dropdown OnValueCHanged(this TMP_Dropdown component, UnityAction<int> callback)
+        {
+            component.onValueChanged.AddListener(callback);
+            return component;
+        }
 
         public static Toggle OnValueChanged(this Toggle toggle, UnityAction<bool> callback)
         {
@@ -133,24 +139,29 @@ namespace Runtime.UI
 
         #endregion
         
-        public static RectTransform GetRect(this LayoutGroup rect)
+        public static RectTransform GetRect(this LayoutGroup component)
         {
-            return rect.GetComponent<RectTransform>();
+            return component.GetComponent<RectTransform>();
         }
         
-        public static RectTransform GetRect(this Image image)
+        public static RectTransform GetRect(this Image component)
         {
-            return image.rectTransform;
+            return component.rectTransform;
         }
         
-        public static RectTransform GetRect(this TextMeshProUGUI text)
+        public static RectTransform GetRect(this TextMeshProUGUI component)
         {
-            return text.rectTransform;
+            return component.rectTransform;
         }
         
-        public static RectTransform GetRect(this Button text)
+        public static RectTransform GetRect(this Button component)
         {
-            return text.GetComponent<RectTransform>();
+            return component.GetComponent<RectTransform>();
+        }
+        
+        public static RectTransform GetRect(this TMP_Dropdown component)
+        {
+            return component.GetComponent<RectTransform>();
         }
         
         public static RectTransform WithSizeDelta(this RectTransform rect, Vector2 sizeDelta = new())

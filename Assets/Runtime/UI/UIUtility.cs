@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -198,10 +199,6 @@ namespace Runtime.UI
         {
             var obj = AddRect(rect, $"Dropdown");
             
-            //var image = obj.gameObject.AddComponent<Image>();
-            //image.sprite = MainUIController.DefaultUISprite;// defaultUISprite;
-            //image.color = elementColor;
-            
             var image = AddImage(obj, MainUIController.DefaultUISprite);
             image.color = elementColor;
             
@@ -221,17 +218,34 @@ namespace Runtime.UI
             dropdown.colors = colors;
             
             var label = AddText(obj, "Text", elementColor);
-            
-            //var arrow = AddRect(obj, "Arrow");
-            var arrow = AddImage(obj, MainUIController.DefaultUISprite);
+            label.GetRect().SetAllStretch(2, 2, 2, 2);
+
+            var arrow = AddRect(obj, "Arrow")
+                .WithImage(MainUIController.DefaultUISprite);
             
             var template = AddRect(obj, "Template");
-            
-            var viewport = AddRect(obj, "Viewport");
+            var scrollRect = template.gameObject.AddComponent<ScrollRect>();
+
+            var viewport = AddRect(template, "Viewport")
+                .WithImage(MainUIController.DefaultUISprite);
             // content, item, item bg; item checkmark; item label
+
+            var content = AddRect(viewport, "Content");
+
+            var item = AddRect(content, "Item");
+            var itemToggle = AddToggle(item, elementColor, textColor);
+            var background = AddRect(item, "Item Background");
+            var checkmark = AddRect(item, "Item Checkmark");
+            var itemLabel = AddText(item, "Text", textColor);
             
-            var scrollbar = AddScrollbar(obj, "Scrollbar");
+            var scrollbar = AddScrollbar(template, "Scrollbar");
             // sliding area, handle
+
+            dropdown.template = template;
+            
+            // Add options
+            
+            dropdown.AddOptions(options.ToList());
             
             return dropdown;
         }
