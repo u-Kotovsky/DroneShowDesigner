@@ -5,6 +5,8 @@ using Runtime.Dmx.Fixtures.Lights;
 using Runtime.Dmx.Fixtures.Truss;
 using Runtime.UI;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 namespace Runtime.Core.Selection
 {
@@ -14,6 +16,9 @@ namespace Runtime.Core.Selection
         public Vector3 endWorldPosition;
         public Vector2 startScreenPosition;
         public Vector2 endScreenPosition;
+        
+        public GraphicRaycaster graphicRaycaster;
+        public EventSystem eventSystem;
 
         public float timer;
         public int state;
@@ -66,6 +71,10 @@ namespace Runtime.Core.Selection
             
             var obj = new GameObject("FixtureSelectionManager (Instance)");
             var component = obj.AddComponent<FixtureSelectionManager>();
+            var graphicRaycaster = FindFirstObjectByType<GraphicRaycaster>();
+            var eventSystem = FindFirstObjectByType<EventSystem>();
+            component.eventSystem = eventSystem;
+            component.graphicRaycaster = graphicRaycaster;
             Instance = component;
         }
         
@@ -137,6 +146,30 @@ namespace Runtime.Core.Selection
             }
         }
 
+        private bool DidWeHitAnythingOnUI()
+        {
+            // Check if we hit anything on UI
+            var pointerEventData = new PointerEventData(eventSystem)
+            {
+                position = Input.mousePosition
+            };
+
+            // List to save found elements
+            var raycastResultList = new List<RaycastResult>();
+            
+            // Find elements at pointerEventData position, then save to raycastList
+            graphicRaycaster.Raycast(pointerEventData, raycastResultList);
+            
+            // Get rect transforms
+            var raycastResult = raycastResultList.Find(element => element.gameObject.GetComponent<RectTransform>());
+            if (raycastResult.gameObject != null) // Ignore action
+            {
+                return true;
+            }
+
+            return false;
+        }
+        
         private void SelectSingleObject()
         {
             if (!hasMainCamera)
@@ -145,6 +178,11 @@ namespace Runtime.Core.Selection
             }
             
             screenRay = MainCamera.ScreenPointToRay(Input.mousePosition);
+            
+            if (DidWeHitAnythingOnUI())
+            {
+                return;
+            }
 
             if (!Physics.Raycast(screenRay, out hitPoint, MainCamera.farClipPlane)) // No hit = ClearSelection
             {

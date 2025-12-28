@@ -43,8 +43,7 @@ namespace Runtime.UI
             var component = obj.AddComponent<EditorUI>();
             Instance = component;
         }
-
-
+        
         public static void BuildUI(RectTransform parent)
         {
             InsertInstanceIfNotExist();
