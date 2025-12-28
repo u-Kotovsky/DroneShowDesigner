@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Runtime.Core
+namespace Runtime.Core.Serialization
 {
     [Serializable]
     public class SerializableVector3

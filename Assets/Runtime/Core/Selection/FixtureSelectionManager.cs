@@ -186,6 +186,9 @@ namespace Runtime.Core.Selection
 
             if (!Physics.Raycast(screenRay, out hitPoint, MainCamera.farClipPlane)) // No hit = ClearSelection
             {
+                bool controlKey = Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl);
+                bool shiftKey = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
+                if (controlKey || shiftKey) return; // Do not reset selection when we holding shift or control keys
                 ClearAllSelection();
                 return;
             }

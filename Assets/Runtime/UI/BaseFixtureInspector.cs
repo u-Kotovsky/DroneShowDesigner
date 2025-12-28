@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Text;
 using Runtime.Core;
+using Runtime.Core.Serialization;
 using Runtime.Dmx.Fixtures;
 using Runtime.Dmx.Fixtures.Shared;
 using UnityEngine;
