@@ -149,7 +149,7 @@ namespace Runtime.UI
 
             if (errors.Length > 0)
             {
-                UIUtility.AddText(_inspector, "Failed to load inspector:\n" + errors.ToString(), Color.red);
+                UIUtility.AddText(_inspector, "Failed to load inspector:\n" + errors, Color.red);
                 errors.Clear();
                 return;
             }

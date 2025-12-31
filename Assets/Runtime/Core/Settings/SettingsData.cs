@@ -13,5 +13,7 @@ namespace Runtime.Core.Settings
         public bool enableMobileLight = false;
         public bool enableLightingDrones = false;
         public bool enablePyroDrones = false;
+        
+        public bool compressText = false;
     }
 }

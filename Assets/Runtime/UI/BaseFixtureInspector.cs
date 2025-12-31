@@ -28,7 +28,7 @@ namespace Runtime.UI
             {
                 string data;
 
-                if (offset == -1 && size == -1)
+                if (offset != -1 && size != -1)
                 {
                     data = Utility.GetDmxValuesWithOffsetAsMa3Representation(fixture.GetDmxData(), fixture.globalChannelStart, offset, size);
                 }
@@ -76,7 +76,8 @@ namespace Runtime.UI
                     // also check for array size of fixtures and clipboard values, if it doesn't match, ignore action
                     // and show popup that clipboard data size does not match selected size and show sizes.
                     // TODO: read header to see what data it should contain
-                    var data = JsonUtility.FromJson<SerializableVector3Array>(GUIUtility.systemCopyBuffer);
+                    var text = Utility.GetSystemCopyBuffer();
+                    var data = JsonUtility.FromJson<SerializableVector3Array>(text);
                     if (data.value.Length != fixtures.Length)
                     {
                         Debug.LogError($"data count from clipboard is not equal to selected fixture count. ({data.value.Length}, {fixtures.Length})");

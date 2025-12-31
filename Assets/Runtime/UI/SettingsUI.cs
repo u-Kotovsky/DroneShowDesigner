@@ -18,6 +18,7 @@ namespace Runtime.UI
         private static TMP_InputField _targetFrameRate, _artNetInIp, _artNetInPort, _artNetOutIp, _artNetOutPort;
         private static Toggle _enableMobileTruss, _enableMobileLight, _enableLightingDrones, _enablePyroDrones;
         private static Toggle _artNetInToggle, _artNetOutToggle;
+        private static Toggle _compressText;
 
         private static FixtureSpawnManager _fixtureSpawner;
         private static DmxController _dmxController;
@@ -74,6 +75,7 @@ namespace Runtime.UI
                 _fixtureSpawner.UseMobileLight = data.enableMobileLight;
                 _fixtureSpawner.UsePyroDrone = data.enablePyroDrones;
                 _fixtureSpawner.UseLightingDrone = data.enableLightingDrones;
+                Utility.UseCompression = data.compressText;
             }
             catch (Exception e)
             {
@@ -147,6 +149,9 @@ namespace Runtime.UI
                 .OnValueChanged(value => { SettingsService.data.enablePyroDrones = value; });
             AddToggle(listRect, ref _enableLightingDrones, 11, "Enable Lighting Drones")
                 .OnValueChanged(value => { SettingsService.data.enableLightingDrones = value; });
+            
+            AddToggle(listRect, ref _compressText, 5, "Compress Text")
+                .OnValueChanged(value => { SettingsService.data.compressText = value; });
             
             RefreshUI();
         }

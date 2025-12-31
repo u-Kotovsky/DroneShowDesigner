@@ -52,7 +52,7 @@ namespace Runtime.Dmx.Fixtures.Lights
                 data[i] = fixtures[i];
             }
             
-            AddMultiPositionCopyPaste(parent, data); // Might be bad?
+            AddMultiPositionCopyPaste(parent, data);
         }
     }
 }

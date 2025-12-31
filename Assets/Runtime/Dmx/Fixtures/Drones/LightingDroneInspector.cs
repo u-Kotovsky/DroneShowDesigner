@@ -78,7 +78,7 @@ namespace Runtime.Dmx.Fixtures.Drones
                 data[i] = fixtures[i];
             }
             
-            AddMultiPositionCopyPaste(parent, data); // Might be bad?
+            AddMultiPositionCopyPaste(parent, data);
         }
     }
 }

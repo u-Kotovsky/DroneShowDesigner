@@ -12,10 +12,10 @@ namespace Runtime.Core.Selection
 {
     public class FixtureSelectionManager : MonoBehaviour
     {
-        public Vector3 startWorldPosition;
-        public Vector3 endWorldPosition;
-        public Vector2 startScreenPosition;
-        public Vector2 endScreenPosition;
+        private Vector3 startWorldPosition;
+        private Vector3 endWorldPosition;
+        private Vector2 startScreenPosition;
+        private Vector2 endScreenPosition;
         
         public GraphicRaycaster graphicRaycaster;
         public EventSystem eventSystem;
@@ -177,12 +177,12 @@ namespace Runtime.Core.Selection
                 return;
             }
             
-            screenRay = MainCamera.ScreenPointToRay(Input.mousePosition);
-            
             if (DidWeHitAnythingOnUI())
             {
                 return;
             }
+            
+            screenRay = MainCamera.ScreenPointToRay(Input.mousePosition);
 
             if (!Physics.Raycast(screenRay, out hitPoint, MainCamera.farClipPlane)) // No hit = ClearSelection
             {

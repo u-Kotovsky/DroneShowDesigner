@@ -1,5 +1,6 @@
 using System;
 using System.Text;
+using Runtime.Core.Compression;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -147,15 +148,19 @@ namespace Runtime.Dmx.Fixtures
         /// <param name="buffer"></param>
         public static void CopyDmxValuesAsArray(byte[] buffer)
         {
-            GUIUtility.systemCopyBuffer = "[" + string.Join(", ", buffer) + "]";
+            var data = "[" + string.Join(", ", buffer) + "]";
+            
+            if (_useCompression) data = Compress(data);
+            
+            GUIUtility.systemCopyBuffer = data;
         }
 
         public static byte[] GetRange(this byte[] buffer, int start, int count)
         {
             byte[] bytes = new byte[count];
-                    
+            
             Buffer.BlockCopy(buffer, start, bytes, 0, bytes.Length);
-
+            
             return bytes;
         }
 
@@ -179,8 +184,37 @@ namespace Runtime.Dmx.Fixtures
         /// <param name="separator"></param>
         public static void CopyValuesAsArray(string[] buffer, string separator = "\n")
         {
-            string data = string.Join(separator, buffer); 
+            var data = string.Join(separator, buffer);
+            if (_useCompression) data = Compress(data);
             GUIUtility.systemCopyBuffer = data;
+        }
+
+        private static bool _useCompression = false;
+        public static bool UseCompression 
+        {
+            get => _useCompression;
+            set => _useCompression = value;
+        }
+
+        public static string GetSystemCopyBuffer()
+        {
+            var data = GUIUtility.systemCopyBuffer;
+            if (_useCompression) data = Decompress(data);
+            return data;
+        }
+
+        public static string Compress(string input)
+        {
+            var bytes = GZipWrapper.Compress(input);
+            var base64 = Convert.ToBase64String(bytes);
+            return base64;
+        }
+
+        public static string Decompress(string input)
+        {
+            var bytes = Convert.FromBase64String(input);
+            var text = GZipWrapper.Decompress(bytes);
+            return text;
         }
 
         /// <summary>
@@ -189,8 +223,9 @@ namespace Runtime.Dmx.Fixtures
         /// <param name="value"></param>
         public static void CopyValue(string value)
         {
-            string data = value;
-            GUIUtility.systemCopyBuffer = data; // Like why the hell it copying only 3 lines and then fucks it up?
+            var data = value;
+            if (_useCompression) data = Compress(data);
+            GUIUtility.systemCopyBuffer = data;
         }
 
         /// <summary>
@@ -232,6 +267,8 @@ namespace Runtime.Dmx.Fixtures
         /// <param name="size"></param>
         public static string GetDmxValuesWithOffsetAsMa3Representation(byte[] dmxData, int globalChannelStart, int offset, int size)
         {
+            if (offset == -1) offset = 0;
+            if (size == -1) size = dmxData.Length;
             byte[] bytes = dmxData.GetRange(offset, size);
             
             int universe = (int)Mathf.Floor(globalChannelStart / 512) + 1;
