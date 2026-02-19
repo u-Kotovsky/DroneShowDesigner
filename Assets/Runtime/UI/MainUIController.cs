@@ -159,6 +159,24 @@ namespace Runtime.UI
                 hotbarButtons.Add(button);
             });
             
+            UIUtility.AddButton(hotbar, "Drones", buttonColor, textColor, button =>
+            {
+                button.OnClick(() =>
+                {
+                    OnDeconstructUI?.Invoke();
+                    OnDeconstructUI += SkybrushUI.DeconstructUI;
+                    //OnDeconstructUI += () => { OnDeconstructUI -= TimelineUI.DeconstructUI; };
+                    CleanScreen();
+                    SetHotBarButtons(true);
+                    button.interactable = false;
+                    Debug.Log($"'{Prefix}' Open Drones");
+                    SkybrushUI.BuildUI(page);
+                    cameraController?.DisableMovement();
+                });
+                
+                hotbarButtons.Add(button);
+            });
+            
             //EffectUI.AddBoxSelection(page.parent.GetComponent<RectTransform>());
             //EffectUI.SetBoxSelectionActive(false);
         }
