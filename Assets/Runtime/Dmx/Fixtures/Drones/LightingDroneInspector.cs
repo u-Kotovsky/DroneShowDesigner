@@ -1,3 +1,4 @@
+using System;
 using Runtime.Dmx.Fixtures.Shared;
 using Runtime.UI;
 using UnityEngine;
@@ -17,28 +18,19 @@ namespace Runtime.Dmx.Fixtures.Drones
         
         public static void OnInspector(RectTransform parent, LightingDrone fixture)
         {
-            AddTitle(parent);
+            AddTitle(parent, Name);
 
-            var info = UIUtility.AddItemToList(parent, 0, 15, "DMX Copy");
+            var dmxCopyInfo = UIUtility.AddItemToList(parent, 0, 15, "DMX Copy");
             UIUtility.AddButton(parent, "Copy All", buttonColor, textColor)
-                .OnClick(() =>
-                {
-                    Utility.CopyAllDmxValuesAsMa3Representation(fixture.GetDmxData(), fixture.globalChannelStart);
-                })
+                .OnClick(() => Utility.CopyAllDmxValuesAsMa3Representation(fixture.GetDmxData(), fixture.globalChannelStart))
                 .GetRect()
                 .WithSizeDelta(new Vector2(0, 20));
             UIUtility.AddButton(parent, "Copy Position", buttonColor, textColor)
-                .OnClick(() =>
-                {
-                    Utility.CopyDmxValuesWithOffsetAsMa3Representation(fixture.GetDmxData(), fixture.globalChannelStart, 0, 6);
-                })
+                .OnClick(() => Utility.CopyDmxValuesWithOffsetAsMa3Representation(fixture.GetDmxData(), fixture.globalChannelStart, 0, 6))
                 .GetRect()
                 .WithSizeDelta(new Vector2(0, 20));
             UIUtility.AddButton(parent, "Copy Color", buttonColor, textColor)
-                .OnClick(() =>
-                {
-                    Utility.CopyDmxValuesWithOffsetAsMa3Representation(fixture.GetDmxData(), fixture.globalChannelStart, 6, 3);
-                })
+                .OnClick(() => Utility.CopyDmxValuesWithOffsetAsMa3Representation(fixture.GetDmxData(), fixture.globalChannelStart, 6, 3))
                 .GetRect()
                 .WithSizeDelta(new Vector2(0, 20));
             
@@ -47,27 +39,78 @@ namespace Runtime.Dmx.Fixtures.Drones
         
         public static void OnInspector(RectTransform parent, LightingDrone[] fixtures)
         {
-            AddTitle(parent);
+            AddTitle(parent, Name);
             
-            var info = UIUtility.AddItemToList(parent, 0, 15, "DMX Copy");
-            UIUtility.AddButton(parent, $"Copy All ({fixtures.Length})", buttonColor, textColor)
+            var selectionInfo = UIUtility.AddItemToList(parent, 0, 15, $"Selected {fixtures.Length} fixtures");
+            var dmxCopyInfo = UIUtility.AddItemToList(parent, 0, 15, "DMX Copy");
+            UIUtility.AddButton(parent, "Copy All", buttonColor, textColor)
+                .OnClick(() => CopyData(fixtures))
+                .GetRect()
+                .WithSizeDelta(new Vector2(0, 20));
+            UIUtility.AddButton(parent, "Copy Position", buttonColor, textColor)
+                .OnClick(() => CopyData(fixtures, 0, 6))
+                .GetRect()
+                .WithSizeDelta(new Vector2(0, 20));
+            UIUtility.AddButton(parent, "Copy Color", buttonColor, textColor)
+                .OnClick(() => CopyData(fixtures, 6, 3))
+                .GetRect()
+                .WithSizeDelta(new Vector2(0, 20));
+            
+            var shapeInfo = UIUtility.AddItemToList(parent, 0, 15, "Shape generators");
+            UIUtility.AddButton(parent, "Make circle", buttonColor, textColor)
                 .OnClick(() =>
                 {
-                    CopyData(fixtures);
+                    Vector3 center = fixtures[0].transform.localPosition;
+                    float radius = 3;
+                    for (var i = 0; i < fixtures.Length; i++)
+                    {
+                        var n = ((float)i / fixtures.Length) * MathF.PI * 2;
+
+                        var sin = MathF.Sin(n) * radius;
+                        var cos = MathF.Cos(n) * radius;
+
+                        Vector3 position = new Vector3(sin, 0, cos);
+                        
+                        fixtures[i].transform.localPosition = position + center;
+                    }
                 })
                 .GetRect()
                 .WithSizeDelta(new Vector2(0, 20));
-            UIUtility.AddButton(parent, $"Copy Position ({fixtures.Length})", buttonColor, textColor)
+            
+            UIUtility.AddButton(parent, "Make pole", buttonColor, textColor)
                 .OnClick(() =>
                 {
-                    CopyData(fixtures, 0, 6);
+                    Vector3 center = fixtures[0].transform.localPosition;
+                    float padding = 1;
+                    for (var i = 0; i < fixtures.Length; i++)
+                    {
+                        Vector3 position = new Vector3(0, i * padding, 0);
+                        
+                        fixtures[i].transform.localPosition = position + center;
+                    }
                 })
                 .GetRect()
                 .WithSizeDelta(new Vector2(0, 20));
-            UIUtility.AddButton(parent, $"Copy Color ({fixtures.Length})", buttonColor, textColor)
+            
+            
+            var colorInfo = UIUtility.AddItemToList(parent, 0, 15, "Color generators");
+            UIUtility.AddButton(parent, "Full White", buttonColor, textColor)
                 .OnClick(() =>
                 {
-                    CopyData(fixtures, 6, 3);
+                    for (var i = 0; i < fixtures.Length; i++)
+                    {
+                        fixtures[i].Color = Color.white;
+                    }
+                })
+                .GetRect()
+                .WithSizeDelta(new Vector2(0, 20));
+            UIUtility.AddButton(parent, "Full Black", buttonColor, textColor)
+                .OnClick(() =>
+                {
+                    for (var i = 0; i < fixtures.Length; i++)
+                    {
+                        fixtures[i].Color = Color.black;
+                    }
                 })
                 .GetRect()
                 .WithSizeDelta(new Vector2(0, 20));

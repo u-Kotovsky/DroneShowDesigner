@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace Runtime.Core.Selection
@@ -22,30 +23,42 @@ namespace Runtime.Core.Selection
         private ObjectManipulateType manipulateType = ObjectManipulateType.None;
         private ObjectAxis moveAxis = ObjectAxis.Screen;
         private ObjectAxis rotateAxis = ObjectAxis.Screen;
-        
-        private void Awake()
+
+        private void Start()
         {
-            
+            FixtureSelectionManager.Instance.OnObjectDeselected += OnDeselected;
         }
-        
+
+        private void OnDeselected(SelectionEntry selection)
+        {
+            if (FixtureSelectionManager.Instance.Selection.Count <= 0) ResetManipulation();
+        }
+
+        private void ResetManipulation()
+        {
+            manipulateType = ObjectManipulateType.None;
+            moveAxis = ObjectAxis.Screen;
+            rotateAxis = ObjectAxis.Screen;
+        }
+
         private void Update()
         {
             if (Input.GetKeyDown(KeyCode.G))
             {
                 manipulateType = manipulateType == ObjectManipulateType.Move ? ObjectManipulateType.None : ObjectManipulateType.Move;
                 
-                if (FixtureSelectionManager.Instance.Selection.Count <= 0) manipulateType = ObjectManipulateType.None;
+                if (FixtureSelectionManager.Instance.Selection.Count <= 0) ResetManipulation();
                 
-                Debug.Log(manipulateType);
+                Debug.Log("Manipulation type: " + manipulateType);
             }
 
             if (Input.GetKeyDown(KeyCode.R))
             {
                 manipulateType = manipulateType == ObjectManipulateType.Rotate ? ObjectManipulateType.None : ObjectManipulateType.Rotate;
                 
-                if (FixtureSelectionManager.Instance.Selection.Count <= 0) manipulateType = ObjectManipulateType.None;
+                if (FixtureSelectionManager.Instance.Selection.Count <= 0) ResetManipulation();
                 
-                Debug.Log(manipulateType);
+                Debug.Log("Manipulation type: " + manipulateType);
             }
 
             switch (manipulateType)
@@ -59,9 +72,18 @@ namespace Runtime.Core.Selection
             }
         }
 
+        private const float speed = 0.5f;
+
         private void Move()
         {
             SetAxis(ref moveAxis);
+            
+            // TODO: once we enable manipulation, save current position into cache,
+            // just in case when user wants to cancel operation, we just revert it to those positions.
+            // TODO: on ESC stop manipulation and revert changes
+            // TODO: enable/disable fixed step
+            // TODO: let user change speed/power of movement
+            // TODO: visual indication that position/rotation manipulation is on or off.
 
             switch (moveAxis)
             {
@@ -69,13 +91,22 @@ namespace Runtime.Core.Selection
 
                     break;
                 case ObjectAxis.X:
-
+                    foreach (var selection in FixtureSelectionManager.Instance.Selection)
+                    {
+                        selection.GameObject.transform.localPosition += Vector3.right * (Input.mousePositionDelta.x * speed);
+                    }
                     break;
                 case ObjectAxis.Y:
-
+                    foreach (var selection in FixtureSelectionManager.Instance.Selection)
+                    {
+                        selection.GameObject.transform.localPosition += Vector3.up * (Input.mousePositionDelta.y * speed);
+                    }
                     break;
                 case ObjectAxis.Z:
-
+                    foreach (var selection in FixtureSelectionManager.Instance.Selection)
+                    {
+                        selection.GameObject.transform.localPosition += Vector3.forward * (Input.mousePositionDelta.x * speed);
+                    }
                     break;
             }
         }
@@ -90,7 +121,7 @@ namespace Runtime.Core.Selection
 
                     break;
                 case ObjectAxis.X:
-
+                    
                     break;
                 case ObjectAxis.Y:
 

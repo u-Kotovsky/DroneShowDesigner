@@ -33,7 +33,7 @@ namespace Runtime.Dmx.Fixtures.Drones
         private byte g;
         private byte b;
         
-        public Color color = new(0, 0, 0, 1);
+        private Color color = new(0, 0, 0, 1);
         public Color Color
         {
             get => color;

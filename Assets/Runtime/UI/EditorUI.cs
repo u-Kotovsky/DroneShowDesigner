@@ -181,7 +181,7 @@ namespace Runtime.UI
 
         private static void CreateMultiComponentInspectorOfOneType(List<SelectionEntry> selection)
         {
-            var componentRoot = UIUtility.AddRect(_inspector, $"Multi-Component")
+            var componentRoot = UIUtility.AddRect(_inspector, "Multi-Component")
                 .WithVerticalLayout()
                 //.SetAllStretch(Vector4.zero)
                 .ControlChildSize(true, false)

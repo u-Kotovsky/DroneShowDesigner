@@ -61,7 +61,7 @@ namespace Runtime.UI
                     }
 
                     var json = JsonUtility.ToJson(array);
-                    Debug.Log($"Copy: {array.value.Length} elements, json: {json}");
+                    Debug.Log($"Copy: {array.value.Length} elements");
                     
                     Utility.CopyValue(json);
                 })
