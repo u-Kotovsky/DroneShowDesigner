@@ -3414,6 +3414,12 @@
             <summary>
             Gets or sets channel for this event.
             </summary>
+            <remarks>
+            Channel is a zero-based number in DryWetMIDI, valid values are from <c>0</c> to <c>15</c>.
+            Other libraries and software can use one-based channel numbers (i.e.from <c>1</c>
+            to <c>16</c>) so be aware about that: channel <c>10</c> in such software will be <c>9</c>
+            in DryWetMIDI.
+            </remarks>
         </member>
         <member name="M:Melanchall.DryWetMidi.Core.ChannelEvent.ReadDataByte(Melanchall.DryWetMidi.Core.MidiReader,Melanchall.DryWetMidi.Core.ReadingSettings)">
             <summary>
@@ -4743,7 +4749,7 @@
         </member>
         <member name="P:Melanchall.DryWetMidi.Core.ChannelPrefixEvent.Channel">
             <summary>
-            Gets or sets MIDI channel.
+            Gets or sets a MIDI channel.
             </summary>
         </member>
         <member name="M:Melanchall.DryWetMidi.Core.ChannelPrefixEvent.ReadContent(Melanchall.DryWetMidi.Core.MidiReader,Melanchall.DryWetMidi.Core.ReadingSettings,System.Int32)">
@@ -6577,6 +6583,12 @@
             <summary>
             Gets the channel of an unknown channel event.
             </summary>
+            <remarks>
+            Channel is a zero-based number in DryWetMIDI, valid values are from <c>0</c> to <c>15</c>.
+            Other libraries and software can use one-based channel numbers (i.e.from <c>1</c>
+            to <c>16</c>) so be aware about that: channel <c>10</c> in such software will be <c>9</c>
+            in DryWetMIDI.
+            </remarks>
         </member>
         <member name="P:Melanchall.DryWetMidi.Core.UnknownChannelEventException.StatusByte">
             <summary>
@@ -7063,6 +7075,7 @@
             <param name="settings">Settings according to which the file must be read. Specify <c>null</c> to use
             default settings.</param>
             <returns>An instance of the <see cref="T:Melanchall.DryWetMidi.Core.MidiFile"/> representing a MIDI file.</returns>
+            <seealso cref="M:Melanchall.DryWetMidi.Core.MidiFile.ReadLazy(System.String,Melanchall.DryWetMidi.Core.ReadingSettings)"/>
             <exception cref="T:System.ArgumentException"><paramref name="filePath"/> is a zero-length string,
             contains only white space, or contains one or more invalid characters as defined by
             <see cref="F:System.IO.Path.InvalidPathChars"/>.</exception>
@@ -7132,6 +7145,7 @@
             <param name="settings">Settings according to which the file must be read. Specify <c>null</c> to use
             default settings.</param>
             <returns>An instance of the <see cref="T:Melanchall.DryWetMidi.Core.MidiTokensReader"/> wrapped around the specified file.</returns>
+            <seealso cref="M:Melanchall.DryWetMidi.Core.MidiFile.Read(System.String,Melanchall.DryWetMidi.Core.ReadingSettings)"/>
             <exception cref="T:System.ArgumentException"><paramref name="filePath"/> is a zero-length string,
             contains only white space, or contains one or more invalid characters as defined by
             <see cref="F:System.IO.Path.InvalidPathChars"/>.</exception>
@@ -7168,6 +7182,7 @@
             <param name="format">Format of a MIDI file.</param>
             <param name="settings">Settings according to which the file must be written. Specify <c>null</c> to use
             default settings.</param>
+            <seealso cref="M:Melanchall.DryWetMidi.Core.MidiFile.WriteLazy(System.String,System.Boolean,Melanchall.DryWetMidi.Core.MidiFileFormat,Melanchall.DryWetMidi.Core.WritingSettings,Melanchall.DryWetMidi.Core.TimeDivision)"/>
             <exception cref="T:System.ArgumentException"><paramref name="filePath"/> is a zero-length string,
             contains only white space, or contains one or more invalid characters as defined by
             <see cref="F:System.IO.Path.InvalidPathChars"/>.</exception>
@@ -7214,6 +7229,7 @@
             (default value) to use the default one - <see cref="F:Melanchall.DryWetMidi.Core.TicksPerQuarterNoteTimeDivision.DefaultTicksPerQuarterNote"/>
             ticks per quarter note.</param>
             <returns>An instance of the <see cref="T:Melanchall.DryWetMidi.Core.MidiTokensWriter"/> wrapped around the specified file.</returns>
+            <seealso cref="M:Melanchall.DryWetMidi.Core.MidiFile.Write(System.String,System.Boolean,Melanchall.DryWetMidi.Core.MidiFileFormat,Melanchall.DryWetMidi.Core.WritingSettings)"/>
             <exception cref="T:System.ArgumentException"><paramref name="filePath"/> is a zero-length string,
             contains only white space, or contains one or more invalid characters as defined by
             <see cref="F:System.IO.Path.InvalidPathChars"/>.</exception>
@@ -7256,6 +7272,7 @@
             Stream must be readable, seekable and be able to provide its position and length via <see cref="P:System.IO.Stream.Position"/>
             and <see cref="P:System.IO.Stream.Length"/> properties.
             </remarks>
+            <seealso cref="M:Melanchall.DryWetMidi.Core.MidiFile.ReadLazy(System.IO.Stream,Melanchall.DryWetMidi.Core.ReadingSettings)"/>
             <exception cref="T:System.ArgumentNullException"><paramref name="stream"/> is <c>null</c>.</exception>
             <exception cref="T:System.ArgumentException">
             One of the following errors occurred:
@@ -7329,6 +7346,7 @@
             Stream must be readable, seekable and be able to provide its position and length via <see cref="P:System.IO.Stream.Position"/>
             and <see cref="P:System.IO.Stream.Length"/> properties.
             </remarks>
+            <seealso cref="M:Melanchall.DryWetMidi.Core.MidiFile.Read(System.IO.Stream,Melanchall.DryWetMidi.Core.ReadingSettings)"/>
             <exception cref="T:System.ArgumentNullException"><paramref name="stream"/> is <c>null</c>.</exception>
             <exception cref="T:System.ArgumentException">
             One of the following errors occurred:
@@ -7363,6 +7381,7 @@
             <param name="format">Format of the file to be written.</param>
             <param name="settings">Settings according to which the file must be written. Specify <c>null</c> to use
             default settings.</param>
+            <seealso cref="M:Melanchall.DryWetMidi.Core.MidiFile.WriteLazy(System.IO.Stream,Melanchall.DryWetMidi.Core.WritingSettings,Melanchall.DryWetMidi.Core.MidiFileFormat,Melanchall.DryWetMidi.Core.TimeDivision)"/>
             <exception cref="T:System.ArgumentNullException"><paramref name="stream"/> is <c>null</c>.</exception>
             <exception cref="T:System.ArgumentException"><paramref name="stream"/> doesn't support writing.</exception>
             <exception cref="T:System.ComponentModel.InvalidEnumArgumentException"><paramref name="format"/> specified an invalid value.</exception>
@@ -7386,6 +7405,7 @@
             (default value) to use the default one - <see cref="F:Melanchall.DryWetMidi.Core.TicksPerQuarterNoteTimeDivision.DefaultTicksPerQuarterNote"/>
             ticks per quarter note.</param>
             <returns>An instance of the <see cref="T:Melanchall.DryWetMidi.Core.MidiTokensWriter"/> wrapped around the <paramref name="stream"/>.</returns>
+            <seealso cref="M:Melanchall.DryWetMidi.Core.MidiFile.Write(System.IO.Stream,Melanchall.DryWetMidi.Core.MidiFileFormat,Melanchall.DryWetMidi.Core.WritingSettings)"/>
             <exception cref="T:System.ArgumentException"><paramref name="stream"/> doesn't support writing.</exception>
             <exception cref="T:System.ComponentModel.InvalidEnumArgumentException"><paramref name="format"/> specified an invalid value.</exception>
             <exception cref="T:System.InvalidOperationException">Time division is <c>null</c>.</exception>
@@ -8981,6 +9001,12 @@
             <summary>
             Gets or sets channel to play the chord on.
             </summary>
+            <remarks>
+            Channel is a zero-based number in DryWetMIDI, valid values are from <c>0</c> to <c>15</c>.
+            Other libraries and software can use one-based channel numbers (i.e.from <c>1</c>
+            to <c>16</c>) so be aware about that: channel <c>10</c> in such software will be <c>9</c>
+            in DryWetMIDI.
+            </remarks>
             <exception cref="T:System.InvalidOperationException">
             <para>One of the following errors occurred:</para>
             <list type="bullet">
@@ -9064,6 +9090,7 @@
             <summary>
             Gets or sets custom construction method for <see cref="T:Melanchall.DryWetMidi.Interaction.Chord"/>. If <c>null</c>,
             default method will be used (via one of the <see cref="T:Melanchall.DryWetMidi.Interaction.Chord"/>'s constructors).
+            The same behavior will be used if the method returns <c>null</c>.
             </summary>
         </member>
         <member name="P:Melanchall.DryWetMidi.Interaction.ChordDetectionSettings.NotesMinCount">
@@ -9187,25 +9214,6 @@
             and built to construct notes for chords.</param>
             <returns>Collection of chords contained in <paramref name="midiEvents"/> ordered by time.</returns>
             <exception cref="T:System.ArgumentNullException"><paramref name="midiEvents"/> is <c>null</c>.</exception>
-        </member>
-        <member name="M:Melanchall.DryWetMidi.Interaction.ChordsManagingUtilities.GetChords(Melanchall.DryWetMidi.Core.EventsCollection,Melanchall.DryWetMidi.Interaction.ChordDetectionSettings,Melanchall.DryWetMidi.Interaction.NoteDetectionSettings,Melanchall.DryWetMidi.Interaction.TimedEventDetectionSettings)">
-            <summary>
-            Gets chords contained in the specified <see cref="T:Melanchall.DryWetMidi.Core.EventsCollection"/>. More info in the
-            <see href="https://melanchall.github.io/drywetmidi/articles/high-level-managing/Getting-objects.html#getchords">Getting objects: GetChords</see> article.
-            </summary>
-            <param name="eventsCollection"><see cref="T:Melanchall.DryWetMidi.Core.EventsCollection"/> to search for chords.</param>
-            <param name="settings">Settings according to which chords should be detected and built.</param>
-            <param name="noteDetectionSettings">Settings according to which timed events should be detected
-            and built to construct notes.</param>
-            <param name="timedEventDetectionSettings">Settings according to which timed events should be detected
-            and built to construct notes for chords.</param>
-            <returns>Collection of chords contained in <paramref name="eventsCollection"/> ordered by time.</returns>
-            <exception cref="T:System.ArgumentNullException"><paramref name="eventsCollection"/> is <c>null</c>.</exception>
-            <seealso cref="M:Melanchall.DryWetMidi.Interaction.ChordsManagingUtilities.ProcessChords(Melanchall.DryWetMidi.Core.EventsCollection,System.Action{Melanchall.DryWetMidi.Interaction.Chord},System.Predicate{Melanchall.DryWetMidi.Interaction.Chord},Melanchall.DryWetMidi.Interaction.ChordDetectionSettings,Melanchall.DryWetMidi.Interaction.NoteDetectionSettings,Melanchall.DryWetMidi.Interaction.TimedEventDetectionSettings,Melanchall.DryWetMidi.Interaction.ChordProcessingHint)"/>
-            <seealso cref="M:Melanchall.DryWetMidi.Interaction.ChordsManagingUtilities.ProcessChords(Melanchall.DryWetMidi.Core.EventsCollection,System.Action{Melanchall.DryWetMidi.Interaction.Chord},Melanchall.DryWetMidi.Interaction.ChordDetectionSettings,Melanchall.DryWetMidi.Interaction.NoteDetectionSettings,Melanchall.DryWetMidi.Interaction.TimedEventDetectionSettings,Melanchall.DryWetMidi.Interaction.ChordProcessingHint)"/>
-            <seealso cref="M:Melanchall.DryWetMidi.Interaction.ChordsManagingUtilities.RemoveChords(Melanchall.DryWetMidi.Core.EventsCollection,Melanchall.DryWetMidi.Interaction.ChordDetectionSettings,Melanchall.DryWetMidi.Interaction.NoteDetectionSettings,Melanchall.DryWetMidi.Interaction.TimedEventDetectionSettings)"/>
-            <seealso cref="M:Melanchall.DryWetMidi.Interaction.ChordsManagingUtilities.RemoveChords(Melanchall.DryWetMidi.Core.EventsCollection,System.Predicate{Melanchall.DryWetMidi.Interaction.Chord},Melanchall.DryWetMidi.Interaction.ChordDetectionSettings,Melanchall.DryWetMidi.Interaction.NoteDetectionSettings,Melanchall.DryWetMidi.Interaction.TimedEventDetectionSettings)"/>
-            <seealso cref="T:Melanchall.DryWetMidi.Interaction.GetObjectsUtilities"/>
         </member>
         <member name="M:Melanchall.DryWetMidi.Interaction.ChordsManagingUtilities.GetChords(Melanchall.DryWetMidi.Core.TrackChunk,Melanchall.DryWetMidi.Interaction.ChordDetectionSettings,Melanchall.DryWetMidi.Interaction.NoteDetectionSettings,Melanchall.DryWetMidi.Interaction.TimedEventDetectionSettings)">
             <summary>
@@ -10013,6 +10021,12 @@
             <summary>
             Gets the channel which should be used to play an object.
             </summary>
+            <remarks>
+            Channel is a zero-based number in DryWetMIDI, valid values are from <c>0</c> to <c>15</c>.
+            Other libraries and software can use one-based channel numbers (i.e.from <c>1</c>
+            to <c>16</c>) so be aware about that: channel <c>10</c> in such software will be <c>9</c>
+            in DryWetMIDI.
+            </remarks>
         </member>
         <member name="T:Melanchall.DryWetMidi.Interaction.ILengthedObject">
             <summary>
@@ -10630,6 +10644,12 @@
             <summary>
             Gets or sets channel to play the note on.
             </summary>
+            <remarks>
+            Channel is a zero-based number in DryWetMIDI, valid values are from <c>0</c> to <c>15</c>.
+            Other libraries and software can use one-based channel numbers (i.e.from <c>1</c>
+            to <c>16</c>) so be aware about that: channel <c>10</c> in such software will be <c>9</c>
+            in DryWetMIDI.
+            </remarks>
         </member>
         <member name="P:Melanchall.DryWetMidi.Interaction.Note.NoteName">
             <summary>
@@ -10722,6 +10742,7 @@
             <summary>
             Gets or sets custom construction method for <see cref="T:Melanchall.DryWetMidi.Interaction.Note"/>. If <c>null</c>,
             default method will be used (via one of the <see cref="T:Melanchall.DryWetMidi.Interaction.Note"/>'s constructors).
+            The same behavior will be used if the method returns <c>null</c>.
             </summary>
         </member>
         <member name="P:Melanchall.DryWetMidi.Interaction.NoteDetectionSettings.NoteStartDetectionPolicy">
@@ -10812,23 +10833,6 @@
             and built to construct notes.</param>
             <returns>Collection of notes contained in <paramref name="midiEvents"/> ordered by time.</returns>
             <exception cref="T:System.ArgumentNullException"><paramref name="midiEvents"/> is <c>null</c>.</exception>
-            <seealso cref="T:Melanchall.DryWetMidi.Interaction.GetObjectsUtilities"/>
-        </member>
-        <member name="M:Melanchall.DryWetMidi.Interaction.NotesManagingUtilities.GetNotes(Melanchall.DryWetMidi.Core.EventsCollection,Melanchall.DryWetMidi.Interaction.NoteDetectionSettings,Melanchall.DryWetMidi.Interaction.TimedEventDetectionSettings)">
-            <summary>
-            Gets notes contained in the specified <see cref="T:Melanchall.DryWetMidi.Core.EventsCollection"/>. More info in the
-            <see href="https://melanchall.github.io/drywetmidi/articles/high-level-managing/Getting-objects.html#getnotes">Getting objects: GetNotes</see> article.
-            </summary>
-            <param name="eventsCollection"><see cref="T:Melanchall.DryWetMidi.Core.EventsCollection"/> to search for notes.</param>
-            <param name="settings">Settings according to which notes should be detected and built.</param>
-            <param name="timedEventDetectionSettings">Settings according to which timed events should be detected
-            and built to construct notes.</param>
-            <returns>Collection of notes contained in <paramref name="eventsCollection"/> ordered by time.</returns>
-            <exception cref="T:System.ArgumentNullException"><paramref name="eventsCollection"/> is <c>null</c>.</exception>
-            <seealso cref="M:Melanchall.DryWetMidi.Interaction.NotesManagingUtilities.ProcessNotes(Melanchall.DryWetMidi.Core.EventsCollection,System.Action{Melanchall.DryWetMidi.Interaction.Note},System.Predicate{Melanchall.DryWetMidi.Interaction.Note},Melanchall.DryWetMidi.Interaction.NoteDetectionSettings,Melanchall.DryWetMidi.Interaction.TimedEventDetectionSettings,Melanchall.DryWetMidi.Interaction.NoteProcessingHint)"/>
-            <seealso cref="M:Melanchall.DryWetMidi.Interaction.NotesManagingUtilities.ProcessNotes(Melanchall.DryWetMidi.Core.EventsCollection,System.Action{Melanchall.DryWetMidi.Interaction.Note},Melanchall.DryWetMidi.Interaction.NoteDetectionSettings,Melanchall.DryWetMidi.Interaction.TimedEventDetectionSettings,Melanchall.DryWetMidi.Interaction.NoteProcessingHint)"/>
-            <seealso cref="M:Melanchall.DryWetMidi.Interaction.NotesManagingUtilities.RemoveNotes(Melanchall.DryWetMidi.Core.EventsCollection,Melanchall.DryWetMidi.Interaction.NoteDetectionSettings,Melanchall.DryWetMidi.Interaction.TimedEventDetectionSettings)"/>
-            <seealso cref="M:Melanchall.DryWetMidi.Interaction.NotesManagingUtilities.RemoveNotes(Melanchall.DryWetMidi.Core.EventsCollection,System.Predicate{Melanchall.DryWetMidi.Interaction.Note},Melanchall.DryWetMidi.Interaction.NoteDetectionSettings,Melanchall.DryWetMidi.Interaction.TimedEventDetectionSettings)"/>
             <seealso cref="T:Melanchall.DryWetMidi.Interaction.GetObjectsUtilities"/>
         </member>
         <member name="M:Melanchall.DryWetMidi.Interaction.NotesManagingUtilities.GetNotes(Melanchall.DryWetMidi.Core.TrackChunk,Melanchall.DryWetMidi.Interaction.NoteDetectionSettings,Melanchall.DryWetMidi.Interaction.TimedEventDetectionSettings)">
@@ -11347,6 +11351,12 @@
             Gets or sets the channel of the current parameter. This channel is in fact
             the channel of Control Change events that represent the parameter.
             </summary>
+            <remarks>
+            Channel is a zero-based number in DryWetMIDI, valid values are from <c>0</c> to <c>15</c>.
+            Other libraries and software can use one-based channel numbers (i.e.from <c>1</c>
+            to <c>16</c>) so be aware about that: channel <c>10</c> in such software will be <c>9</c>
+            in DryWetMIDI.
+            </remarks>
         </member>
         <member name="P:Melanchall.DryWetMidi.Interaction.Parameter.ValueType">
             <summary>
@@ -13008,6 +13018,7 @@
             <summary>
             Gets or sets custom construction method for <see cref="T:Melanchall.DryWetMidi.Interaction.TimedEvent"/>. If <c>null</c>,
             default method will be used (via one of the <see cref="T:Melanchall.DryWetMidi.Interaction.TimedEvent"/>'s constructors).
+            The same behavior will be used if the method returns <c>null</c>.
             </summary>
         </member>
         <member name="T:Melanchall.DryWetMidi.Interaction.TimedEventProcessingHint">
@@ -13823,6 +13834,19 @@
             Gets the number of objects contained in the <see cref="T:Melanchall.DryWetMidi.Interaction.TimedObjectsCollection`1"/>.
             </summary>
         </member>
+        <member name="P:Melanchall.DryWetMidi.Interaction.TimedObjectsCollection`1.IsReadOnly">
+            <summary>
+            Gets a value indicating whether the <see cref="T:Melanchall.DryWetMidi.Interaction.TimedObjectsCollection`1"/>
+            is read-only.
+            </summary>
+        </member>
+        <member name="M:Melanchall.DryWetMidi.Interaction.TimedObjectsCollection`1.Add(`0)">
+            <summary>
+            Adds an object to this collection.
+            </summary>
+            <param name="obj">Object to add to the collection.</param>
+            <exception cref="T:System.ArgumentNullException"><paramref name="obj"/> is <c>null</c>.</exception>
+        </member>
         <member name="M:Melanchall.DryWetMidi.Interaction.TimedObjectsCollection`1.Add(System.Collections.Generic.IEnumerable{`0})">
             <summary>
             Adds objects to this collection.
@@ -13836,6 +13860,14 @@
             </summary>
             <param name="objects">Objects to add to the collection.</param>
             <exception cref="T:System.ArgumentNullException"><paramref name="objects"/> is <c>null</c>.</exception>
+        </member>
+        <member name="M:Melanchall.DryWetMidi.Interaction.TimedObjectsCollection`1.Remove(`0)">
+            <summary>
+            Removes the first occurrence of a specific object from this collection
+            </summary>
+            <param name="obj">Object to remove from the collection.</param>
+            <returns><c>true</c> if the object was successfully removed; otherwise, <c>false</c>.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="obj"/> is <c>null</c>.</exception>
         </member>
         <member name="M:Melanchall.DryWetMidi.Interaction.TimedObjectsCollection`1.Remove(System.Collections.Generic.IEnumerable{`0})">
             <summary>
@@ -13867,6 +13899,37 @@
             <summary>
             Removes all objects from this collection.
             </summary>
+        </member>
+        <member name="M:Melanchall.DryWetMidi.Interaction.TimedObjectsCollection`1.Contains(`0)">
+            <summary>
+            Determines whether the <see cref="T:Melanchall.DryWetMidi.Interaction.TimedObjectsCollection`1"/> contains a
+            specific object.
+            </summary>
+            <param name="obj">The object to locate in the <see cref="T:Melanchall.DryWetMidi.Interaction.TimedObjectsCollection`1"/>.</param>
+            <returns><c>true</c> if the object is found; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:Melanchall.DryWetMidi.Interaction.TimedObjectsCollection`1.CopyTo(`0[],System.Int32)">
+            <summary>
+            Copies the objects of the <see cref="T:Melanchall.DryWetMidi.Interaction.TimedObjectsCollection`1"/> to an
+            array, starting at a particular index.
+            </summary>
+            <param name="array">The one-dimensional array that is the destination of the objects
+            copied from <see cref="T:Melanchall.DryWetMidi.Interaction.TimedObjectsCollection`1"/>. The array must have
+            zero-based indexing.</param>
+            <param name="arrayIndex">The zero-based index in array at which copying begins.</param>
+            <exception cref="T:System.ArgumentNullException"><paramref name="array"/> is <c>null</c>.</exception>
+            <exception cref="T:System.ArgumentOutOfRangeException">
+            One of the following errors occurred:
+            <list type="bullet">
+            <item>
+            <description><paramref name="arrayIndex"/> is less than zero or greater than the length of the array.</description>
+            </item>
+            <item>
+            <description>The number of elements in the <see cref="T:Melanchall.DryWetMidi.Interaction.TimedObjectsCollection`1"/> is greater than
+            the available space from the <paramref name="arrayIndex"/> to the end of the <paramref name="array"/>.</description>
+            </item>
+            </list>
+            </exception>
         </member>
         <member name="M:Melanchall.DryWetMidi.Interaction.TimedObjectsCollection`1.GetEnumerator">
             <summary>
@@ -17449,7 +17512,7 @@
             <para>
             The default value of the enum is <see cref="F:Melanchall.DryWetMidi.Interaction.TimeSpanRoundingPolicy.NoRounding"/>. Let's see how remaining options work.
             Please note that rounding step should be specified (see
-            <see cref="M:Melanchall.DryWetMidi.Interaction.TimeSpanUtilities.Round(Melanchall.DryWetMidi.Interaction.ITimeSpan,Melanchall.DryWetMidi.Interaction.TimeSpanRoundingPolicy,System.Int64,Melanchall.DryWetMidi.Interaction.ITimeSpan,Melanchall.DryWetMidi.Interaction.TempoMap)"/>).
+            <see cref="M:Melanchall.DryWetMidi.Interaction.TimeSpanUtilities.Round(Melanchall.DryWetMidi.Interaction.ITimeSpan,Melanchall.DryWetMidi.Interaction.TimeSpanRoundingPolicy,Melanchall.DryWetMidi.Interaction.ITimeSpan,Melanchall.DryWetMidi.Interaction.ITimeSpan,Melanchall.DryWetMidi.Interaction.TempoMap)"/>).
             </para>
             <para>
             <see cref="F:Melanchall.DryWetMidi.Interaction.TimeSpanRoundingPolicy.RoundUp"/> used to round a time span to the smallest one that is greater than or equal
@@ -17563,33 +17626,6 @@
             Provides useful utilities for working with <see cref="T:Melanchall.DryWetMidi.Interaction.ITimeSpan"/>.
             </summary>
         </member>
-        <member name="M:Melanchall.DryWetMidi.Interaction.TimeSpanUtilities.Round(Melanchall.DryWetMidi.Interaction.ITimeSpan,Melanchall.DryWetMidi.Interaction.TimeSpanRoundingPolicy,System.Int64,Melanchall.DryWetMidi.Interaction.ITimeSpan,Melanchall.DryWetMidi.Interaction.TempoMap)">
-            <summary>
-            Rounds a time span using the specified step and rounding policy.
-            </summary>
-            <param name="timeSpan">Time span to round.</param>
-            <param name="roundingPolicy">Policy according to which the <paramref name="timeSpan"/> should be rounded.</param>
-            <param name="time">Time os the <paramref name="timeSpan"/>.</param>
-            <param name="step">Step to round the <paramref name="timeSpan"/> by.</param>
-            <param name="tempoMap">Tempo map used to calculate new time span.</param>
-            <returns>A new time span which is the <paramref name="timeSpan"/> rounded using the passed parameters.</returns>
-            <exception cref="T:System.ArgumentNullException">
-            <para>One of the following errors occurred:</para>
-            <list type="bullet">
-            <item>
-            <description><paramref name="timeSpan"/> is <c>null</c>.</description>
-            </item>
-            <item>
-            <description><paramref name="step"/> is <c>null</c>.</description>
-            </item>
-            <item>
-            <description><paramref name="tempoMap"/> is <c>null</c>.</description>
-            </item>
-            </list>
-            </exception>
-            <exception cref="T:System.ComponentModel.InvalidEnumArgumentException"><paramref name="roundingPolicy"/> specified an invalid value.</exception>
-            <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="time"/> is negative.</exception>
-        </member>
         <member name="M:Melanchall.DryWetMidi.Interaction.TimeSpanUtilities.TryParse(System.String,Melanchall.DryWetMidi.Interaction.ITimeSpan@)">
             <summary>
             Converts the string representation of a time span to its <see cref="T:Melanchall.DryWetMidi.Interaction.ITimeSpan"/> equivalent.
@@ -17662,6 +17698,41 @@
             <returns><c>true</c> if the <paramref name="timeSpan"/> represents zero time span;
             otherwise, <c>false</c>.</returns>
             <exception cref="T:System.ArgumentNullException"><paramref name="timeSpan"/> is <c>null</c>.</exception>
+        </member>
+        <member name="M:Melanchall.DryWetMidi.Interaction.TimeSpanUtilities.Round(Melanchall.DryWetMidi.Interaction.ITimeSpan,Melanchall.DryWetMidi.Interaction.TimeSpanRoundingPolicy,Melanchall.DryWetMidi.Interaction.ITimeSpan,Melanchall.DryWetMidi.Interaction.ITimeSpan,Melanchall.DryWetMidi.Interaction.TempoMap)">
+            <summary>
+            Rounds a time span using the specified step and rounding policy.
+            </summary>
+            <remarks>
+            Note that in general case you need to specify a time where the <paramref name="timeSpan"/> starts and so
+            rounding means to snap the end of the <paramref name="timeSpan"/> to a point of the grid which started
+            at the <paramref name="time"/>. If you want to treat the <paramref name="timeSpan"/> as just a point in time,
+            pass a zero time span to the <paramref name="time"/> (for example, <c>(MidiTimeSpan)0</c>).
+            </remarks>
+            <param name="timeSpan">Time span to round.</param>
+            <param name="roundingPolicy">Policy according to which the <paramref name="timeSpan"/> should be rounded.</param>
+            <param name="time">Time of the <paramref name="timeSpan"/>.</param>
+            <param name="step">Step to round the <paramref name="timeSpan"/> by.</param>
+            <param name="tempoMap">Tempo map used to calculate new time span.</param>
+            <returns>A new time span which is the <paramref name="timeSpan"/> rounded using the passed parameters.</returns>
+            <exception cref="T:System.ArgumentNullException">
+            <para>One of the following errors occurred:</para>
+            <list type="bullet">
+            <item>
+            <description><paramref name="timeSpan"/> is <c>null</c>.</description>
+            </item>
+            <item>
+            <description><paramref name="time"/> is <c>null</c>.</description>
+            </item>
+            <item>
+            <description><paramref name="step"/> is <c>null</c>.</description>
+            </item>
+            <item>
+            <description><paramref name="tempoMap"/> is <c>null</c>.</description>
+            </item>
+            </list>
+            </exception>
+            <exception cref="T:System.ComponentModel.InvalidEnumArgumentException"><paramref name="roundingPolicy"/> specified an invalid value.</exception>
         </member>
         <member name="T:Melanchall.DryWetMidi.Interaction.BarBeatUtilities">
             <summary>
@@ -19362,6 +19433,12 @@
             <summary>
             Gets the note channel.
             </summary>
+            <remarks>
+            Channel is a zero-based number in DryWetMIDI, valid values are from <c>0</c> to <c>15</c>.
+            Other libraries and software can use one-based channel numbers (i.e.from <c>1</c>
+            to <c>16</c>) so be aware about that: channel <c>10</c> in such software will be <c>9</c>
+            in DryWetMIDI.
+            </remarks>
         </member>
         <member name="T:Melanchall.DryWetMidi.Multimedia.PlaybackCurrentTime">
             <summary>
@@ -19649,9 +19726,9 @@
             Occurs when MIDI event played.
             </summary>
         </member>
-        <member name="E:Melanchall.DryWetMidi.Multimedia.Playback.DeviceErrorOccurred">
+        <member name="E:Melanchall.DryWetMidi.Multimedia.Playback.ErrorOccurred">
             <summary>
-            Occurs when an error got from output device.
+            Occurs when an error happened.
             </summary>
         </member>
         <member name="M:Melanchall.DryWetMidi.Multimedia.Playback.#ctor(System.Collections.Generic.IEnumerable{Melanchall.DryWetMidi.Interaction.ITimedObject},Melanchall.DryWetMidi.Interaction.TempoMap,Melanchall.DryWetMidi.Multimedia.PlaybackSettings)">
@@ -20158,6 +20235,82 @@
             <param name="predicate">Predicate to select MIDI events.</param>
             <returns><see cref="T:Melanchall.DryWetMidi.Multimedia.SnapPointsGroup"/> holding information on how to select events.</returns>
             <exception cref="T:System.ArgumentNullException"><paramref name="predicate"/> is <c>null</c>.</exception>
+        </member>
+        <member name="T:Melanchall.DryWetMidi.Multimedia.PlaybackErrorOccurredEventArgs">
+            <summary>
+            Provides data for the <see cref="E:Melanchall.DryWetMidi.Multimedia.Playback.ErrorOccurred"/>.
+            </summary>
+        </member>
+        <member name="P:Melanchall.DryWetMidi.Multimedia.PlaybackErrorOccurredEventArgs.Site">
+            <summary>
+            Gets the location within the playback where the error occurred.
+            </summary>
+        </member>
+        <member name="P:Melanchall.DryWetMidi.Multimedia.PlaybackErrorOccurredEventArgs.Exception">
+            <summary>
+            Gets the exception.
+            </summary>
+        </member>
+        <member name="T:Melanchall.DryWetMidi.Multimedia.PlaybackErrorSite">
+            <summary>
+            Specifies the site within playback where an error occurred.
+            </summary>
+            <seealso cref="E:Melanchall.DryWetMidi.Multimedia.Playback.ErrorOccurred"/>
+        </member>
+        <member name="F:Melanchall.DryWetMidi.Multimedia.PlaybackErrorSite.PlayEvent">
+            <summary>
+            Playing a MIDI event (sending to an <see cref="T:Melanchall.DryWetMidi.Multimedia.IOutputDevice"/>).
+            </summary>
+        </member>
+        <member name="F:Melanchall.DryWetMidi.Multimedia.PlaybackErrorSite.Tick">
+            <summary>
+            MIDI clock tick processing.
+            </summary>
+        </member>
+        <member name="F:Melanchall.DryWetMidi.Multimedia.PlaybackErrorSite.NoteCallback">
+            <summary>
+            <see cref="P:Melanchall.DryWetMidi.Multimedia.Playback.NoteCallback"/>.
+            </summary>
+        </member>
+        <member name="F:Melanchall.DryWetMidi.Multimedia.PlaybackErrorSite.EventCallback">
+            <summary>
+            <see cref="P:Melanchall.DryWetMidi.Multimedia.Playback.EventCallback"/>.
+            </summary>
+        </member>
+        <member name="F:Melanchall.DryWetMidi.Multimedia.PlaybackErrorSite.Started">
+            <summary>
+            <see cref="E:Melanchall.DryWetMidi.Multimedia.Playback.Started"/> event handler.
+            </summary>
+        </member>
+        <member name="F:Melanchall.DryWetMidi.Multimedia.PlaybackErrorSite.Stopped">
+            <summary>
+            <see cref="E:Melanchall.DryWetMidi.Multimedia.Playback.Stopped"/> event handler.
+            </summary>
+        </member>
+        <member name="F:Melanchall.DryWetMidi.Multimedia.PlaybackErrorSite.Finished">
+            <summary>
+            <see cref="E:Melanchall.DryWetMidi.Multimedia.Playback.Finished"/> event handler.
+            </summary>
+        </member>
+        <member name="F:Melanchall.DryWetMidi.Multimedia.PlaybackErrorSite.EventPlayed">
+            <summary>
+            <see cref="E:Melanchall.DryWetMidi.Multimedia.Playback.EventPlayed"/> event handler.
+            </summary>
+        </member>
+        <member name="F:Melanchall.DryWetMidi.Multimedia.PlaybackErrorSite.RepeatStarted">
+            <summary>
+            <see cref="E:Melanchall.DryWetMidi.Multimedia.Playback.RepeatStarted"/> event handler.
+            </summary>
+        </member>
+        <member name="F:Melanchall.DryWetMidi.Multimedia.PlaybackErrorSite.NotesPlaybackStarted">
+            <summary>
+            <see cref="E:Melanchall.DryWetMidi.Multimedia.Playback.NotesPlaybackStarted"/> event handler.
+            </summary>
+        </member>
+        <member name="F:Melanchall.DryWetMidi.Multimedia.PlaybackErrorSite.NotesPlaybackFinished">
+            <summary>
+            <see cref="E:Melanchall.DryWetMidi.Multimedia.Playback.NotesPlaybackFinished"/> event handler.
+            </summary>
         </member>
         <member name="T:Melanchall.DryWetMidi.Multimedia.PlaybackEventCallback">
             <summary>

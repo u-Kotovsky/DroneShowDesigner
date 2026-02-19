@@ -29,6 +29,6 @@ AssetOrigin:
   serializedVersion: 1
   productId: 222171
   packageName: DryWetMIDI
-  packageVersion: 8.0.2
+  packageVersion: 8.0.3
   assetPath: Assets/Melanchall/DryWetMIDI/Melanchall_DryWetMidi_Native32.dll
-  uploadId: 776551
+  uploadId: 835016
