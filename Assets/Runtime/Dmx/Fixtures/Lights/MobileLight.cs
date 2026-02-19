@@ -90,7 +90,7 @@ namespace Runtime.Dmx.Fixtures.Lights
         {
             // 1229 206 16 Way Selector. 0 = No Action; 1 = Hide Search Light mesh [lights can still function]; Rest undefined.
             buffer.EnsureCapacity(1229 + 1);
-            buffer.Set(1229, 0);
+            //buffer.Set(1229, 0);
         }
         
         private static void SetPreset(MobileLight[] pool, MobileLightPreset[] preset)

@@ -144,7 +144,7 @@ namespace Runtime.Dmx.Fixtures.Drones
             
             buffer.EnsureCapacity(512 * 6);
             buffer.Set(2598, 255); // 2598 // Enable FX Drone
-            buffer.Set(2599, 0);
+            //buffer.Set(2599, 0);
         }
         
         #endregion
