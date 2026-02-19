@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Runtime.Core.Compression
 {
-    public class GZipWrapper
+    public abstract class GZipWrapper
     {
         public static byte[] Compress(string text)
         {

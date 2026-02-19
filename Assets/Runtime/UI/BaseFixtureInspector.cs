@@ -1,8 +1,8 @@
 using System.Text;
+using UnityEngine;
 using Runtime.Core.Serialization;
 using Runtime.Dmx.Fixtures;
 using Runtime.Dmx.Fixtures.Shared;
-using UnityEngine;
 
 namespace Runtime.UI
 {
@@ -44,7 +44,7 @@ namespace Runtime.UI
         protected static void AddMultiPositionCopyPaste(RectTransform parent, BaseMobile[] fixtures)
         {
             var info = UIUtility.AddItemToList(parent, 0, 15, "Position Copy/Paste");
-            UIUtility.AddButton(parent, $"Copy Position ({fixtures.Length})", buttonColor, textColor)
+            UIUtility.AddButton(parent, "Copy", buttonColor, textColor)
                 .OnClick(() =>
                 {
                     // TODO: add header to json to give context what data it contains.
@@ -55,19 +55,17 @@ namespace Runtime.UI
                         var fixture = fixtures[i];
                         // TODO: Should we do local or global?
                         // TODO: use DMX values instead.
-                        var vec3 = new SerializableVector3(fixture.transform.localPosition.x,
-                            fixture.transform.localPosition.y, fixture.transform.localPosition.z);
+                        var vec3 = new SerializableVector3(fixture.transform.localPosition);
                         array.value[i] = vec3;
                     }
 
                     var json = JsonUtility.ToJson(array);
-                    Debug.Log($"Copy: {array.value.Length} elements");
                     
                     Utility.CopyValue(json);
                 })
                 .GetRect()
                 .WithSizeDelta(new Vector2(0, 20));
-            UIUtility.AddButton(parent, $"Paste Position ({fixtures.Length})", buttonColor, textColor)
+            UIUtility.AddButton(parent, "Paste", buttonColor, textColor)
                 .OnClick(() =>
                 {
                     // TODO: read system clipboard, see if required values are here (x, y, z) and values are valid => paste em in fixtures
@@ -76,7 +74,7 @@ namespace Runtime.UI
                     // TODO: read header to see what data it should contain
                     var text = Utility.GetSystemCopyBuffer();
                     var data = JsonUtility.FromJson<SerializableVector3Array>(text);
-                    if (data.value.Length != fixtures.Length)
+                    if (data.value.Length != fixtures.Length) // TODO: support for non-matching elements? (splines hi)
                     {
                         Debug.LogError($"data count from clipboard is not equal to selected fixture count. ({data.value.Length}, {fixtures.Length})");
                         return;
@@ -86,8 +84,55 @@ namespace Runtime.UI
                     {
                         fixtures[i].transform.localPosition = data.value[i].GetVector3();
                     }
+                })
+                .GetRect()
+                .WithSizeDelta(new Vector2(0, 20));
+        }
+        
+        protected static void AddMultiRotationCopyPaste(RectTransform parent, BaseMobile[] fixtures)
+        {
+            // TODO: fix rotation paste weird (wrong angles?)
+            var info = UIUtility.AddItemToList(parent, 0, 15, "Rotation Copy/Paste");
+            UIUtility.AddButton(parent, "Copy", buttonColor, textColor)
+                .OnClick(() =>
+                {
+                    // TODO: add header to json to give context what data it contains.
+                    var array = new SerializableVector3Array(fixtures.Length);
+
+                    for (var i = 0; i < fixtures.Length; i++)
+                    {
+                        var fixture = fixtures[i];
+                        // TODO: Should we do local or global?
+                        // TODO: use DMX values instead.
+                        var vec3 = new SerializableVector3(fixture.transform.localRotation.eulerAngles);
+                        array.value[i] = vec3;
+                    }
+
+                    var json = JsonUtility.ToJson(array);
                     
-                    Debug.Log("Paste position successfully!");
+                    Utility.CopyValue(json);
+                })
+                .GetRect()
+                .WithSizeDelta(new Vector2(0, 20));
+            UIUtility.AddButton(parent, "Paste", buttonColor, textColor)
+                .OnClick(() =>
+                {
+                    // TODO: read system clipboard, see if required values are here (x, y, z) and values are valid => paste em in fixtures
+                    // also check for array size of fixtures and clipboard values, if it doesn't match, ignore action
+                    // and show popup that clipboard data size does not match selected size and show sizes.
+                    // TODO: read header to see what data it should contain
+                    var text = Utility.GetSystemCopyBuffer();
+                    var data = JsonUtility.FromJson<SerializableVector3Array>(text);
+                    if (data.value.Length != fixtures.Length) // TODO: support for non-matching elements? (splines hi)
+                    {
+                        Debug.LogError($"data count from clipboard is not equal to selected fixture count. ({data.value.Length}, {fixtures.Length})");
+                        return;
+                    }
+                    
+                    for (var i = 0; i < fixtures.Length; i++)
+                    {
+                        fixtures[i].transform.localRotation = Quaternion.Euler(data.value[i].GetVector3());
+                    }
                 })
                 .GetRect()
                 .WithSizeDelta(new Vector2(0, 20));

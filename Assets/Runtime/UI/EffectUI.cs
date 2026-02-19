@@ -14,7 +14,7 @@ namespace Runtime.UI
 
         public static void SetBoxSelectionPosition(Vector2 start, Vector2 end)
         {
-            // p.s. my math is weird, please help me lol
+            // TODO: fix math
 
             if (_boxSelection == null) return;
             

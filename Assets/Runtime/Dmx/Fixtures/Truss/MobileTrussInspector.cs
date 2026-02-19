@@ -6,39 +6,21 @@ namespace Runtime.Dmx.Fixtures.Truss
 {
     public abstract class MobileTrussInspector : BaseFixtureInspector
     {
-        private const string Name = "MobileTruss";
-        
-        private static void AddTitle(RectTransform parent)
-        {
-            UIUtility.AddText(parent, Name, Color.white)
-                .GetRect()
-                .WithSizeDelta(new Vector2(0, 20));
-        }
-        
         public static void OnInspector(RectTransform parent, MobileTruss fixture)
         {
-            AddTitle(parent);
+            AddTitle(parent, nameof(MobileTruss));
             
             var info = UIUtility.AddItemToList(parent, 0, 15, "DMX Copy");
-            UIUtility.AddButton(parent, "Copy All", buttonColor, textColor)
-                .OnClick(() =>
-                {
-                    Utility.CopyAllDmxValuesAsMa3Representation(fixture.GetDmxData(), fixture.globalChannelStart);
-                })
+            UIUtility.AddButton(parent, "All", buttonColor, textColor)
+                .OnClick(() => Utility.CopyAllDmxValuesAsMa3Representation(fixture.GetDmxData(), fixture.globalChannelStart))
                 .GetRect()
                 .WithSizeDelta(new Vector2(0, 20));
-            UIUtility.AddButton(parent, "Copy Position", buttonColor, textColor)
-                .OnClick(() =>
-                {
-                    Utility.CopyDmxValuesWithOffsetAsMa3Representation(fixture.GetDmxData(), fixture.globalChannelStart, 0, 6);
-                })
+            UIUtility.AddButton(parent, "Position", buttonColor, textColor)
+                .OnClick(() => Utility.CopyDmxValuesWithOffsetAsMa3Representation(fixture.GetDmxData(), fixture.globalChannelStart, 0, 6))
                 .GetRect()
                 .WithSizeDelta(new Vector2(0, 20));
-            UIUtility.AddButton(parent, "Copy Rotation", buttonColor, textColor)
-                .OnClick(() =>
-                { 
-                    Utility.CopyDmxValuesWithOffsetAsMa3Representation(fixture.GetDmxData(), fixture.globalChannelStart, 6, 6);
-                })
+            UIUtility.AddButton(parent, "Rotation", buttonColor, textColor)
+                .OnClick(() => Utility.CopyDmxValuesWithOffsetAsMa3Representation(fixture.GetDmxData(), fixture.globalChannelStart, 6, 6))
                 .GetRect()
                 .WithSizeDelta(new Vector2(0, 20));
             
@@ -66,28 +48,19 @@ namespace Runtime.Dmx.Fixtures.Truss
         
         public static void OnInspector(RectTransform parent, MobileTruss[] fixtures)
         {
-            AddTitle(parent);
+            AddTitle(parent, nameof(MobileTruss));
             
             var info = UIUtility.AddItemToList(parent, 0, 15, "DMX Copy");
-            UIUtility.AddButton(parent, $"Copy All ({fixtures.Length})", buttonColor, textColor)
-                .OnClick(() =>
-                {
-                    CopyData(fixtures); // We only read so that should be alright
-                })
+            UIUtility.AddButton(parent, "All", buttonColor, textColor)
+                .OnClick(() => CopyData(fixtures)) // We only read so that should be alright
                 .GetRect()
                 .WithSizeDelta(new Vector2(0, 20));
-            UIUtility.AddButton(parent, $"Copy Position ({fixtures.Length})", buttonColor, textColor)
-                .OnClick(() =>
-                {
-                    CopyData(fixtures, 0, 6); // We only read so that should be alright
-                })
+            UIUtility.AddButton(parent, "Position", buttonColor, textColor)
+                .OnClick(() => CopyData(fixtures, 0, 6)) // We only read so that should be alright
                 .GetRect()
                 .WithSizeDelta(new Vector2(0, 20));
-            UIUtility.AddButton(parent, $"Copy Rotation ({fixtures.Length})", buttonColor, textColor)
-                .OnClick(() =>
-                { 
-                    CopyData(fixtures, 6, 6); // We only read so that should be alright
-                })
+            UIUtility.AddButton(parent, "Rotation", buttonColor, textColor)
+                .OnClick(() => CopyData(fixtures, 6, 6)) // We only read so that should be alright
                 .GetRect()
                 .WithSizeDelta(new Vector2(0, 20));
             
@@ -98,6 +71,7 @@ namespace Runtime.Dmx.Fixtures.Truss
             }
             
             AddMultiPositionCopyPaste(parent, data);
+            AddMultiRotationCopyPaste(parent, data);
         }
     }
 }

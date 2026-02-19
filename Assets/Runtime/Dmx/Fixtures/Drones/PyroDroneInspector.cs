@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using Runtime.Dmx.Fixtures.Shared;
 using Runtime.UI;
 using UnityEngine;
@@ -11,37 +10,21 @@ namespace Runtime.Dmx.Fixtures.Drones
         
         // TODO: add inputfields to adjust pitch/yaw/roll for pyro direction
         
-        private static void AddTitle(RectTransform parent)
-        {
-            UIUtility.AddText(parent, Name, Color.white)
-                .GetRect()
-                .WithSizeDelta(new Vector2(0, 20));
-        }
-        
         public static void OnInspector(RectTransform parent, PyroDrone fixture)
         {
-            AddTitle(parent);
+            AddTitle(parent, nameof(PyroDrone));
             
             var info = UIUtility.AddItemToList(parent, 0, 15, "DMX Copy");
             UIUtility.AddButton(parent, "Copy All", buttonColor, textColor)
-                .OnClick(() =>
-                {
-                    Utility.CopyAllDmxValuesAsMa3Representation(fixture.GetDmxData(), fixture.globalChannelStart);
-                })
+                .OnClick(() => Utility.CopyAllDmxValuesAsMa3Representation(fixture.GetDmxData(), fixture.globalChannelStart))
                 .GetRect()
                 .WithSizeDelta(new Vector2(0, 20));
             UIUtility.AddButton(parent, "Copy Position", buttonColor, textColor)
-                .OnClick(() =>
-                {
-                    Utility.CopyDmxValuesWithOffsetAsMa3Representation(fixture.GetDmxData(), fixture.globalChannelStart, 0, 6);
-                })
+                .OnClick(() => Utility.CopyDmxValuesWithOffsetAsMa3Representation(fixture.GetDmxData(), fixture.globalChannelStart, 0, 6))
                 .GetRect()
                 .WithSizeDelta(new Vector2(0, 20));
             UIUtility.AddButton(parent, "Copy Pitch Yaw Roll", buttonColor, textColor)
-                .OnClick(() =>
-                { 
-                    Utility.CopyDmxValuesWithOffsetAsMa3Representation(fixture.GetDmxData(), fixture.globalChannelStart, 6, 3);
-                })
+                .OnClick(() => Utility.CopyDmxValuesWithOffsetAsMa3Representation(fixture.GetDmxData(), fixture.globalChannelStart, 6, 3))
                 .GetRect()
                 .WithSizeDelta(new Vector2(0, 20));
             
@@ -50,28 +33,19 @@ namespace Runtime.Dmx.Fixtures.Drones
 
         public static void OnInspector(RectTransform parent, PyroDrone[] fixtures)
         {
-            AddTitle(parent);
+            AddTitle(parent, nameof(PyroDrone));
             
             var info = UIUtility.AddItemToList(parent, 0, 15, "DMX Copy");
-            UIUtility.AddButton(parent, $"Copy All ({fixtures.Length})", buttonColor, textColor)
-                .OnClick(() =>
-                {
-                    CopyData(fixtures);
-                })
+            UIUtility.AddButton(parent, "All", buttonColor, textColor)
+                .OnClick(() => CopyData(fixtures))
                 .GetRect()
                 .WithSizeDelta(new Vector2(0, 20));
-            UIUtility.AddButton(parent, $"Copy Position ({fixtures.Length})", buttonColor, textColor)
-                .OnClick(() =>
-                {
-                    CopyData(fixtures, 0, 6);
-                })
+            UIUtility.AddButton(parent, "Position", buttonColor, textColor)
+                .OnClick(() => CopyData(fixtures, 0, 6))
                 .GetRect()
                 .WithSizeDelta(new Vector2(0, 20));
-            UIUtility.AddButton(parent, $"Copy Pitch Yaw Roll ({fixtures.Length})", buttonColor, textColor)
-                .OnClick(() =>
-                {
-                    CopyData(fixtures, 6, 3);
-                })
+            UIUtility.AddButton(parent, "Pitch/Yaw/Roll", buttonColor, textColor)
+                .OnClick(() => CopyData(fixtures, 6, 3))
                 .GetRect()
                 .WithSizeDelta(new Vector2(0, 20));
             

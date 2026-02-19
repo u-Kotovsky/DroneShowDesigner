@@ -7,18 +7,9 @@ namespace Runtime.Dmx.Fixtures.Drones
 {
     public abstract class LightingDroneInspector : BaseFixtureInspector
     {
-        private const string Name = "LightingDrone";
-        
-        private static void AddTitle(RectTransform parent)
-        {
-            UIUtility.AddText(parent, Name, Color.white)
-                .GetRect()
-                .WithSizeDelta(new Vector2(0, 20));
-        }
-        
         public static void OnInspector(RectTransform parent, LightingDrone fixture)
         {
-            AddTitle(parent, Name);
+            AddTitle(parent, nameof(LightingDrone));
 
             var dmxCopyInfo = UIUtility.AddItemToList(parent, 0, 15, "DMX Copy");
             UIUtility.AddButton(parent, "Copy All", buttonColor, textColor)
@@ -39,7 +30,7 @@ namespace Runtime.Dmx.Fixtures.Drones
         
         public static void OnInspector(RectTransform parent, LightingDrone[] fixtures)
         {
-            AddTitle(parent, Name);
+            AddTitle(parent, nameof(LightingDrone));
             
             var selectionInfo = UIUtility.AddItemToList(parent, 0, 15, $"Selected {fixtures.Length} fixtures");
             var dmxCopyInfo = UIUtility.AddItemToList(parent, 0, 15, "DMX Copy");
@@ -57,7 +48,8 @@ namespace Runtime.Dmx.Fixtures.Drones
                 .WithSizeDelta(new Vector2(0, 20));
             
             var shapeInfo = UIUtility.AddItemToList(parent, 0, 15, "Shape generators");
-            UIUtility.AddButton(parent, "Make circle", buttonColor, textColor)
+            // TODO: expose options in UI, maybe a modifier that has collection of objects that it controls when enabled (or lerp-ed)
+            UIUtility.AddButton(parent, "Circle", buttonColor, textColor)
                 .OnClick(() =>
                 {
                     Vector3 center = fixtures[0].transform.localPosition;
@@ -77,7 +69,7 @@ namespace Runtime.Dmx.Fixtures.Drones
                 .GetRect()
                 .WithSizeDelta(new Vector2(0, 20));
             
-            UIUtility.AddButton(parent, "Make pole", buttonColor, textColor)
+            UIUtility.AddButton(parent, "Pole", buttonColor, textColor)
                 .OnClick(() =>
                 {
                     Vector3 center = fixtures[0].transform.localPosition;
@@ -94,7 +86,7 @@ namespace Runtime.Dmx.Fixtures.Drones
             
             
             var colorInfo = UIUtility.AddItemToList(parent, 0, 15, "Color generators");
-            UIUtility.AddButton(parent, "Full White", buttonColor, textColor)
+            UIUtility.AddButton(parent, "White", buttonColor, textColor)
                 .OnClick(() =>
                 {
                     for (var i = 0; i < fixtures.Length; i++)
@@ -104,7 +96,7 @@ namespace Runtime.Dmx.Fixtures.Drones
                 })
                 .GetRect()
                 .WithSizeDelta(new Vector2(0, 20));
-            UIUtility.AddButton(parent, "Full Black", buttonColor, textColor)
+            UIUtility.AddButton(parent, "Black", buttonColor, textColor)
                 .OnClick(() =>
                 {
                     for (var i = 0; i < fixtures.Length; i++)
