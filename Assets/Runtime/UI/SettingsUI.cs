@@ -1,6 +1,5 @@
 using System;
 using System.IO;
-using Runtime.Core.Resources;
 using Runtime.Core.Settings;
 using Runtime.Dmx.Fixtures;
 using TMPro;

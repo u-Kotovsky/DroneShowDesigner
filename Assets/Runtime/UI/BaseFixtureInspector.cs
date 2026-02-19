@@ -1,6 +1,4 @@
-using System.Collections.Generic;
 using System.Text;
-using Runtime.Core;
 using Runtime.Core.Serialization;
 using Runtime.Dmx.Fixtures;
 using Runtime.Dmx.Fixtures.Shared;
@@ -62,7 +60,7 @@ namespace Runtime.UI
                         array.value[i] = vec3;
                     }
 
-                    string json = JsonUtility.ToJson(array);
+                    var json = JsonUtility.ToJson(array);
                     Debug.Log($"Copy: {array.value.Length} elements, json: {json}");
                     
                     Utility.CopyValue(json);

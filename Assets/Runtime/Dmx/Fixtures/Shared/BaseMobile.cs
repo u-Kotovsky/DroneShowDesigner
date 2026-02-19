@@ -61,6 +61,7 @@ namespace Runtime.Dmx.Fixtures.Shared
         public void WriteDmxRotation(int offset, Vector3 rotation)
         {
             float angle = MaxAngle * 2;
+            
             XRotationCoarse = Utility.GetCoarse(rotation.x / angle);
             XRotationFine = Utility.GetFine(rotation.x / angle);
         

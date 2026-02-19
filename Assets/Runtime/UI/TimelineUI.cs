@@ -25,7 +25,7 @@ namespace Runtime.UI
         {
             try
             {
-                var pathToData =Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "DroneShowDesigner");
+                var pathToData = Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "DroneShowDesigner");
 
                 if (!Directory.Exists(pathToData)) Directory.CreateDirectory(pathToData);
                 _pathToTimelineFile = Path.Join(pathToData, "Timeline.json");
