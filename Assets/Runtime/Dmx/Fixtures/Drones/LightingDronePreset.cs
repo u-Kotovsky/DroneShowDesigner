@@ -38,7 +38,7 @@ namespace Runtime.Dmx.Fixtures.Drones
 
         public void WriteColorToDrone(LightingDrone drone)
         {
-            drone.color = GetColor();
+            drone.Color = GetColor();
         }
 
         public void ReadPositionFromDrone(BaseDrone drone)
@@ -48,7 +48,7 @@ namespace Runtime.Dmx.Fixtures.Drones
 
         public void ReadColorFromDrone(LightingDrone drone)
         {
-            drone.color = GetColor();
+            drone.Color = GetColor();
         }
         
         public Vector3 GetPosition(Vector3 minPosition, Vector3 maxPosition)

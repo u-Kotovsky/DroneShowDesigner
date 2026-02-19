@@ -77,7 +77,7 @@ namespace Runtime.Dmx.Fixtures.Drones.Movers
                         timer = 0;
                         state = 1;
                         
-                        lightingDrone.color = Color.black;
+                        lightingDrone.Color = Color.black;
                     }
                     
                     break;
@@ -87,7 +87,7 @@ namespace Runtime.Dmx.Fixtures.Drones.Movers
                     if (layerTakingoff == layer)
                     {
                         transform.localPosition = Vector3.Lerp(takeoffStartPosition, takeoffEndPosition, timer / timeToTakeOff);
-                        lightingDrone.color = Color.magenta;
+                        lightingDrone.Color = Color.magenta;
                     }
 
                     if (timer >= timeToTakeOff)
@@ -139,7 +139,7 @@ namespace Runtime.Dmx.Fixtures.Drones.Movers
                 
                 case 3:
                     timer += Time.deltaTime;
-                    lightingDrone.color = Color.white;
+                    lightingDrone.Color = Color.white;
 
                     if (timer >= 5)
                     {
@@ -157,14 +157,14 @@ namespace Runtime.Dmx.Fixtures.Drones.Movers
                     {
                         transform.localPosition =
                             Vector3.Lerp(takeoffEndPosition, takeoffStartPosition, timer / timeToTakeOff);
-                        lightingDrone.color = Color.magenta;
+                        lightingDrone.Color = Color.magenta;
                     }
 
                     if (timer >= timeToTakeOff)
                     {
                         if (layerTakingoff == layer)
                         {
-                            lightingDrone.color = Color.black;
+                            lightingDrone.Color = Color.black;
                         }
                         if (layerTakingoff >= 0)
                         {
@@ -189,19 +189,19 @@ namespace Runtime.Dmx.Fixtures.Drones.Movers
             switch (layer)
             {
                 case 0:
-                    lightingDrone.color = Color.red;
+                    lightingDrone.Color = Color.red;
                     break;
                 case 1:
-                    lightingDrone.color = Color.yellow;
+                    lightingDrone.Color = Color.yellow;
                     break;
                 case 2:
-                    lightingDrone.color = Color.green;
+                    lightingDrone.Color = Color.green;
                     break;
                 case 3:
-                    lightingDrone.color = Color.cyan;
+                    lightingDrone.Color = Color.cyan;
                     break;
                 case 4:
-                    lightingDrone.color = Color.blue;
+                    lightingDrone.Color = Color.blue;
                     break;
             }
         }

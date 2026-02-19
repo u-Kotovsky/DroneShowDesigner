@@ -119,7 +119,7 @@ namespace Runtime.Dmx.Fixtures.Drones.Movers.MeshToDrone
             drone.transform.position = worldVertex;
             
             var data = drones[drone.fixtureIndex];
-            drone.color = target.GetColorByVertex(data.VertexIndex);
+            drone.Color = target.GetColorByVertex(data.VertexIndex);
         }
 
         #region Unity event methods

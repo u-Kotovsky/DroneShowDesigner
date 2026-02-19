@@ -50,7 +50,7 @@ namespace Runtime.Dmx.Fixtures.Drones
                 timer = 0;
                 state = DroneNavigationState.UpdatingPosition;
                 nextPosition = NextRandomPosition();
-                ((LightingDrone)drone).color = waitColor;
+                ((LightingDrone)drone).Color = waitColor;
             }
         }
 
@@ -66,7 +66,7 @@ namespace Runtime.Dmx.Fixtures.Drones
                 state = DroneNavigationState.WaitingForTimer;
                 transform.localPosition = nextPosition;
                 lastPosition = nextPosition;
-                ((LightingDrone)drone).color = moveColor;
+                ((LightingDrone)drone).Color = moveColor;
             }
         }
 

@@ -5,6 +5,7 @@ using Runtime.Dmx.Fixtures.Drones.Movers;
 using Runtime.Dmx.Fixtures.Drones.Movers.MeshToDrone;
 using Unity_DMX.Core;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.Splines;
 
 namespace Runtime.Dmx.Fixtures.Drones
@@ -33,6 +34,16 @@ namespace Runtime.Dmx.Fixtures.Drones
         private byte b;
         
         public Color color = new(0, 0, 0, 1);
+        public Color Color
+        {
+            get => color;
+            set 
+            {
+                color = value; 
+                WriteDmxColor(value);
+                UpdateMaterial(); 
+            }
+        }
 
         public void WriteDmxColor(Color value)
         {
@@ -47,7 +58,7 @@ namespace Runtime.Dmx.Fixtures.Drones
 
         public void ForceSetColor(Color value)
         {
-            color = value;
+            Color = value;
             WriteDmxColor(value);
             UpdateMaterial();
         }
@@ -59,6 +70,8 @@ namespace Runtime.Dmx.Fixtures.Drones
 
             minPosition = new Vector3(-800, -800, -800);
             maxPosition = new Vector3(800, 800, 800);
+
+            Color = Color.black;
         }
 
         private void Update()
@@ -69,27 +82,27 @@ namespace Runtime.Dmx.Fixtures.Drones
             }
             
             WriteDmxPosition(0, transform.position, true);
-            UpdateMaterial();
         }
 
         private void UpdateMaterial()
         {
             if (DroneRenderers == null) return;
             
+            MaterialPropertyBlock propertyBlock = new MaterialPropertyBlock();
+            propertyBlock.SetColor(BaseColor, Color);
+            
             foreach (var droneRenderer in DroneRenderers)
             {
                 if (droneRenderer == null || droneRenderer.sharedMaterial == null)
                     continue;
                 
-                MaterialPropertyBlock propertyBlock = new MaterialPropertyBlock();
-                propertyBlock.SetColor(BaseColor, color);
                 droneRenderer.SetPropertyBlock(propertyBlock);
             }
         }
 
         public override void WriteDmxData()
         {
-            WriteDmxColor(color);
+            WriteDmxColor(Color);
         }
         
         #region Static
@@ -156,31 +169,28 @@ namespace Runtime.Dmx.Fixtures.Drones
             fixture.gameObject.name = "LightingDrone #" + fixture.fixtureIndex;
             pool[index] = fixture;
         }
-        
+
         public static void WriteDataToGlobalBuffer(ref LightingDrone[] pool, ref DmxData globalDmxBuffer)
         {
             foreach (var fixture in pool)
             {
                 var data = new List<byte>(fixture.GetDmxData());
 
-                globalDmxBuffer.EnsureCapacity(fixture.globalChannelStart + data.Count);
+                globalDmxBuffer.EnsureCapacity(fixture.globalChannelStart + data.Count + (512));
                 globalDmxBuffer.SetRange(fixture.globalChannelStart, data);
             }
 
             WriteSpecialData(ref globalDmxBuffer);
         }
-        
+
         private static void WriteSpecialData(ref DmxData buffer)
         {
             int offset = 512 * 5; // 2560 - 1 = 2559
 
             buffer.EnsureCapacity(offset + 246 + 1);
-            //buffer.Set(offset + 39, 255); // 2598 // Enable
-            //buffer.Set(offset + 40, 0); // 2599 // Part of 39 (Turn off)
-            buffer.Set(offset + 243, 255); // 2802 // Enable Misc Control
-            buffer.Set(offset + 244, 0); // 2803 // Enable Misc Control (Off)
-            buffer.Set(offset + 245, 255); // 2804 // Enable Huge Drone Map
-            //buffer.Set(offset + 246, 255); // 2805 // Delete World
+            
+            buffer.Set(2802, 255); // Enable Misc Control
+            buffer.Set(2804, 255); // Enable Huge Drone Map
         }
         #endregion
     }
