@@ -75,3 +75,6 @@ crashlytics-build.properties
 /[Aa]ssets/[Ss]treamingAssets/aa/*
 
 .idea/
+
+# Ignore cache for skybrush files
+/[Aa]ssets/SkybrushCache/*
