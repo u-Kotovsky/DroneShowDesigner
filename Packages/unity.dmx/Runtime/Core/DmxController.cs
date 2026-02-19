@@ -40,7 +40,7 @@ namespace Unity_DMX.Core
             dmxToSend.DmxData ??= new byte[512];
             dmxDataMap = new Dictionary<int, byte[]>();
             
-            dmxBuffer.OnBufferUpdate += OnBufferUpdate;
+            //dmxBuffer.OnBufferUpdate += OnBufferUpdate;
         }
 
         public void InitializeSocket()
