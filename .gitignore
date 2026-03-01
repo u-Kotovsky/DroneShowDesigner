@@ -78,3 +78,9 @@ crashlytics-build.properties
 
 # Ignore cache for skybrush files
 /[Aa]ssets/SkybrushCache/*
+
+# Ignore poi shaders
+/[Aa]ssets/_PoiyomiShaders*
+/Thry/*
+/[Aa]ssets/csc.rsp*
+/Poi*
