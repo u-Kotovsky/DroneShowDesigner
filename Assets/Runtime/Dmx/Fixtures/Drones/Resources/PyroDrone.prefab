@@ -67,7 +67,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: bf450ea00569415498ae85ee913a3fba, type: 2}
+  - {fileID: 2100000, guid: 9b54483f9b66f664ea3f603f1f314690, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -89,6 +89,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!65 &5833012244115735686
 BoxCollider:
@@ -156,3 +157,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 479f62fa9b0b6754d93a081ce8f12ab0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Runtime.Core.Selection.Selectable
+  originalMaterials: []
+  renderers: []
+  selectedMaterial: {fileID: 0}
+  autoCollectRenderers: 1

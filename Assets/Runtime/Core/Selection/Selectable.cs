@@ -7,6 +7,7 @@ namespace Runtime.Core.Selection
     {
         // Cached property indexes
         private static readonly int Color1 = Shader.PropertyToID("_Color");
+        private static readonly int DecalBlendAlpha = Shader.PropertyToID("_DecalBlendAlpha"); // Selection outline
         
         // References
         public List<Material> originalMaterials = new();
@@ -15,8 +16,16 @@ namespace Runtime.Core.Selection
         
         public bool autoCollectRenderers = true;
 
+        public bool useMaterialSwap = false;
+        public bool useDecalBlendAlpha = true;
+
         private void Awake()
         {
+            if (useDecalBlendAlpha)
+            {
+                SetupProps();
+            }
+            
             if (selectedMaterial == null)
             {
                 selectedMaterial = new Material(Shader.Find("Unlit/Color"));
@@ -36,29 +45,57 @@ namespace Runtime.Core.Selection
             }
         }
 
+        private MaterialPropertyBlock selectedProperty;
+        private MaterialPropertyBlock deselectedProperty;
+
+        private void SetupProps()
+        {
+            selectedProperty = new MaterialPropertyBlock();
+            deselectedProperty = new MaterialPropertyBlock();
+
+            selectedProperty.SetFloat(DecalBlendAlpha, 1);
+            deselectedProperty.SetFloat(DecalBlendAlpha, 0);
+        }
+
         public void OnObjectSelected()
         {
             foreach (var renderer1 in renderers)
             {
                 var materials = renderer1.sharedMaterials;
 
-                for (var i = 0; i < materials.Length; i++)
-                    materials[i] = selectedMaterial;
-                
-                renderer1.sharedMaterials = materials;
+                if (useMaterialSwap)
+                {
+                    for (var i = 0; i < materials.Length; i++)
+                        materials[i] = selectedMaterial;
+                    
+                    renderer1.sharedMaterials = materials;
+                }
+
+                if (useDecalBlendAlpha)
+                {
+                    renderer1.SetPropertyBlock(selectedProperty);
+                }
             }
         }
 
         public void OnObjectDeselected()
         {
-            foreach (var t in renderers)
+            foreach (var renderer1 in renderers)
             {
-                var materials = t.sharedMaterials;
+                var materials = renderer1.sharedMaterials;
+
+                if (useMaterialSwap)
+                {
+                    for (var i = 0; i < materials.Length; i++)
+                        materials[i] = originalMaterials[i];
+                    
+                    renderer1.sharedMaterials = materials;
+                }
                 
-                for (var i1 = 0; i1 < materials.Length; i1++)
-                    materials[i1] = originalMaterials[i1];
-                
-                t.sharedMaterials = materials;
+                if (useDecalBlendAlpha)
+                {
+                    renderer1.SetPropertyBlock(deselectedProperty);
+                }
             }
         }
     }

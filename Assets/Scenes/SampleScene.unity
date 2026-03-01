@@ -3034,7 +3034,6 @@ MonoBehaviour:
   fixtureIndex: 0
   minPosition: {x: -50, y: -50, z: -50}
   maxPosition: {x: 50, y: 50, z: 50}
-  color: {r: 0, g: 0, b: 0, a: 0}
 --- !u!4 &1009790514
 Transform:
   m_ObjectHideFlags: 0
