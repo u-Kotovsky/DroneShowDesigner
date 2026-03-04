@@ -18,8 +18,8 @@ namespace Runtime.Dmx.Fixtures.Truss
             MinAngle = -270;
             MaxAngle = 270;
 
-            minPosition = new Vector3(-50, -50, -50);
-            maxPosition = new Vector3(50, 50, 50);
+            minPosition = Vector3.one * -50;
+            maxPosition = Vector3.one * 50;
         }
 
         private void Update()
@@ -58,8 +58,6 @@ namespace Runtime.Dmx.Fixtures.Truss
                 Spawn(ref pool, ref i, GlobalDmxChannelOffset, out fixture);
 
                 var nav = fixture.gameObject.AddComponent<MobileTrussNavigation>();
-                //nav.playTrussPresetSwap = true;
-                fixture.spawnManager = spawnManager;
                 nav.cyclePresets = false;
                 nav.playTrussPresetSwap = false;
                 nav.nextTrussPreset = 6;
@@ -93,15 +91,14 @@ namespace Runtime.Dmx.Fixtures.Truss
         
         public static void WriteDataToGlobalBuffer(ref MobileTruss[] pool, ref DmxData globalDmxBuffer)
         {
+            globalDmxBuffer.EnsureCapacity(GlobalDmxChannelOffset + (pool.Length * 14));
             foreach (var fixture in pool)
             {
-                var data = new List<byte>(fixture.GetDmxData());
-
-                globalDmxBuffer.EnsureCapacity(fixture.globalChannelStart + data.Count);
-                globalDmxBuffer.SetRange(fixture.globalChannelStart, data);
+                globalDmxBuffer.SetRange(fixture.globalChannelStart, fixture.GetDmxData());
             }
             
-            WriteSpecialData(ref globalDmxBuffer);
+            globalDmxBuffer.EnsureCapacity(5 + 1);
+            globalDmxBuffer.Set(5, 255);
         }
         
         private static void WriteSpecialData(ref DmxData buffer)

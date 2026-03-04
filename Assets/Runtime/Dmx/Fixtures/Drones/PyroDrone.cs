@@ -20,8 +20,8 @@ namespace Runtime.Dmx.Fixtures.Drones
             Buffer = new byte[10]; // (0 -> 5) Position Coarse + Fine, (6 -> 8) Pitch + Yaw + Roll, (9) Index
             MinAngle = -360;
             MaxAngle = 360;
-            minPosition = new Vector3(-800, -800, -800);
-            maxPosition = new Vector3(800, 800, 800);
+            minPosition = Vector3.one * -800;
+            maxPosition = Vector3.one * 800;
         }
 
         private void Update()
@@ -62,9 +62,10 @@ namespace Runtime.Dmx.Fixtures.Drones
         #region Static
         private static GameObject _pyroDronePrefab;
         private static GameObject _internalPool;
-        private const int GlobalDmxChannelOffset = (512 * 5) + 41 - 1; // 2600 is start for pyro drone.
+        private const int GlobalDmxChannelOffset = (512 * 5) + 321 - 1; // 2880 is start for FX drone // Offset is probably correct (maybe?)
+        //(512 * 5) + 41 - 1; // 2600 is start for pyro drone.
         private const string Prefix = "PyroDrone";
-
+        
         public static void InitializePrefab(Action callback = null)
         {
             if (_pyroDronePrefab != null) return;
@@ -75,19 +76,17 @@ namespace Runtime.Dmx.Fixtures.Drones
                 callback?.Invoke();
             });
         }
-        
+            
         public static void Spawn(FixtureSpawnManager spawnManager, ref PyroDrone[] pool, ref int count)
         {
             if (_internalPool == null) _internalPool = new GameObject("PyroDronePool");
             pool = new PyroDrone[count];
-            PyroDrone fixture = null;
-
+            
             for (int i = 0; i < pool.Length; i++)
             {
-                Spawn(ref pool, ref i, GlobalDmxChannelOffset, out fixture);
-                fixture.spawnManager = spawnManager;
+                Spawn(ref pool, ref i, GlobalDmxChannelOffset, out _);
             }
-            
+                
             Debug.Log($"'{Prefix}' {pool.Length} pyro drones are instanced");
 
             SetPreset(pool, PyroDronePresetManager.presets[0]);
@@ -101,10 +100,10 @@ namespace Runtime.Dmx.Fixtures.Drones
             fixture.fixtureIndex = index;
             fixture.globalChannelStart = offset + (index * fixture.GetDmxData().Length);
             fixture.gameObject.name = "PyroDrone #" + fixture.fixtureIndex;
-            
+                
             pool[index] = fixture;
         }
-
+        
         private static void SetPreset(PyroDrone[] pool, PyroDronePreset[] preset)
         {
             for (var i = 0; i < preset.Length; i++)
@@ -113,40 +112,18 @@ namespace Runtime.Dmx.Fixtures.Drones
                 fixture.transform.localPosition = preset[i].GetPosition();
             }
         }
-        
+    
         public static void WriteDataToGlobalBuffer(ref PyroDrone[] pool, ref DmxData globalDmxBuffer)
         {
+            globalDmxBuffer.EnsureCapacity(GlobalDmxChannelOffset + (pool.Length * 10));
             foreach (var fixture in pool)
             {
-                var data = new List<byte>(fixture.GetDmxData());
-                
-                globalDmxBuffer.EnsureCapacity(fixture.globalChannelStart + data.Count);
-                globalDmxBuffer.SetRange(fixture.globalChannelStart, data);
+                globalDmxBuffer.SetRange(fixture.globalChannelStart, fixture.GetDmxData());
             }
 
-            WriteSpecialData(ref globalDmxBuffer);
+            globalDmxBuffer.EnsureCapacity(2599);
+            globalDmxBuffer.Set(2598, 255); // 2598 // Enable FX Drone
         }
-        
-        private static void WriteSpecialData(ref DmxData buffer) // TODO: explain each setter
-        {
-            //int offset = 512 * 5 - 1; // 2560 - 1
-            
-            //buffer.EnsureCapacity(offset + 246 + 1);
-            
-            // FX Drone:
-            // 2600 or 6 uni
-            
-            //int offset = 512 * 5 - 1; // 2560
-            //buffer.EnsureCapacity(offset + 512);
-            //buffer.Set(offset + 39, 255); // 2598 // Enable FX Drone
-            //buffer.Set(offset + 40, 0);
-            //buffer.Set(offset + 201, 0); // end of last drone
-            
-            buffer.EnsureCapacity(512 * 6);
-            buffer.Set(2598, 255); // 2598 // Enable FX Drone
-            //buffer.Set(2599, 0);
-        }
-        
         #endregion
     }
 }

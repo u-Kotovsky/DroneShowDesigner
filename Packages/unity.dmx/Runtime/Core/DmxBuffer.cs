@@ -8,22 +8,29 @@ namespace Unity_DMX.Core
     {
         public DmxData Buffer;
         
-        public event Action<DmxData> OnBufferUpdate = delegate { };
+        private event Action<DmxData> OnBufferUpdate = delegate { };
 
-#if UNITY_EDITOR
-        public ulong bufferUpdates = 0;
-#endif
-
+        public void OnBufferUpdateSubscribe(Action<DmxData> callback)
+        {
+            OnBufferUpdate += callback;
+        }
+        
+        public void OnBufferUpdateUnSubscribe(Action<DmxData> callback)
+        {
+            OnBufferUpdate -= callback;
+        }
+        
         private void Awake()
         {
             Buffer = new DmxData(0);
             
-#if UNITY_EDITOR
+#if UNITY_EDITOR && DRONE_BUFFER_DEBUG
             OnBufferUpdate += BufferUpdate;
 #endif
         }
 
-#if UNITY_EDITOR
+#if UNITY_EDITOR && DRONE_BUFFER_DEBUG
+        public ulong bufferUpdates = 0;
         private void BufferUpdate(DmxData data)
         {
             bufferUpdates++;

@@ -14,7 +14,7 @@ namespace Unity_DMX
         /// <param name="target"></param>
         /// <param name="universe"></param>
         /// <param name="buffer"></param>
-        public static void SendUniverseFromGlobalBuffer(DmxController target, short universe, DmxData buffer)
+        public static void SendUniverseFromGlobalBuffer(ref DmxController target, ref short universe, ref DmxData buffer)
         {
             var dmxData = TakeUniverseFromGlobalBuffer(universe, buffer);
             
@@ -47,8 +47,7 @@ namespace Unity_DMX
         {
             int offset = packet.Universe * 512;
 
-            DmxData dmxData = new DmxData(packet.DmxData);
-            globalDmxBuffer.SetRange(offset, dmxData);
+            globalDmxBuffer.SetRange(offset, packet.DmxData);
             
             callback?.Invoke(packet.Universe, TakeUniverseFromGlobalBuffer(packet.Universe, globalDmxBuffer));
         }

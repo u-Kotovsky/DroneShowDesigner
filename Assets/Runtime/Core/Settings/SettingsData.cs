@@ -14,6 +14,8 @@ namespace Runtime.Core.Settings
         public bool enableLightingDrones = false;
         public bool enablePyroDrones = false;
         
+        public bool enableInternalRender = true;
+        
         public bool compressText = false;
     }
 }

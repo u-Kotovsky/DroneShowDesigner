@@ -7,15 +7,24 @@ namespace Unity_DMX.Core
         private readonly List<byte> buffer;
         
         public int Count => buffer.Count;
+        
+        public short UniverseCount { get; private set; }
 
         public DmxData(int size)
         {
             buffer = new List<byte>(new byte[size]);
+            CalculateUniverses();
         }
 
         public DmxData(byte[] data)
         {
             buffer = new List<byte>(data);
+            CalculateUniverses();
+        }
+
+        private void CalculateUniverses()
+        {
+            UniverseCount = (short)(buffer.Count / 512);
         }
 
         public void EnsureCapacity(int capacity)
@@ -23,6 +32,7 @@ namespace Unity_DMX.Core
             if (buffer.Count >= capacity) return;
             
             buffer.AddRange(new byte[capacity - buffer.Count]);
+            CalculateUniverses();
         }
         
         public void Set(int dstOffset, byte value)

@@ -258,26 +258,6 @@ Shader "Hidden/Locked/.poiyomi/Poiyomi Pro URP/bf450ea00569415498ae85ee913a3fba"
 		[ThryWideEnum(Direct Color, 0, Indirect Color, 1, Light Map, 2, Attenuation, 3, N Dot L, 4, Half Dir, 5, Direction, 6, Add Color, 7, Add Attenuation, 8, Add Shadow, 9, Add N Dot L, 10)] _LightingDebugVisualize ("Visualize", Int) = 0
 		[HideInInspector] s_end_LightDataDebug ("Debug", Float) = 0
 		[HideInInspector] m_end_PoiLightData ("Light Data", Float) = 0
-		[HideInInspector] m_start_PoiShading (" Shading--{reference_property:_ShadingEnabled,button_help:{text:Tutorial,action:{type:URL,data:https://www.poiyomi.com/shading/main},hover:Documentation}}", Float) = 0
-		[HideInInspector][ThryToggle(VIGNETTE_MASKED)]_ShadingEnabled ("Enable Shading", Float) = 1
-		[DoNotAnimate][KeywordEnum(TextureRamp, Multilayer Math, Wrapped, Skin, ShadeMap, Flat, Realistic, Cloth, SDF)] _LightingMode ("Lighting Type", Float) = 5
-		_LightingShadowColor ("Shadow Tint--{condition_showS:(_LightingMode!=4 && _LightingMode!=1 && _LightingMode!=5)}", Color) = (1, 1, 1)
-		[ToggleUI]_ForceFlatRampedLightmap ("Force Ramped Lightmap--{condition_showS:(_LightingMode==5)}", Range(0, 1)) = 1
-		_ShadowStrength ("Shadow Strength--{condition_showS:(_LightingMode<=4 || _LightingMode==8)}", Range(0, 1)) = 1
-		_LightingIgnoreAmbientColor ("Ignore Indirect Shadow Color--{condition_showS:(_LightingMode<=3 || _LightingMode==8)}", Range(0, 1)) = 1
-		[Space(15)]
-		[HideInInspector] s_start_ShadingAddPass ("Add Pass (Point & Spot Lights)--{persistent_expand:true,default_expand:false}", Float) = 0
-		[Enum(Realistic, 0, Toon, 1, Same as Base Pass, 3)] _LightingAdditiveType ("Lighting Type", Int) = 3
-		_LightingAdditiveGradientStart ("Gradient Start--{condition_showS:(_LightingAdditiveType==1)}", Range(0, 1)) = 0
-		_LightingAdditiveGradientEnd ("Gradient End--{condition_showS:(_LightingAdditiveType==1)}", Range(0, 1)) = .5
-		[HideInInspector] s_end_ShadingAddPass ("Add Pass", Float) = 0
-		[HideInInspector] s_start_ShadingGlobalMask ("Global Masks--{persistent_expand:true,default_expand:false}", Float) = 0
-		[ThryWideEnum(Off, 0, 1R, 1, 1G, 2, 1B, 3, 1A, 4, 2R, 5, 2G, 6, 2B, 7, 2A, 8, 3R, 9, 3G, 10, 3B, 11, 3A, 12, 4R, 13, 4G, 14, 4B, 15, 4A, 16)] _ShadingRampedLightMapApplyGlobalMaskIndex ("LightMap to Global Mask--{reference_property:_ShadingRampedLightMapApplyGlobalMaskBlendType}", Int) = 0
-		[ThryHideInInspector][ThryWideEnum(Add, 7, Subtract, 1, Multiply, 2, Divide, 3, Min, 4, Max, 5, Average, 6, Replace, 0)] _ShadingRampedLightMapApplyGlobalMaskBlendType ("Blending", Int) = 2
-		[ThryWideEnum(Off, 0, 1R, 1, 1G, 2, 1B, 3, 1A, 4, 2R, 5, 2G, 6, 2B, 7, 2A, 8, 3R, 9, 3G, 10, 3B, 11, 3A, 12, 4R, 13, 4G, 14, 4B, 15, 4A, 16)] _ShadingRampedLightMapInverseApplyGlobalMaskIndex ("Inversed LightMap to Global Mask--{reference_property:_ShadingRampedLightMapInverseApplyGlobalMaskBlendType}", Int) = 0
-		[ThryHideInInspector][ThryWideEnum(Add, 7, Subtract, 1, Multiply, 2, Divide, 3, Min, 4, Max, 5, Average, 6, Replace, 0)] _ShadingRampedLightMapInverseApplyGlobalMaskBlendType ("Blending", Int) = 2
-		[HideInInspector] s_end_ShadingGlobalMask ("Global Masks", Float) = 0
-		[HideInInspector] m_end_PoiShading ("Shading", Float) = 0
 		[HideInInspector] m_OutlineCategory (" Outlines--{reference_property:_EnableOutlines,button_help:{text:Tutorial,action:{type:URL,data:https://www.poiyomi.com/outlines/},hover:Documentation}}", Float) = 0
 		[HideInInspector] m_specialFXCategory ("Special FX", Float) = 0
 		[HideInInspector] m_vertexCategory ("Vertex Options", Float) = 0
@@ -2460,8 +2440,6 @@ Shader "Hidden/Locked/.poiyomi/Poiyomi Pro URP/bf450ea00569415498ae85ee913a3fba"
 			Blend [_SrcBlend] [_DstBlend], [_SrcBlendAlpha] [_DstBlendAlpha]
 			HLSLPROGRAM
  #define GEOM_TYPE_BRANCH 
- #define VIGNETTE_MASKED 
- #define _LIGHTINGMODE_FLAT 
  #define _STOCHASTICMODE_DELIOT_HEITZ 
  #define PROP_DECALTEXTURE 
  #define OPTIMIZER_ENABLED 
@@ -2652,20 +2630,6 @@ Shader "Hidden/Locked/.poiyomi/Poiyomi Pro URP/bf450ea00569415498ae85ee913a3fba"
 			float _UVModWorldPos1;
 			float _UVModLocalPos0;
 			float _UVModLocalPos1;
-			float _ShadowStrength;
-			float _LightingIgnoreAmbientColor;
-			float3 _LightingShadowColor;
-			float _ShadingRampedLightMapApplyGlobalMaskIndex;
-			float _ShadingRampedLightMapApplyGlobalMaskBlendType;
-			float _ShadingRampedLightMapInverseApplyGlobalMaskIndex;
-			float _ShadingRampedLightMapInverseApplyGlobalMaskBlendType;
-			#ifdef _LIGHTINGMODE_FLAT
-			float _ForceFlatRampedLightmap;
-			#endif
-			float _LightingAdditiveType;
-			float _LightingAdditiveGradientStart;
-			float _LightingAdditiveGradientEnd;
-			float _LightingAdditiveDetailStrength;
 			#if defined(PROP_DECALMASK)
 			float4 _DecalMask_ST;
 			float2 _DecalMaskPan;
@@ -3140,7 +3104,7 @@ Shader "Hidden/Locked/.poiyomi/Poiyomi Pro URP/bf450ea00569415498ae85ee913a3fba"
 			in float4 mainTexture)
 			{
 				poiLight.finalLightAdd = 0;
-				if (!1.0)
+				if (!0.0)
 				{
 					return float4(mainTexture.rgb * .0001, 1);
 				}
@@ -3604,133 +3568,6 @@ Shader "Hidden/Locked/.poiyomi/Poiyomi Pro URP/bf450ea00569415498ae85ee913a3fba"
 				float3 viewDirection = normalize(lerp(getCameraPosition().xyz, _WorldSpaceCameraPos.xyz, 1.0) - poiMesh.worldPos.xyz) * - 1;
 				return lerp(MonoPanoProjection(viewDirection), StereoPanoProjection(viewDirection), 0.0);
 			}
-			#ifdef VIGNETTE_MASKED
-			float GetRemapMinValue(float scale, float offset)
-			{
-				return clamp(-offset / scale, -0.01f, 1.01f); // Remap min
-			}
-			float GetRemapMaxValue(float scale, float offset)
-			{
-				return clamp((1.0f - offset) / scale, -0.01f, 1.01f); // Remap Max
-			}
-			#if POI_PIPE == POI_URP
-			void PoiAdditionalLightCopy(inout PoiLight poiLight, in PoiLight mainLight, in Light additionalLight, uint lightType, float detailShadow)
-			{
-				PoiInitStruct(PoiLight, poiLight);
-				poiLight.lightType = lightType;
-				poiLight.unityLight = additionalLight;
-				poiLight.detailShadow = detailShadow;
-				poiLight.shadowMask = mainLight.shadowMask;
-				poiLight.occlusion = mainLight.occlusion;
-				poiLight.brdfData = mainLight.brdfData;
-				poiLight.brdfDataClearCoat = mainLight.brdfDataClearCoat;
-				poiLight.lightingMinLightBrightness = mainLight.lightingMinLightBrightness;
-				poiLight.lightingCapEnabled = mainLight.lightingCapEnabled;
-				poiLight.lightingMonochromatic = mainLight.lightingMonochromatic;
-			}
-			#endif
-			void PoiCalculateShading(inout PoiLight poiLight, inout PoiFragData poiFragData, in PoiMesh poiMesh, in PoiCam poiCam)
-			{
-				float shadowAttenuation = lerp(1, poiLight.attenuation, poiLight.attenuationStrength);
-				float attenuation = 1;
-				if (poiLight.lightType == POI_POINT_SPOT)
-				{
-					shadowAttenuation = lerp(1, poiLight.additiveShadow, poiLight.attenuationStrength);
-				}
-				#if (POI_PIPE == POI_BIRP && defined(POI_PASS_ADD)) || (POI_PIPE == POI_URP)
-				if (poiLight.lightType == POI_POINT_SPOT)
-				{
-					if (3.0 == 3)
-					{
-						#if defined(_LIGHTINGMODE_REALISTIC) || defined(_LIGHTINGMODE_CLOTH) || defined(_LIGHTINGMODE_WRAPPED)
-						#if POI_PIPE == POI_BIRP
-						poiLight.rampedLightMap = max(0, poiLight.nDotL);
-						poiLight.finalLighting = poiLight.directColor * attenuation * max(0, poiLight.nDotL) * poiLight.detailShadow * shadowAttenuation;
-						#elif POI_PIPE == POI_URP
-						poiLight.rampedLightMap = max(0, poiLight.nDotL);
-						poiLight.finalLighting = LightingPhysicallyBased(poiLight.brdfData, poiLight.brdfDataClearCoat, poiLight.directColor, poiLight.direction, attenuation * shadowAttenuation, poiMesh.normals[1], poiCam.viewDir, 1.0, false);
-						#endif
-						return;
-						#endif
-					}
-					if (3.0 == 0)
-					{
-						poiLight.rampedLightMap = max(0, poiLight.nDotL);
-						#if POI_PIPE == POI_BIRP
-						poiLight.finalLighting = poiLight.directColor * attenuation * max(0, poiLight.nDotL) * poiLight.detailShadow * shadowAttenuation;
-						#elif POI_PIPE == POI_URP
-						poiLight.finalLighting = LightingPhysicallyBased(poiLight.brdfData, poiLight.brdfDataClearCoat, poiLight.directColor, poiLight.direction, attenuation * shadowAttenuation, poiMesh.normals[1], poiCam.viewDir, 1.0, false);
-						#endif
-						return;
-					}
-					if (3.0 == 1)
-					{
-						#if defined(POINT_COOKIE) || defined(DIRECTIONAL_COOKIE)
-						float passthrough = 0;
-						#else
-						float passthrough = 0.5;
-						#endif
-						float2 ToonAddGradient = float2(0.0, 0.5);
-						if (ToonAddGradient.x == ToonAddGradient.y) ToonAddGradient.y += 0.0001;
-						poiLight.rampedLightMap = smoothstep(ToonAddGradient.y, ToonAddGradient.x, 1 - (.5 * poiLight.nDotL + .5));
-						#if defined(POINT) || defined(SPOT)
-						poiLight.finalLighting = lerp(poiLight.directColor * max(min(poiLight.additiveShadow, poiLight.detailShadow), passthrough), poiLight.indirectColor, smoothstep(ToonAddGradient.x, ToonAddGradient.y, 1 - (.5 * poiLight.nDotL + .5)));
-						#else
-						poiLight.finalLighting = lerp(poiLight.directColor * max(min(poiLight.attenuation, poiLight.detailShadow), passthrough), poiLight.indirectColor, smoothstep(ToonAddGradient.x, ToonAddGradient.y, 1 - (.5 * poiLight.nDotL + .5)));
-						#endif
-						return;
-					}
-				}
-				#endif
-				float shadowStrength = 1.0 * poiLight.shadowMask.r;
-				#ifdef POI_PASS_OUTLINE
-				shadowStrength = lerp(0, shadowStrength, 0.0);
-				#endif
-				#ifdef _LIGHTINGMODE_FLAT
-				poiLight.finalLighting = poiLight.directColor * attenuation * shadowAttenuation;
-				if (1.0)
-				{
-					poiLight.rampedLightMap = smoothstep(0.4, 0.6, poiLight.nDotLNormalized);
-				}
-				else
-				{
-					poiLight.rampedLightMap = 1;
-				}
-				#endif
-				#if POI_PIPE == POI_BIRP
-				if (poiFragData.toggleVertexLights)
-				{
-					#if defined(VERTEXLIGHT_ON)
-					float3 vertexLighting = float3(0, 0, 0);
-					for (int index = 0; index < 4; index++)
-					{
-						float lightingMode = 3.0;
-						if (lightingMode == 3)
-						{
-							#if defined(_LIGHTINGMODE_REALISTIC)
-							lightingMode = 0;
-							#else
-							lightingMode = 1;
-							#endif
-						}
-						if (lightingMode == 0)
-						{
-							vertexLighting = max(vertexLighting, poiLight.vColor[index] * poiLight.vSaturatedDotNL[index] * poiLight.detailShadow); // Realistic
-						}
-						if (lightingMode == 1)
-						{
-							float2 ToonAddGradient = float2(0.0, 0.5);
-							if (ToonAddGradient.x == ToonAddGradient.y) ToonAddGradient.y += 0.0001;
-							vertexLighting = max(vertexLighting, lerp(poiLight.vColor[index], poiLight.vColor[index] * 0.5, smoothstep(ToonAddGradient.x, ToonAddGradient.y, 1 - (.5 * poiLight.vDotNL[index] + .5))) * poiLight.detailShadow);
-						}
-					}
-					float3 mixedLight = poiLight.finalLighting;
-					poiLight.finalLighting = max(vertexLighting, poiLight.finalLighting);
-					#endif
-				}
-				#endif
-			}
-			#endif
 			#if defined(GEOM_TYPE_BRANCH) || defined(GEOM_TYPE_BRANCH_DETAIL) || defined(GEOM_TYPE_FROND) || defined(DEPTH_OF_FIELD_COC_VIEW)
 			float2 decalUV(float uvNumber, float2 position, half rotation, half rotationSpeed, half2 scale, float4 scaleOffset, float depth, in float symmetryMode, in float mirroredUVMode, in PoiMesh poiMesh, in PoiCam poiCam)
 			{
@@ -4187,12 +4024,6 @@ Shader "Hidden/Locked/.poiyomi/Poiyomi Pro URP/bf450ea00569415498ae85ee913a3fba"
 				#endif
 			}
 			#endif
-			#ifdef VIGNETTE_MASKED
-			void PoiLightingDependantModules(inout PoiLight poiLight, inout PoiFragData poiFragData, in MochieBRDFData mochieBRDFData,
-			in PoiMesh poiMesh, in PoiCam poiCam, in PoiMods poiMods)
-			{
-			}
-			#endif
 			float4 frag(VertexOut i, bool facing : SV_IsFrontFace) : SV_Target
 			{
 				UNITY_SETUP_INSTANCE_ID(i);
@@ -4502,70 +4333,8 @@ Shader "Hidden/Locked/.poiyomi/Poiyomi Pro URP/bf450ea00569415498ae85ee913a3fba"
 					if (2.0 == 4) poiFragData.alpha = saturate(poiFragData.alpha - alphaMask);
 				}
 				applyAlphaOptions(poiFragData, poiMesh, poiCam, poiMods);
-				#if defined(_LIGHTINGMODE_SHADEMAP) && defined(VIGNETTE_MASKED)
-				#ifndef POI_PASS_OUTLINE
-				applyShadeMapping(poiFragData, poiMesh, poiLight);
-				#endif
-				#endif
-				bool skipShading = false;
-				#ifdef POI_PASS_OUTLINE
-				if (!1.0) skipShading = true;
-				#endif
-				#ifdef VIGNETTE_MASKED
-				if (!skipShading)
-				{
-					PoiCalculateShading(poiLight, poiFragData, poiMesh, poiCam);
-					PoiLightingDependantModules(poiLight, poiFragData, mochieBRDFData, poiMesh, poiCam, poiMods);
-					#if defined(_ADDITIONAL_LIGHTS)
-					#if USE_CLUSTER_LIGHT_LOOP
-					UNITY_LOOP for (uint lightIndex = 0; lightIndex < min(URP_FP_DIRECTIONAL_LIGHTS_COUNT, POI_MAX_VISIBLE_LIGHTS); lightIndex++)
-					{
-						CLUSTER_LIGHT_LOOP_SUBTRACTIVE_LIGHT_CHECK
-						Light additionalLight = GetAdditionalLight(lightIndex, poiMesh.worldPos, poiLight.shadowMask);
-						PoiLight poiLightAdd;
-						PoiAdditionalLightCopy(poiLightAdd, poiLight, additionalLight, POI_DIRECTIONAL, poiDetailShadowMain);
-						PoiLightDataSetup(poiLightAdd, poiFragData, poiMesh, poiCam, poiMods, i, mainTexture);
-						PoiCalculateShading(poiLightAdd, poiFragData, poiMesh, poiCam);
-						PoiLightingDependantModules(poiLightAdd, poiFragData, mochieBRDFData, poiMesh, poiCam, poiMods);
-						poiLightOut.totalLighting += poiLightAdd.finalLighting;
-						poiLightOut.totalLightAdd += poiLightAdd.finalLightAdd;
-					}
-					#endif
-					uint pixelLightCount = min(GetAdditionalLightsCount(), POI_MAX_VISIBLE_LIGHTS);
-					LIGHT_LOOP_BEGIN(pixelLightCount)
-					Light additionalLight = GetAdditionalLight(lightIndex, poiMesh.worldPos, poiLight.shadowMask);
-					PoiLight poiLightAdd;
-					PoiAdditionalLightCopy(poiLightAdd, poiLight, additionalLight, POI_POINT_SPOT, poiDetailShadowAdditional);
-					PoiLightDataSetupAdd(poiLightAdd, poiFragData, poiMesh, poiCam, poiMods, i, mainTexture);
-					PoiCalculateShading(poiLightAdd, poiFragData, poiMesh, poiCam);
-					PoiLightingDependantModules(poiLightAdd, poiFragData, mochieBRDFData, poiMesh, poiCam, poiMods);
-					poiLightOut.totalLighting += poiLightAdd.finalLighting;
-					poiLightOut.totalLightAdd += poiLightAdd.finalLightAdd;
-					LIGHT_LOOP_END
-					#endif
-				}
-				else
-				{
-					poiLight.finalLighting = 1;
-				}
-				#else
 				poiLight.finalLighting = 1;
 				poiLight.rampedLightMap = poiEdgeNonLinear(poiLight.nDotL, 0.1, .1);
-				#endif
-				if (0.0 > 0)
-				{
-					applyToGlobalMask(poiMods, 0.0 - 1, 2.0, dot(poiLight.rampedLightMap, float3(0.299, 0.587, 0.114)));
-				}
-				if (0.0 > 0)
-				{
-					applyToGlobalMask(poiMods, 0.0 - 1, 2.0, 1 - dot(poiLight.rampedLightMap, float3(0.299, 0.587, 0.114)));
-				}
-				poiLight.directLuminance = dot(poiLight.directColor, float3(0.299, 0.587, 0.114));
-				poiLight.indirectLuminance = dot(poiLight.indirectColor, float3(0.299, 0.587, 0.114));
-				poiLight.finalLuminance = dot(poiLight.finalLighting, float3(0.299, 0.587, 0.114));
-				#ifdef POI_GRABPASS
-				poiLight.finalLighting = max(poiLight.finalLighting, 0.0001);
-				#endif
 				#if defined(GEOM_TYPE_BRANCH) || defined(GEOM_TYPE_BRANCH_DETAIL) || defined(GEOM_TYPE_FROND) || defined(DEPTH_OF_FIELD_COC_VIEW)
 				applyDecals(poiFragData, poiMesh, poiCam, poiMods, poiLight);
 				#endif
@@ -4586,7 +4355,7 @@ Shader "Hidden/Locked/.poiyomi/Poiyomi Pro URP/bf450ea00569415498ae85ee913a3fba"
 				if (0.0 == POI_MODE_OPAQUE)
 				{
 				}
-				clip(poiFragData.alpha - 0.5);
+				clip(poiFragData.alpha - 0.0);
 				if (0.0 == POI_MODE_CUTOUT && !0.0)
 				{
 					poiFragData.alpha = 1;
@@ -4632,8 +4401,6 @@ Shader "Hidden/Locked/.poiyomi/Poiyomi Pro URP/bf450ea00569415498ae85ee913a3fba"
 			Blend [_SrcBlend] [_DstBlend], [_SrcBlendAlpha] [_DstBlendAlpha]
 			HLSLPROGRAM
  #define GEOM_TYPE_BRANCH 
- #define VIGNETTE_MASKED 
- #define _LIGHTINGMODE_FLAT 
  #define _STOCHASTICMODE_DELIOT_HEITZ 
  #define PROP_DECALTEXTURE 
  #define OPTIMIZER_ENABLED 
@@ -5371,7 +5138,7 @@ Shader "Hidden/Locked/.poiyomi/Poiyomi Pro URP/bf450ea00569415498ae85ee913a3fba"
 				{
 					poiFragData.alpha = 1;
 				}
-				clip(poiFragData.alpha - 0.5);
+				clip(poiFragData.alpha - 0.0);
 				applyUnityFog(poiFragData.finalColor, i.fogData, 0.0);
 				return float4(poiFragData.finalColor, poiFragData.alpha) + POI_SAFE_RGB0;
 			}
@@ -5400,8 +5167,6 @@ Shader "Hidden/Locked/.poiyomi/Poiyomi Pro URP/bf450ea00569415498ae85ee913a3fba"
 			Blend [_SrcBlend] [_DstBlend], [_SrcBlendAlpha] [_DstBlendAlpha]
 			HLSLPROGRAM
  #define GEOM_TYPE_BRANCH 
- #define VIGNETTE_MASKED 
- #define _LIGHTINGMODE_FLAT 
  #define _STOCHASTICMODE_DELIOT_HEITZ 
  #define PROP_DECALTEXTURE 
  #define OPTIMIZER_ENABLED 
@@ -6105,7 +5870,7 @@ Shader "Hidden/Locked/.poiyomi/Poiyomi Pro URP/bf450ea00569415498ae85ee913a3fba"
 				poiFragData.alpha = _AlphaForceOpaque2 ? 1 : poiFragData.alpha;
 				#endif
 				#endif
-				clip(poiFragData.alpha - 0.5);
+				clip(poiFragData.alpha - 0.0);
 				#if POI_PIPE == POI_URP
 				outDepth = i.pos.z + POI_SAFE_RGB0.r;
 				#endif
@@ -6140,8 +5905,6 @@ Shader "Hidden/Locked/.poiyomi/Poiyomi Pro URP/bf450ea00569415498ae85ee913a3fba"
 			Blend [_SrcBlend] [_DstBlend], [_SrcBlendAlpha] [_DstBlendAlpha]
 			HLSLPROGRAM
  #define GEOM_TYPE_BRANCH 
- #define VIGNETTE_MASKED 
- #define _LIGHTINGMODE_FLAT 
  #define _STOCHASTICMODE_DELIOT_HEITZ 
  #define PROP_DECALTEXTURE 
  #define OPTIMIZER_ENABLED 
@@ -6851,7 +6614,7 @@ Shader "Hidden/Locked/.poiyomi/Poiyomi Pro URP/bf450ea00569415498ae85ee913a3fba"
 				{
 					poiFragData.alpha = 1;
 				}
-				clip(poiFragData.alpha - 0.5);
+				clip(poiFragData.alpha - 0.0);
 				#if POI_PIPE == POI_URP
 				float3 normalWS = NormalizeNormalPerPixel(poiMesh.normals[0]);
 				outNormalWS = half4(normalWS, 0.0) + POI_SAFE_RGB0;
@@ -6882,8 +6645,6 @@ Shader "Hidden/Locked/.poiyomi/Poiyomi Pro URP/bf450ea00569415498ae85ee913a3fba"
 			ColorMask RG
 			HLSLPROGRAM
  #define GEOM_TYPE_BRANCH 
- #define VIGNETTE_MASKED 
- #define _LIGHTINGMODE_FLAT 
  #define _STOCHASTICMODE_DELIOT_HEITZ 
  #define PROP_DECALTEXTURE 
  #define OPTIMIZER_ENABLED 
@@ -7588,7 +7349,7 @@ Shader "Hidden/Locked/.poiyomi/Poiyomi Pro URP/bf450ea00569415498ae85ee913a3fba"
 				poiFragData.alpha = _AlphaForceOpaque2 ? 1 : poiFragData.alpha;
 				#endif
 				#endif
-				clip(poiFragData.alpha - 0.5);
+				clip(poiFragData.alpha - 0.0);
 				#if defined(POI_PASS_MOTION_VECTORS)
 				#if UNITY_VERSION >= 202300
 				#if defined(APPLICATION_SPACE_WARP_MOTION)

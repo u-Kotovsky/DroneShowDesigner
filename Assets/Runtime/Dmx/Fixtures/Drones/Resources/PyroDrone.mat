@@ -15,7 +15,6 @@ Material:
   m_InvalidKeywords:
   - BSSBLOOMFOGTYPE_HEIGHT
   - GEOM_TYPE_BRANCH
-  - VIGNETTE_MASKED
   - _LIGHTINGMODE_FLAT
   - _RIM2STYLE_POIYOMI
   - _RIMSTYLE_POIYOMI
@@ -27,7 +26,7 @@ Material:
   m_CustomRenderQueue: 2000
   stringTagMap:
     AllLockedGUIDS: 9b54483f9b66f664ea3f603f1f314690
-    OriginalKeywords: BSSBLOOMFOGTYPE_HEIGHT GEOM_TYPE_BRANCH VIGNETTE_MASKED _LIGHTINGMODE_FLAT
+    OriginalKeywords: BSSBLOOMFOGTYPE_HEIGHT GEOM_TYPE_BRANCH _LIGHTINGMODE_FLAT
       _RIM2STYLE_POIYOMI _RIMSTYLE_POIYOMI _STOCHASTICMODE_DELIOT_HEITZ _STYLIZEDREFLECTIONMODE_UNITYCHAN
     OriginalShader: .poiyomi/Poiyomi Pro URP
     OriginalShaderGUID: d30d29f3c7b703e47bb508ac02c9d611
@@ -2282,7 +2281,7 @@ Material:
     - _ShaderOptimizerEnabled: 1
     - _ShaderUIWarning0: -0
     - _ShaderUIWarning1: -0
-    - _ShadingEnabled: 1
+    - _ShadingEnabled: 0
     - _ShadingRampedLightMapApplyGlobalMaskBlendType: 2
     - _ShadingRampedLightMapApplyGlobalMaskIndex: 0
     - _ShadingRampedLightMapInverseApplyGlobalMaskBlendType: 2
@@ -2819,8 +2818,8 @@ Material:
     - m_end_videoEffects: 0
     - m_end_voronoi: 0
     - m_end_voronoiRandom: 0
-    - m_lightingCategory: 0
-    - m_mainCategory: 1
+    - m_lightingCategory: 1
+    - m_mainCategory: 0
     - m_modifierCategory: 0
     - m_renderingCategory: 0
     - m_specialFXCategory: 0
@@ -2843,7 +2842,7 @@ Material:
     - m_start_Decal2AudioLink: 0
     - m_start_Decal3: 0
     - m_start_Decal3AudioLink: 0
-    - m_start_DecalSection: 1
+    - m_start_DecalSection: 0
     - m_start_DepthBulge: 0
     - m_start_DetailOptions: 0
     - m_start_DistortionAudioLink: 0

@@ -1,7 +1,4 @@
-using System;
-using System.Collections.Generic;
 using Runtime.Dmx.Fixtures.Drones;
-using Runtime.Dmx.Fixtures.Drones.Movers;
 using Runtime.Dmx.Fixtures.Lights;
 using Runtime.Dmx.Fixtures.Truss;
 using Unity_DMX.Core;
@@ -16,8 +13,50 @@ namespace Runtime.Dmx.Fixtures
 
         [Header("Cinemachine")] 
         public SplineContainer splineContainer;
+
+        private bool useInternalRender = false;
+
+        public bool UseInternalRender
+        {
+            get => useInternalRender;
+            set
+            {
+                useInternalRender = value;
+                ToggleRenderPool(lightingDronePool, useInternalRender);
+                ToggleRenderPool(pyroDronePool, useInternalRender);
+                ToggleRenderPool(mobileTrussPool, useInternalRender);
+                ToggleRenderPool(mobileLightPool, useInternalRender);
+            }
+        }
         
-        [Header("Fixtures to enable on start")]
+        private void ToggleRenderPool(Component[] pool, bool active)
+        {
+            foreach (var obj in pool)
+            {
+                if (obj == null)  continue;
+
+                if (obj.TryGetComponent<Renderer>(out var objRenderer))
+                {
+                    objRenderer.enabled = active;
+                }
+
+                if (obj.transform.childCount > 0)
+                {
+                    foreach (Transform o in obj.transform)
+                    {
+                        if (o.TryGetComponent<Renderer>(out var oRenderer))
+                        {
+                            oRenderer.enabled = active;
+                        }
+                    }
+                }
+            }
+        }
+        
+        [Header("Pyro Drone Spawn Settings")]
+        public int pyroDroneSpawnCount = 16;
+        public PyroDrone[] pyroDronePool;
+        public bool IsPyroDroneInitialized { get; private set; }
         private bool usePyroDrone;
         public bool UsePyroDrone
         {
@@ -28,7 +67,20 @@ namespace Runtime.Dmx.Fixtures
                 usePyroDrone = value;
             }
         }
+        private void InitializePyroDrones()
+        {
+            PyroDrone.InitializePrefab(() =>
+            {
+                PyroDrone.Spawn(this, ref pyroDronePool, ref pyroDroneSpawnCount);
+                TogglePool(pyroDronePool, false);
+                IsPyroDroneInitialized = true;
+            });
+        }
         
+        [Header("Lighting Drone Spawn Settings")]
+        public int lightingDroneSpawnCount = 1000;
+        public LightingDrone[] lightingDronePool;
+        public bool IsLightingDroneInitialized { get; private set; }
         private bool useLightingDrone;
         public bool UseLightingDrone
         {
@@ -39,7 +91,21 @@ namespace Runtime.Dmx.Fixtures
                 useLightingDrone = value;
             }
         }
+        private void InitializeLightingDrones()
+        {
+            LightingDrone.InitializePrefab(() =>
+            {
+                LightingDrone.Spawn(this, ref lightingDronePool, ref lightingDroneSpawnCount, ref splineContainer);
+                IsLightingDroneInitialized = true;
+                
+                TogglePool(lightingDronePool, false);
+            });
+        }
         
+        [Header("Mobile Truss Spawn Settings")]
+        public int mobileTrussSpawnCount = 12;
+        public MobileTruss[] mobileTrussPool;
+        public bool IsMobileTrussInitialized { get; private set; }
         private bool useMobileTruss;
         public bool UseMobileTruss
         {
@@ -50,45 +116,6 @@ namespace Runtime.Dmx.Fixtures
                 useMobileTruss = value;
             }
         }
-
-        private bool useMobileLight;
-        public bool UseMobileLight
-        {
-            get => useMobileLight;
-            set
-            {
-                TogglePool(mobileLightPool, value);
-                useMobileLight = value;
-            }
-        }
-
-        private void TogglePool(Component[] pool, bool active)
-        {
-            foreach (var obj in pool)
-                if (obj != null) obj.gameObject.SetActive(active);
-        }
-        
-        public bool IsMobileTrussInitialized { get; private set; }
-        public bool IsMobileLightInitialized { get; private set; }
-        public bool IsPyroDroneInitialized { get; private set; }
-        public bool IsLightingDroneInitialized { get; private set; }
-        
-        [Header("Pyro Drone Spawn Settings")]
-        public int pyroDroneSpawnCount = 16;
-        public PyroDrone[] pyroDronePool;
-        
-        [Header("Lighting Drone Spawn Settings")]
-        public int lightingDroneSpawnCount = 1000;
-        public LightingDrone[] lightingDronePool;
-        
-        [Header("Mobile Truss Spawn Settings")]
-        public int mobileTrussSpawnCount = 12;
-        public MobileTruss[] mobileTrussPool;
-
-        [Header("Mobile Light Spawn Settings")]
-        public int mobileLightSpawnCount = 8;
-        public MobileLight[] mobileLightPool;
-
         private void InitializeMobileTruss()
         {
             MobileTruss.InitializePrefab(() =>
@@ -99,6 +126,20 @@ namespace Runtime.Dmx.Fixtures
             });
         }
 
+        [Header("Mobile Light Spawn Settings")]
+        public int mobileLightSpawnCount = 8;
+        public MobileLight[] mobileLightPool;
+        public bool IsMobileLightInitialized { get; private set; }
+        private bool useMobileLight;
+        public bool UseMobileLight
+        {
+            get => useMobileLight;
+            set
+            {
+                TogglePool(mobileLightPool, value);
+                useMobileLight = value;
+            }
+        }
         private void InitializeMobileLight()
         {
             MobileLight.InitializePrefab(() =>
@@ -109,59 +150,12 @@ namespace Runtime.Dmx.Fixtures
             });
         }
 
-        private void InitializePyroDrones()
+        private void TogglePool(Component[] pool, bool active)
         {
-            PyroDrone.InitializePrefab(() =>
-            {
-                PyroDrone.Spawn(this, ref pyroDronePool, ref pyroDroneSpawnCount);
-                TogglePool(pyroDronePool, false);
-                IsPyroDroneInitialized = true;
-            });
+            foreach (var obj in pool)
+                if (obj != null) obj.gameObject.SetActive(active);
         }
-
-        private void InitializeLightingDrones()
-        {
-            LightingDrone.InitializePrefab(() =>
-            {
-                LightingDrone.Spawn(this, ref lightingDronePool, ref lightingDroneSpawnCount, ref splineContainer);
-                IsLightingDroneInitialized = true;
-                
-                TogglePool(lightingDronePool, false);
-                
-                // Post-setup
-                //lightingDronePool[0].transform.parent.localPosition = new Vector3(0, 10, 0);
-                
-                /*for (var i = 0; i < lightingDronePool.Length; i++)
-                {
-                    var drone = lightingDronePool[i];
-                    var component = drone.gameObject.AddComponent<DroneTakeoff>();
-                }*/
-                
-                /*var counter = 0;
-                var size = Mathf.Sqrt(lightingDronePool.Length);
-                var offset = size / 2;
-                
-                for (var z = 0; z < size; z++)
-                {
-                    for (var x = 0; x < size; x++)
-                    {
-                        if (lightingDronePool.Length <= counter) return;
-                        var drone = lightingDronePool[counter];
-                        //var component = drone.gameObject.AddComponent<DroneTakeoff>();
-
-                        //component.xIndex = x;
-                        //component.zIndex = z;
-
-                        //var c = counter % 5;
-                        //transform.localPosition = new Vector3(x - offset, 10.6f, y - offset); // 700 + (c * 5)
-                        //component.SetPositionTakeoffStart(lightingDronePool.Length, size, offset, x, 0.6f, z);
-                    
-                        counter++;
-                    }
-                }*/
-            });
-        }
-
+        
         public void Awake()
         {
             dmxController.OnDmxDataChanged += OnDmxDataChanged;
@@ -178,41 +172,32 @@ namespace Runtime.Dmx.Fixtures
             dmxController.ForceBufferUpdate(); // Maybe causing random dmx shuffle
         }
 
-        private void OnDmxDataChanged(short universe, DmxData data, DmxData globalDmxBuffer)
+        private void OnDmxDataChanged(short universe, DmxData globalDmxBuffer) // data unused here
         {
             WriteDmxData(ref globalDmxBuffer);
         }
         
         private void WriteDmxData(ref DmxData buffer)
         {
-            try
+            // TODO: Once a feature turned off, send data that cancels these features in dmx buffer
+            if (UseMobileTruss && IsMobileTrussInitialized)
             {
-
-                // TODO: Once a feature turned off, send data that cancels these features in dmx buffer
-                if (UseMobileTruss && IsMobileTrussInitialized)
-                {
-                    MobileTruss.WriteDataToGlobalBuffer(ref mobileTrussPool, ref buffer);
-                }
-
-                if (UseMobileLight && IsMobileLightInitialized)
-                {
-                    MobileLight.WriteDataToGlobalBuffer(ref mobileLightPool, ref buffer);
-                }
-                
-                if (UsePyroDrone && IsPyroDroneInitialized)
-                {
-                    PyroDrone.WriteDataToGlobalBuffer(ref pyroDronePool, ref buffer);
-                }
-
-                if (UseLightingDrone && IsLightingDroneInitialized)
-                {
-                    LightingDrone.WriteDataToGlobalBuffer(ref lightingDronePool, ref buffer);
-                }
+                MobileTruss.WriteDataToGlobalBuffer(ref mobileTrussPool, ref buffer);
             }
-            catch (Exception e)
+
+            if (UseMobileLight && IsMobileLightInitialized)
             {
-                Debug.LogException(e);
-                throw;
+                MobileLight.WriteDataToGlobalBuffer(ref mobileLightPool, ref buffer);
+            }
+            
+            if (UsePyroDrone && IsPyroDroneInitialized)
+            {
+                PyroDrone.WriteDataToGlobalBuffer(ref pyroDronePool, ref buffer);
+            }
+
+            if (UseLightingDrone && IsLightingDroneInitialized)
+            {
+                LightingDrone.WriteDataToGlobalBuffer(ref lightingDronePool, ref buffer);
             }
         }
     }

@@ -45,22 +45,20 @@ namespace Unity_DMX.Core
 
         public void InitializeSocket()
         {
-            Debug.Log($"'{Prefix}' '{remotePort}' is " + ServerOrClient);
             socket = new ArtNetSocket(remotePort);
             socket.NewPacket += OnNewPacketReceived;
             
+            var address = NetworkUtility.FindFromHostName(remoteIp);
             if (isServer) // !useBroadcast || !isServer
             {
                 // When you set the subnet mask, it will set the address you do not send to yourself (Convenient!）
                 // However, debugging becomes troublesome
-                socket.Open(NetworkUtility.FindFromHostName(remoteIp), remotePort, NetworkUtility.FindFromHostName(remoteIp));
+                socket.Open(address, remotePort, address);
             }
             else
             {
-                remote = new IPEndPoint(NetworkUtility.FindFromHostName(remoteIp), remotePort);
+                remote = new IPEndPoint(address, remotePort);
             }
-            
-            dmxBuffer.OnBufferUpdate += OnBufferUpdate;
         }
 
         #region ArtNet Toggle
@@ -70,6 +68,7 @@ namespace Unity_DMX.Core
             Debug.Log($"'{Prefix}' '{remotePort}' ({ServerOrClient}) was requested to be started.");
             if (IsArtNetOn) return;
             InitializeSocket();
+            dmxBuffer.OnBufferUpdateSubscribe(OnBufferUpdate);
             IsArtNetOn = true;
         }
 
@@ -82,13 +81,13 @@ namespace Unity_DMX.Core
             socket = null;
             remote = null;
             IsArtNetOn = false;
-            dmxBuffer.OnBufferUpdate -= OnBufferUpdate;
+            dmxBuffer.OnBufferUpdateUnSubscribe(OnBufferUpdate);
         }
         #endregion
 
         #region Buffer or DMX512 data
         private Dictionary<int, byte[]> dmxDataMap;
-        public event Action<short, DmxData, DmxData> OnDmxDataChanged = delegate { };
+        public event Action<short, DmxData> OnDmxDataChanged = delegate { };
         public void ForceBufferUpdate()
         {
             OnBufferUpdate(dmxBuffer.Buffer);
@@ -97,15 +96,12 @@ namespace Unity_DMX.Core
         private void OnBufferUpdate(DmxData buffer)
         {
             // Ensure we have at least one universe
-            dmxBuffer.Buffer.EnsureCapacity(512);
+            dmxBuffer.Buffer.EnsureCapacity(512); // Heavy
             
-            var universeCount = (short)(dmxBuffer.Buffer.Count / 512);
-            
-            for (short i = 0; i < universeCount; i++)
+            for (short i = 0; i < dmxBuffer.Buffer.UniverseCount; i++)
             {
-                var universeBuffer = BufferUtility.TakeUniverseFromGlobalBuffer(i, dmxBuffer.Buffer);
-                OnDmxDataChanged?.Invoke(i, universeBuffer, dmxBuffer.Buffer);
-                SendDmxData(i);
+                OnDmxDataChanged?.Invoke(i, dmxBuffer.Buffer);
+                SendDmxData(ref i);
             }
         }
         #endregion
@@ -143,8 +139,8 @@ namespace Unity_DMX.Core
                 dmxBuffer.Buffer.EnsureCapacity((packet.Universe + 1) * 512);
                 BufferUtility.WriteDmxToGlobalBuffer(ref dmxBuffer.Buffer, ref packet, (universe, data) =>
                 {
-                    OnDmxDataChanged?.Invoke(universe, data, dmxBuffer.Buffer);
-                    SendDmxData(universe);
+                    OnDmxDataChanged?.Invoke(universe, dmxBuffer.Buffer);
+                    SendDmxData(ref universe);
                 });
             }
             catch (Exception exception)
@@ -157,12 +153,12 @@ namespace Unity_DMX.Core
         /// Send universe buffer if we are redirecting packets.
         /// </summary>
         /// <param name="universe"></param>
-        private void SendDmxData(short universe)
+        private void SendDmxData(ref short universe)
         {
             if (!redirectPackets) return;
             // TODO: look into comparing redirectTo component in a different way (optimization)
             if (redirectTo == null) return;
-            BufferUtility.SendUniverseFromGlobalBuffer(redirectTo, universe, dmxBuffer.Buffer);
+            BufferUtility.SendUniverseFromGlobalBuffer(ref redirectTo, ref universe, ref dmxBuffer.Buffer);
         }
         
         public void Send(short universe, DmxData dmxData)

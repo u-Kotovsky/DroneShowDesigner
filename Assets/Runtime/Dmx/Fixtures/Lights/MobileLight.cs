@@ -54,7 +54,6 @@ namespace Runtime.Dmx.Fixtures.Lights
             for (int i = 0; i < pool.Length; i++)
             {
                 Spawn(ref pool, ref i, GlobalDmxChannelOffset, out fixture);
-                fixture.spawnManager = spawnManager;
             }
             
             Debug.Log($"'{Prefix}' {pool.Length} mobile lights are instanced");
@@ -75,21 +74,14 @@ namespace Runtime.Dmx.Fixtures.Lights
         
         public static void WriteDataToGlobalBuffer(ref MobileLight[] pool, ref DmxData globalDmxBuffer)
         {
+            globalDmxBuffer.EnsureCapacity(GlobalDmxChannelOffset + (pool.Length * 6));
             foreach (var fixture in pool)
             {
-                var data = new List<byte>(fixture.GetDmxData());
-
-                globalDmxBuffer.EnsureCapacity(fixture.globalChannelStart + data.Count);
-                globalDmxBuffer.SetRange(fixture.globalChannelStart, data);
+                globalDmxBuffer.SetRange(fixture.globalChannelStart, fixture.GetDmxData());
             }
 
-            WriteSpecialData(globalDmxBuffer);
-        }
-
-        private static void WriteSpecialData(DmxData buffer)
-        {
             // 1229 206 16 Way Selector. 0 = No Action; 1 = Hide Search Light mesh [lights can still function]; Rest undefined.
-            buffer.EnsureCapacity(1229 + 1);
+            globalDmxBuffer.EnsureCapacity(1229 + 1);
             //buffer.Set(1229, 0);
         }
         
