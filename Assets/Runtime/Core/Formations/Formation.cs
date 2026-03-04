@@ -35,7 +35,7 @@ namespace Runtime.Core.Formations
                 {
                     var point = points[i];
 
-                    if (point is null)
+                    if (point == null)
                     {
                         drone.localPosition = Vector3.zero;
                         if (ld is not null) ld.Color = Color.black;

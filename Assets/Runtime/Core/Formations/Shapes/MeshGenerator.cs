@@ -33,6 +33,7 @@ namespace Runtime.Core.Formations.Shapes
                 return;
             }
             
+            
             vertices = new Vector3[mesh.vertices.Length];
             
             for (var i = 0; i < vertices.Length; i++)
@@ -44,7 +45,7 @@ namespace Runtime.Core.Formations.Shapes
         public bool GeneratePoint(int index, out Vector3 point)
         {
             TryBakeMesh();
-            if (mesh is null || vertices.Length < count)
+            if (mesh is null || index > count)
             {
                 point = Vector3.zero;
                 return false;
@@ -78,8 +79,10 @@ namespace Runtime.Core.Formations.Shapes
         
             for (int i = 0; i < count; i++)
             {
-                GeneratePoint(i, out var position);
-                pointList.Add(position);
+                if (GeneratePoint(i, out var position))
+                {
+                    pointList.Add(position);
+                }
             }
         
             points = pointList.ToArray();
@@ -89,7 +92,7 @@ namespace Runtime.Core.Formations.Shapes
 #if UNITY_EDITOR
         public void DrawInspector()
         {
-            if (vertices == null && mesh != null)
+            if (mesh != null && (vertices == null || vertices.Length == 0))
             {
                 TryBakeMesh(true);
             }
