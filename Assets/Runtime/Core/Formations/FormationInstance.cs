@@ -11,6 +11,8 @@ namespace Runtime.Core.Formations
 
         public bool preview = true;
         public float previewSize = .2f;
+        
+        // TODO: Object exclusion by colliders or something.
 
         private void OnDrawGizmosSelected()
         {
