@@ -29,7 +29,7 @@ namespace Runtime.UI
         
         public static MainUIController Instance { get; private set; }
 
-        private void Awake()
+        public void Initialize()
         {
             Instance = this;
             
@@ -183,13 +183,6 @@ namespace Runtime.UI
         
         public event Action OnDeconstructUI = delegate { };
         public event Action OnUpdate = delegate { };
-
-        private void Start()
-        {
-            SettingsUI.Poke();
-            SettingsUI.Load();
-            TimelineUI.Poke();
-        }
 
         private void Update()
         {

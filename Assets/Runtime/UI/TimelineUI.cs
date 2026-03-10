@@ -159,13 +159,13 @@ namespace Runtime.UI
         private static string _pathToTimelineFile;
         private static void SaveCurrentFile()
         {
-            Debug.Log($"'{Prefix}' Saving current file as '{_pathToTimelineFile}'");
+            //Debug.Log($"'{Prefix}' Saving current file as '{_pathToTimelineFile}'");
             TimelineService.Save(_pathToTimelineFile);
         }
 
         private static void SaveAsFile()
         {
-            Debug.Log($"'{Prefix}' Saving new file as '{_pathToTimelineFile}'");
+            //Debug.Log($"'{Prefix}' Saving new file as '{_pathToTimelineFile}'");
             // TODO: Select where to save popup
             TimelineService.Save(_pathToTimelineFile);
         }
@@ -174,7 +174,7 @@ namespace Runtime.UI
         {
             try
             {
-                Debug.Log($"'{Prefix}' Loading from file '{_pathToTimelineFile}'");
+                //Debug.Log($"'{Prefix}' Loading from file '{_pathToTimelineFile}'");
                 // TODO: Select what to load popup
                 TimelineService.Load(_pathToTimelineFile);
             }

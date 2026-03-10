@@ -1,3 +1,4 @@
+using System;
 using Runtime.Dmx.Fixtures.Drones;
 using Runtime.Dmx.Fixtures.Lights;
 using Runtime.Dmx.Fixtures.Truss;
@@ -15,7 +16,6 @@ namespace Runtime.Dmx.Fixtures
         public SplineContainer splineContainer;
 
         private bool useInternalRender = false;
-
         public bool UseInternalRender
         {
             get => useInternalRender;
@@ -72,10 +72,13 @@ namespace Runtime.Dmx.Fixtures
             PyroDrone.InitializePrefab(() =>
             {
                 PyroDrone.Spawn(this, ref pyroDronePool, ref pyroDroneSpawnCount);
-                TogglePool(pyroDronePool, false);
                 IsPyroDroneInitialized = true;
+                CheckForFixturesInitialized();
             });
         }
+        
+        public event Action<LightingDrone[]> OnLightingDronesEnabled;
+        public event Action<LightingDrone[]> OnLightingDronesDisabled;
         
         [Header("Lighting Drone Spawn Settings")]
         public int lightingDroneSpawnCount = 1000;
@@ -89,6 +92,14 @@ namespace Runtime.Dmx.Fixtures
             {
                 TogglePool(lightingDronePool, value);
                 useLightingDrone = value;
+                if (value)
+                {
+                    OnLightingDronesEnabled?.Invoke(lightingDronePool);
+                }
+                else
+                {
+                    OnLightingDronesDisabled?.Invoke(lightingDronePool);
+                }
             }
         }
         private void InitializeLightingDrones()
@@ -97,8 +108,7 @@ namespace Runtime.Dmx.Fixtures
             {
                 LightingDrone.Spawn(this, ref lightingDronePool, ref lightingDroneSpawnCount, ref splineContainer);
                 IsLightingDroneInitialized = true;
-                
-                TogglePool(lightingDronePool, false);
+                CheckForFixturesInitialized();
             });
         }
         
@@ -121,8 +131,8 @@ namespace Runtime.Dmx.Fixtures
             MobileTruss.InitializePrefab(() =>
             {
                 MobileTruss.Spawn(this, ref mobileTrussPool, ref mobileTrussSpawnCount);
-                TogglePool(mobileTrussPool, false);
                 IsMobileTrussInitialized = true;
+                CheckForFixturesInitialized();
             });
         }
 
@@ -145,21 +155,50 @@ namespace Runtime.Dmx.Fixtures
             MobileLight.InitializePrefab(() =>
             {
                 MobileLight.Spawn(this, ref mobileLightPool, ref mobileLightSpawnCount);
-                TogglePool(mobileLightPool, false);
                 IsMobileLightInitialized = true;
+                CheckForFixturesInitialized();
             });
         }
 
         private void TogglePool(Component[] pool, bool active)
         {
             foreach (var obj in pool)
-                if (obj != null) obj.gameObject.SetActive(active);
+            {
+                if (obj == null) continue;
+                
+                obj.gameObject.SetActive(active);
+            }
+        }
+
+        public event Action OnFixturesInitialized = delegate { };
+
+        private void CheckForFixturesInitialized()
+        {
+            if (IsMobileTrussInitialized && IsMobileLightInitialized && IsPyroDroneInitialized &&
+                IsLightingDroneInitialized)
+            {
+                OnFixturesInitialized?.Invoke();
+            }
         }
         
-        public void Awake()
+        private static FixtureSpawnManager _instance;
+        public static FixtureSpawnManager Instance => _instance;
+
+        private void Awake()
         {
-            dmxController.OnDmxDataChanged += OnDmxDataChanged;
+            if (_instance != null)
+            {
+                throw new Exception("Another instance present.");
+            }
             
+            _instance = this;
+            
+            dmxController.OnDmxDataChanged += OnDmxDataChanged;
+        }
+
+        public void Initialize()
+        {
+            Debug.Log("Initialize fixtures");
             InitializeMobileTruss();
             InitializeMobileLight();
             InitializePyroDrones();

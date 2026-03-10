@@ -87,7 +87,7 @@ namespace Runtime.Dmx.Fixtures.Drones
                 Spawn(ref pool, ref i, GlobalDmxChannelOffset, out _);
             }
                 
-            Debug.Log($"'{Prefix}' {pool.Length} pyro drones are instanced");
+            //Debug.Log($"'{Prefix}' {pool.Length} pyro drones are instanced");
 
             SetPreset(pool, PyroDronePresetManager.presets[0]);
         }

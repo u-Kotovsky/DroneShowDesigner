@@ -49,14 +49,13 @@ namespace Runtime.Dmx.Fixtures.Lights
         {
             if (_internalPool == null) _internalPool = new GameObject("MobileLightPool");
             pool = new MobileLight[count];
-            MobileLight fixture = null;
 
             for (int i = 0; i < pool.Length; i++)
             {
-                Spawn(ref pool, ref i, GlobalDmxChannelOffset, out fixture);
+                Spawn(ref pool, ref i, GlobalDmxChannelOffset, out _);
             }
             
-            Debug.Log($"'{Prefix}' {pool.Length} mobile lights are instanced");
+            //Debug.Log($"'{Prefix}' {pool.Length} mobile lights are instanced");
 
             SetPreset(pool, MobileLightPresetManager.presets[0]);
         }

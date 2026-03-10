@@ -88,11 +88,12 @@ namespace Runtime.Core.Formations
         {
             RemoveGenerated();
         
-            component.root = new GameObject("root").transform;
+            component.root = new GameObject("rt-" + component.gameObject.name).transform;
             component.root.SetParent(component.transform);
             component.root.localPosition = Vector3.zero;
             component.root.localRotation = Quaternion.identity;
             component.root.localScale = Vector3.one;
+            
         
             component.shapeGenerator.Generate(out var positions);
         
@@ -105,6 +106,9 @@ namespace Runtime.Core.Formations
                 
                 component.points.Add(point.transform);
             }
+            
+            var formation = component.root.gameObject.AddComponent<Formation>();
+            formation.points = component.points.ToArray();
         }
 
         private void InitializeGenerator(bool forceReplace = false)

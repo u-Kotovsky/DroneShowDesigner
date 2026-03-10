@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Runtime.Core.Formations
 {
-    public class FormationGizmo
+    public abstract class FormationGizmo
     {
         public static void DrawPoints(Vector3[] points, Vector3 sizeOfDrone, Color directionColor, Color pointColor, bool directionGizmo, bool pointGizmo)
         {

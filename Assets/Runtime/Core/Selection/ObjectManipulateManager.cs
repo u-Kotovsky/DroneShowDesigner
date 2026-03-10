@@ -24,7 +24,7 @@ namespace Runtime.Core.Selection
         private ObjectAxis moveAxis = ObjectAxis.Screen;
         private ObjectAxis rotateAxis = ObjectAxis.Screen;
 
-        private void Start()
+        public void Initialize()
         {
             FixtureSelectionManager.Instance.OnObjectDeselected += OnDeselected;
         }

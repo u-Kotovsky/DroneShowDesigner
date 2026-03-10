@@ -51,10 +51,10 @@ namespace Runtime.Dmx.Fixtures.Truss
         {
             _internalPool ??= new GameObject("MobileTrussPool");
             pool = new MobileTruss[count];
-            MobileTruss fixture = null;
 
             for (int i = 0; i < pool.Length; i++)
             {
+                MobileTruss fixture = null;
                 Spawn(ref pool, ref i, GlobalDmxChannelOffset, out fixture);
 
                 var nav = fixture.gameObject.AddComponent<MobileTrussNavigation>();
@@ -63,7 +63,7 @@ namespace Runtime.Dmx.Fixtures.Truss
                 nav.nextTrussPreset = 6;
             }
 
-            Debug.Log($"'{Prefix}' {pool.Length} mobile trusses are instanced");
+            //Debug.Log($"'{Prefix}' {pool.Length} mobile trusses are instanced");
 
             SetPreset(pool, MobileTrussPresetManager.trussPresets[6]);
         }

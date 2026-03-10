@@ -9,6 +9,7 @@ namespace Runtime.Core.Formations
     {
         [Header("Data")] 
         [SerializeReference]
+        [HideInInspector]
         public IShapeGenerator shapeGenerator;
         public int shapeGeneratorType = -1;
         public GameObject visual;
@@ -16,9 +17,6 @@ namespace Runtime.Core.Formations
         public List<Transform> points;
         public bool visualize = true;
         public bool affectTransform = true;
-
-        [Range(0, 1)]
-        public float weight = 1;
         
         [Header("Gizmo options")]
         public bool drawDirectionGizmos = true;

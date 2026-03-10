@@ -110,7 +110,7 @@ namespace Runtime.Dmx.Fixtures.Drones
                 Spawn(ref pool, ref i, GlobalDmxChannelOffset, out _);
             }
             
-            Debug.Log($"'{Prefix}' {pool.Length} lighting drones are instanced");
+            //Debug.Log($"'{Prefix}' {pool.Length} lighting drones are instanced");
         }
 
         private static void Spawn(ref LightingDrone[] pool, ref int index, int offset, out LightingDrone fixture)
