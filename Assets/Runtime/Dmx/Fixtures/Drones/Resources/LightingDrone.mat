@@ -31,6 +31,7 @@ Material:
     OriginalShader: .poiyomi/Poiyomi Pro URP
     OriginalShaderGUID: d30d29f3c7b703e47bb508ac02c9d611
     RenderType: Opaque
+    _ColorAnimated: 1
     _DecalBlendAlphaAnimated: 1
     _stripped_tex__ClothDFG: 76d65cbce584df7449699fb8406f60ea
     _stripped_tex__DistortionFlowTexture: 07f0a54a3a4e7754eabc8ced70d7b30c

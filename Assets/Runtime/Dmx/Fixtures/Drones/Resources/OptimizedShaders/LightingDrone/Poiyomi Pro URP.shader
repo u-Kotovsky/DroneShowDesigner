@@ -4305,8 +4305,8 @@ Shader "Hidden/Locked/.poiyomi/Poiyomi Pro URP/bf450ea00569415498ae85ee913a3fba"
 				#endif
 				poiFragData.baseColor = mainTexture.rgb;
 				#if !defined(POI_PASS_BASETWO) && !defined(POI_PASS_ADDTWO)
-				poiFragData.baseColor *= poiThemeColor(poiMods, float4(0,1,0.3503615,1).rgb, 0.0);
-				poiFragData.alpha = mainTexture.a * float4(0,1,0.3503615,1).a;
+				poiFragData.baseColor *= poiThemeColor(poiMods, _Color.rgb, 0.0);
+				poiFragData.alpha = mainTexture.a * _Color.a;
 				#else
 				if(_TwoPassOverrideFirstPassColor)
 				{
@@ -4315,8 +4315,8 @@ Shader "Hidden/Locked/.poiyomi/Poiyomi Pro URP/bf450ea00569415498ae85ee913a3fba"
 				}
 				else
 				{
-					poiFragData.baseColor *= poiThemeColor(poiMods, float4(0,1,0.3503615,1).rgb, 0.0);
-					poiFragData.alpha = mainTexture.a * float4(0,1,0.3503615,1).a;
+					poiFragData.baseColor *= poiThemeColor(poiMods, _Color.rgb, 0.0);
+					poiFragData.alpha = mainTexture.a * _Color.a;
 				}
 				#endif
 				if (2.0)
@@ -5098,8 +5098,8 @@ Shader "Hidden/Locked/.poiyomi/Poiyomi Pro URP/bf450ea00569415498ae85ee913a3fba"
 				poiCam.worldDirection.w = i.worldDir;
 				poiFragData.baseColor = mainTexture.rgb;
 				#if !defined(POI_PASS_BASETWO) && !defined(POI_PASS_ADDTWO)
-				poiFragData.baseColor *= poiThemeColor(poiMods, float4(0,1,0.3503615,1).rgb, 0.0);
-				poiFragData.alpha = mainTexture.a * float4(0,1,0.3503615,1).a;
+				poiFragData.baseColor *= poiThemeColor(poiMods, _Color.rgb, 0.0);
+				poiFragData.alpha = mainTexture.a * _Color.a;
 				#else
 				if(_TwoPassOverrideFirstPassColor)
 				{
@@ -5108,8 +5108,8 @@ Shader "Hidden/Locked/.poiyomi/Poiyomi Pro URP/bf450ea00569415498ae85ee913a3fba"
 				}
 				else
 				{
-					poiFragData.baseColor *= poiThemeColor(poiMods, float4(0,1,0.3503615,1).rgb, 0.0);
-					poiFragData.alpha = mainTexture.a * float4(0,1,0.3503615,1).a;
+					poiFragData.baseColor *= poiThemeColor(poiMods, _Color.rgb, 0.0);
+					poiFragData.alpha = mainTexture.a * _Color.a;
 				}
 				#endif
 				if (2.0)
@@ -5835,8 +5835,8 @@ Shader "Hidden/Locked/.poiyomi/Poiyomi Pro URP/bf450ea00569415498ae85ee913a3fba"
 				poiCam.worldDirection.w = i.worldDir;
 				poiFragData.baseColor = mainTexture.rgb;
 				#if !defined(POI_PASS_BASETWO) && !defined(POI_PASS_ADDTWO)
-				poiFragData.baseColor *= poiThemeColor(poiMods, float4(0,1,0.3503615,1).rgb, 0.0);
-				poiFragData.alpha = mainTexture.a * float4(0,1,0.3503615,1).a;
+				poiFragData.baseColor *= poiThemeColor(poiMods, _Color.rgb, 0.0);
+				poiFragData.alpha = mainTexture.a * _Color.a;
 				#else
 				if(_TwoPassOverrideFirstPassColor)
 				{
@@ -5845,8 +5845,8 @@ Shader "Hidden/Locked/.poiyomi/Poiyomi Pro URP/bf450ea00569415498ae85ee913a3fba"
 				}
 				else
 				{
-					poiFragData.baseColor *= poiThemeColor(poiMods, float4(0,1,0.3503615,1).rgb, 0.0);
-					poiFragData.alpha = mainTexture.a * float4(0,1,0.3503615,1).a;
+					poiFragData.baseColor *= poiThemeColor(poiMods, _Color.rgb, 0.0);
+					poiFragData.alpha = mainTexture.a * _Color.a;
 				}
 				#endif
 				if (2.0)
@@ -6575,8 +6575,8 @@ Shader "Hidden/Locked/.poiyomi/Poiyomi Pro URP/bf450ea00569415498ae85ee913a3fba"
 				poiCam.worldDirection.w = i.worldDir;
 				poiFragData.baseColor = mainTexture.rgb;
 				#if !defined(POI_PASS_BASETWO) && !defined(POI_PASS_ADDTWO)
-				poiFragData.baseColor *= poiThemeColor(poiMods, float4(0,1,0.3503615,1).rgb, 0.0);
-				poiFragData.alpha = mainTexture.a * float4(0,1,0.3503615,1).a;
+				poiFragData.baseColor *= poiThemeColor(poiMods, _Color.rgb, 0.0);
+				poiFragData.alpha = mainTexture.a * _Color.a;
 				#else
 				if(_TwoPassOverrideFirstPassColor)
 				{
@@ -6585,8 +6585,8 @@ Shader "Hidden/Locked/.poiyomi/Poiyomi Pro URP/bf450ea00569415498ae85ee913a3fba"
 				}
 				else
 				{
-					poiFragData.baseColor *= poiThemeColor(poiMods, float4(0,1,0.3503615,1).rgb, 0.0);
-					poiFragData.alpha = mainTexture.a * float4(0,1,0.3503615,1).a;
+					poiFragData.baseColor *= poiThemeColor(poiMods, _Color.rgb, 0.0);
+					poiFragData.alpha = mainTexture.a * _Color.a;
 				}
 				#endif
 				if (2.0)
@@ -7314,8 +7314,8 @@ Shader "Hidden/Locked/.poiyomi/Poiyomi Pro URP/bf450ea00569415498ae85ee913a3fba"
 				poiCam.worldDirection.w = i.worldDir;
 				poiFragData.baseColor = mainTexture.rgb;
 				#if !defined(POI_PASS_BASETWO) && !defined(POI_PASS_ADDTWO)
-				poiFragData.baseColor *= poiThemeColor(poiMods, float4(0,1,0.3503615,1).rgb, 0.0);
-				poiFragData.alpha = mainTexture.a * float4(0,1,0.3503615,1).a;
+				poiFragData.baseColor *= poiThemeColor(poiMods, _Color.rgb, 0.0);
+				poiFragData.alpha = mainTexture.a * _Color.a;
 				#else
 				if(_TwoPassOverrideFirstPassColor)
 				{
@@ -7324,8 +7324,8 @@ Shader "Hidden/Locked/.poiyomi/Poiyomi Pro URP/bf450ea00569415498ae85ee913a3fba"
 				}
 				else
 				{
-					poiFragData.baseColor *= poiThemeColor(poiMods, float4(0,1,0.3503615,1).rgb, 0.0);
-					poiFragData.alpha = mainTexture.a * float4(0,1,0.3503615,1).a;
+					poiFragData.baseColor *= poiThemeColor(poiMods, _Color.rgb, 0.0);
+					poiFragData.alpha = mainTexture.a * _Color.a;
 				}
 				#endif
 				if (2.0)

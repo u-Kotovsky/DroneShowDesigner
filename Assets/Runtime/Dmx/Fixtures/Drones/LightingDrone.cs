@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using Runtime.Core.Resources;
 using Unity_DMX.Core;
 using UnityEngine;
@@ -11,7 +10,7 @@ namespace Runtime.Dmx.Fixtures.Drones
     public class LightingDrone : BaseDrone
     {
         #region Color
-        private static readonly int BaseColor = Shader.PropertyToID("_BaseColor");
+        private static readonly int ColorId = Shader.PropertyToID("_Color");
         private byte r;
         private byte g;
         private byte b;
@@ -67,7 +66,7 @@ namespace Runtime.Dmx.Fixtures.Drones
             if (DroneRenderers == null) return;
             
             MaterialPropertyBlock propertyBlock = new MaterialPropertyBlock();
-            propertyBlock.SetColor(BaseColor, Color);
+            propertyBlock.SetColor(ColorId, Color);
             
             foreach (var droneRenderer in DroneRenderers)
             {
