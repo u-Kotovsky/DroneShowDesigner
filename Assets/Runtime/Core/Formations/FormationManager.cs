@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Runtime.Dmx.Fixtures;
 using Runtime.Dmx.Fixtures.Drones;
@@ -15,6 +16,8 @@ namespace Runtime.Core.Formations
     
         public List<Transform> drones;
         public List<LightingDrone> lightingDrones;
+
+        public bool placeDrones = false;
 
         private void Start()
         {
@@ -34,11 +37,21 @@ namespace Runtime.Core.Formations
             {
                 drones.Add(obj[i].transform);
                 lightingDrones.Add(obj[i]);
+
+                try
+                {
+                    obj[i].Color = Color.black;
+                }
+                catch (Exception e)
+                {
+                    Debug.LogException(e);
+                }
             }
         }
 
         private void Update()
         {
+            if (!placeDrones) return;
             int droneIndex = 0;
             
             for (var i = 0; i < formationInstances.Count; i++)
