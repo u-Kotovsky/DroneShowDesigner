@@ -1,5 +1,6 @@
 #if UNITY_EDITOR
 using UnityEditor;
+using UnityEngine;
 
 namespace Runtime.Core.Timeline
 {
@@ -13,7 +14,13 @@ namespace Runtime.Core.Timeline
         {
             base.OnInspectorGUI();
             
-            
+            var component = (TimelineKeyFrame)target;
+
+            if (GUILayout.Button("Regenerate Index Data"))
+            {
+                component.indexData.Clear();
+                component.RefreshFormationInstances();
+            }
         }
     }
 }

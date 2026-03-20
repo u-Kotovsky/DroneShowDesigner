@@ -29,7 +29,7 @@ namespace Runtime.Core.Timeline
             RefreshFormationInstances();
         }
 
-        private void RefreshFormationInstances()
+        public void RefreshFormationInstances()
         {
             formationInstances.Clear();
             foreach (Transform o in transform)

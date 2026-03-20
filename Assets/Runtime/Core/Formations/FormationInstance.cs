@@ -1,3 +1,6 @@
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 using UnityEngine;
 
 namespace Runtime.Core.Formations
@@ -17,6 +20,8 @@ namespace Runtime.Core.Formations
         private void OnDrawGizmosSelected()
         {
             if (!preview) return;
+            
+            if (targetFormation == null) return;
 
             for (var i = 0; i < targetFormation.points.Length; i++)
             {
@@ -26,4 +31,35 @@ namespace Runtime.Core.Formations
             }
         }
     }
+
+#if UNITY_EDITOR
+    [CustomEditor(typeof(FormationInstance))]
+    public class FormationInstanceEditor : Editor
+    {
+        public override void OnInspectorGUI()
+        {
+            base.OnInspectorGUI();
+            
+            var component = (FormationInstance)target;
+            
+            EditorGUILayout.Space();
+            EditorGUI.indentLevel++;
+            if (component == null)
+            {
+                EditorGUILayout.LabelField($"{component.GetType()} target is null");
+                return;
+            }
+
+            if (component.targetFormation == null)
+            {
+                EditorGUILayout.LabelField("Target Formation is null");
+                return;
+            }
+            
+            EditorGUILayout.LabelField("Debug info");
+            EditorGUILayout.LabelField("Point count: " + component.targetFormation.points.Length);
+            EditorGUI.indentLevel--;
+        }
+    }
+#endif
 }

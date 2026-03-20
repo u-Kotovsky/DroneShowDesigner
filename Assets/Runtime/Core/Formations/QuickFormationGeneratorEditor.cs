@@ -4,6 +4,7 @@ using System.Linq;
 using Runtime.Core.Formations.Shapes;
 using Runtime.Core.Resources;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -38,55 +39,20 @@ namespace Runtime.Core.Formations
                 return;
             }
 
-            if (component.shapeGenerator is null)
+            if (component.ShapeGenerator is null)
             {
                 return;
             }
         
-            component.shapeGenerator.Generate(out var points);
+            component.ShapeGenerator.Generate(out var points);
             if (component.affectTransform) component.ApplyTransform(points, component.transform);
 
             FormationGizmo.DrawPoints(points, sizeOfDrone, Color.red, Color.white, component.drawDirectionGizmos, component.drawPointGizmos);
         }
 
-        private void RemoveGenerated()
+        /*private void Generate()
         {
-            if (component.root == null) return;
-        
-            if (Application.isPlaying)
-            {
-                Destroy(component.root.gameObject);
-            }
-            else
-            {
-                DestroyImmediate(component.root.gameObject);
-            }
-                
-            component.points.Clear();
-        }
-
-        private void Visualize()
-        {
-            component.visualize = !component.visualize;
-            
-            for (var i = 0; i < component.points.Count; i++)
-            {
-                var point = component.points[i];
-
-                if (component.visualize)
-                {
-                    AddVisual(component.visual, point.transform);
-                }
-                else
-                {
-                    RemoveVisual(point.transform);
-                }
-            }
-        }
-
-        private void Generate()
-        {
-            RemoveGenerated();
+            component.RemoveGenerated();
         
             component.root = new GameObject("rt-" + component.gameObject.name).transform;
             component.root.SetParent(component.transform);
@@ -94,8 +60,7 @@ namespace Runtime.Core.Formations
             component.root.localRotation = Quaternion.identity;
             component.root.localScale = Vector3.one;
             
-        
-            component.shapeGenerator.Generate(out var positions);
+            component.ShapeGenerator.Generate(out var positions);
         
             for (var i = 0; i < positions.Length; i++)
             {
@@ -109,17 +74,17 @@ namespace Runtime.Core.Formations
             
             var formation = component.root.gameObject.AddComponent<Formation>();
             formation.points = component.points.ToArray();
-        }
+        }*/
 
         private void InitializeGenerator(bool forceReplace = false)
         {
-            if (component.shapeGenerator != null && !forceReplace)
+            if (component.ShapeGenerator != null && !forceReplace)
             {
                 return;
             }
         
-            var type = shapeGenerators[component.shapeGeneratorType];
-            component.shapeGenerator = Activator.CreateInstance(type) as IShapeGenerator;
+            var type = shapeGenerators[component.ShapeGeneratorType];
+            component.ShapeGenerator = Activator.CreateInstance(type) as IShapeGenerator;
         }
 
         private void OnEnable()
@@ -147,14 +112,14 @@ namespace Runtime.Core.Formations
             }
 
             EditorGUI.BeginChangeCheck();
-            component.shapeGeneratorType = EditorGUILayout.Popup("Shape Generator Type", component.shapeGeneratorType, shapeGeneratorNames.ToArray());
+            component.ShapeGeneratorType = EditorGUILayout.Popup("Shape Generator Type", component.ShapeGeneratorType, shapeGeneratorNames.ToArray());
             if (EditorGUI.EndChangeCheck())
             {
                 Debug.LogWarning("Types don't match. initialize generator.");
                 InitializeGenerator(true);
             }
 
-            if (component.shapeGenerator == null)
+            if (component.ShapeGenerator == null)
             {
                 Debug.LogError("Generator is null. Making new one.");
                 EditorGUILayout.LabelField("failed to load generator. Generator is null.", StyleUtility.LabelError);
@@ -164,50 +129,33 @@ namespace Runtime.Core.Formations
         
             EditorGUILayout.LabelField("Properties of generator");
             EditorGUI.indentLevel++;
-            component.shapeGenerator.DrawInspector();
+            component.ShapeGenerator.DrawInspector();
             EditorGUI.indentLevel--;
         
             if (GUILayout.Button("Remove"))
             {
-                RemoveGenerated();
+                component.ResetPointsRoot();
             }
 
             if (GUILayout.Button("Visualize"))
             {
-                Visualize();
+                component.Visualize();
             }
 
             if (GUILayout.Button("Generate"))
             {
-                Generate();
+                component.Generate();
             }
-        }
+            
+            EditorGUILayout.Space();
 
-        private static void AddVisual(GameObject visual, Transform source)
-        {
-            var visualPoint = Instantiate(visual, source);
-            visualPoint.name = "visual";
-            visualPoint.transform.localPosition = Vector3.zero;
-        }
-
-        private static void RemoveVisual(Transform source)
-        {
-            if (source.childCount == 0) return;
-
-            foreach (Transform o in source)
+            var col = GUI.color;
+            GUI.color = Color.red;
+            if (GUILayout.Button("Regenerate ALL"))
             {
-                if (o.name.Contains("visual"))
-                {
-                    if (Application.isPlaying)
-                    {
-                        Destroy(o.gameObject);
-                    }
-                    else
-                    {
-                        DestroyImmediate(o.gameObject);
-                    }
-                }
+                QuickFormationGenerator.RegenerateAll();
             }
+            GUI.color = col;
         }
     }
 }

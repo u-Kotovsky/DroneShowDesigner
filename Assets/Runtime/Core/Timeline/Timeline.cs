@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Runtime.Core.Formations;
@@ -15,7 +16,11 @@ namespace Runtime.Core.Timeline
         
         public bool isRunning = false;
         public float time = 0;
+        public float maxtime = 0;
         public float timeScale = 1f;
+        public bool loop = false;
+
+        public bool drawTransitionLines = true;
         
         public void OnEnable()
         {
@@ -30,11 +35,35 @@ namespace Runtime.Core.Timeline
         private void RefreshKeyframes()
         {
             keyframes.Clear();
+            
             foreach (Transform o in transform)
             {
                 if (o.TryGetComponent<TimelineKeyFrame>(out var keyframe))
                 {
                     keyframes.Add(keyframe);
+
+                    var endtime = keyframe.time + keyframe.delay;
+                    if (endtime > maxtime)
+                    {
+                        maxtime = endtime;
+                    }
+                }
+            }
+        }
+
+        private void OnDrawGizmosSelected()
+        {
+            if (!drawTransitionLines) return;
+            
+            for (var i = 0; i < keyframes.Count; i++)
+            {
+                var keyframe = keyframes[i];
+
+                for (var j = 0; j < keyframe.indexData.Count; j++)
+                {
+                    //var data = keyframe.indexData[j];
+                    
+                    // TODO: preview transition
                 }
             }
         }
@@ -50,6 +79,18 @@ namespace Runtime.Core.Timeline
         public void CalculateTimeline(float timeStep)
         {
             time += timeStep * timeScale;
+
+            if (time >= maxtime && loop)
+            {
+                if (loop)
+                {
+                    time = 0;
+                }
+                else
+                {
+                    return;
+                }
+            }
 
             if (!GetTargetKeyframeIndex(out int leftIndex, out int rightIndex))
                 return;
@@ -94,7 +135,7 @@ namespace Runtime.Core.Timeline
                 var hasRight = rightPoints.TryGetValue(i, out var rightData);
                 
                 // TODO: separate color state
-                ld.Color = t == 0 ? Color.white * 0.5f : Color.black;
+                ld.Color = t == 0 ? Color.white * 0.25f : Color.black;
                 
                 Vector3 targetPosition;
                 if (hasLeft && hasRight)

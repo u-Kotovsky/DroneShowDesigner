@@ -16,6 +16,8 @@ namespace Runtime.Core.Formations
             
             for (var i = 0; i < component.formationInstances.Count; i++)
             {
+                if (component.formationInstances[i] == null) continue;
+                if (component.formationInstances[i].targetFormation == null) continue;
                 points += component.formationInstances[i].targetFormation.points.Length;
             }
             

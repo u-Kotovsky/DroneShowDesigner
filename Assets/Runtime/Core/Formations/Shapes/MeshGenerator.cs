@@ -19,7 +19,7 @@ namespace Runtime.Core.Formations.Shapes
         private Vector3[] vertices;
         private bool isBaked = false;
 
-        private void TryBakeMesh(bool forceRebake = false) // kinda
+        private void TryBakeMesh(bool forceRebake = false, bool overrideCount = false) // kinda
         {
             if (!isBaked && !forceRebake)
             {
@@ -35,6 +35,8 @@ namespace Runtime.Core.Formations.Shapes
             
             
             vertices = new Vector3[mesh.vertices.Length];
+            
+            if (overrideCount) count = vertices.Length;
             
             for (var i = 0; i < vertices.Length; i++)
             {
@@ -53,6 +55,11 @@ namespace Runtime.Core.Formations.Shapes
 
             if (fastMode)
             {
+                if (vertices == null)
+                {
+                    point = Vector3.zero;
+                    return false;
+                }
                 if (index >= vertices.Length)
                 {
                     point = Vector3.zero;
@@ -104,10 +111,11 @@ namespace Runtime.Core.Formations.Shapes
             if (EditorGUI.EndChangeCheck())
             {
                 isBaked = false;
-                TryBakeMesh(true);
+                TryBakeMesh(true, true);
             }
             
-            EditorGUILayout.LabelField($"Vertex count: {vertices.Length}"); // null
+            if (vertices != null) EditorGUILayout.LabelField($"Vertex count: {vertices.Length}"); // null
+            
             count = EditorGUILayout.IntField(nameof(count), count);
             offset = EditorGUILayout.IntField(nameof(offset), offset);
         }
