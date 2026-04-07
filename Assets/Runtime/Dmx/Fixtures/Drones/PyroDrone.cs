@@ -62,8 +62,7 @@ namespace Runtime.Dmx.Fixtures.Drones
         #region Static
         private static GameObject _pyroDronePrefab;
         private static GameObject _internalPool;
-        private const int GlobalDmxChannelOffset = (512 * 5) + 321 - 1; // 2880 is start for FX drone // Offset is probably correct (maybe?)
-        //(512 * 5) + 41 - 1; // 2600 is start for pyro drone.
+        private const int GlobalDmxChannelOffset = 2600; //(512 * 5) + 41 - 1; // 2600 is start for pyro drone.
         private const string Prefix = "PyroDrone";
         
         public static void InitializePrefab(Action callback = null)
@@ -122,7 +121,9 @@ namespace Runtime.Dmx.Fixtures.Drones
             }
 
             globalDmxBuffer.EnsureCapacity(2599);
-            globalDmxBuffer.Set(2598, 255); // 2598 // Enable FX Drone
+            //globalDmxBuffer.Set(2597, 255); //mute fx volume
+            globalDmxBuffer.Set(2598, 255); //enable fx drone
+            globalDmxBuffer.Set(2599, 0); //enable fx drone
         }
         #endregion
     }

@@ -55,12 +55,7 @@ namespace Runtime.Core.Formations.Shapes
 
             if (fastMode)
             {
-                if (vertices == null)
-                {
-                    point = Vector3.zero;
-                    return false;
-                }
-                if (index >= vertices.Length)
+                if (vertices == null || index >= vertices.Length)
                 {
                     point = Vector3.zero;
                     return false;

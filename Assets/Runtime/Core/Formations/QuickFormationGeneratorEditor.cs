@@ -50,32 +50,6 @@ namespace Runtime.Core.Formations
             FormationGizmo.DrawPoints(points, sizeOfDrone, Color.red, Color.white, component.drawDirectionGizmos, component.drawPointGizmos);
         }
 
-        /*private void Generate()
-        {
-            component.RemoveGenerated();
-        
-            component.root = new GameObject("rt-" + component.gameObject.name).transform;
-            component.root.SetParent(component.transform);
-            component.root.localPosition = Vector3.zero;
-            component.root.localRotation = Quaternion.identity;
-            component.root.localScale = Vector3.one;
-            
-            component.ShapeGenerator.Generate(out var positions);
-        
-            for (var i = 0; i < positions.Length; i++)
-            {
-                var position = positions[i];
-                var point = new GameObject($"Point #{i}");
-                point.transform.SetParent(component.root);
-                point.transform.localPosition = position;
-                
-                component.points.Add(point.transform);
-            }
-            
-            var formation = component.root.gameObject.AddComponent<Formation>();
-            formation.points = component.points.ToArray();
-        }*/
-
         private void InitializeGenerator(bool forceReplace = false)
         {
             if (component.ShapeGenerator != null && !forceReplace)

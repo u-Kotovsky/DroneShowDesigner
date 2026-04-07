@@ -15,20 +15,31 @@ namespace Runtime.Core.Formations
         public bool preview = true;
         public float previewSize = .2f;
         
+        public Color targetColor = Color.white;
+        
         // TODO: Object exclusion by colliders or something.
 
         private void OnDrawGizmosSelected()
         {
             if (!preview) return;
-            
+            DrawDronesGizmos();
+        }
+
+        public void DrawDronesGizmos()
+        {
             if (targetFormation == null) return;
+            
+            var color = Gizmos.color;
 
             for (var i = 0; i < targetFormation.points.Length; i++)
             {
                 var point = targetFormation.points[i];
                 var position = transform.TransformPoint(point.localPosition);
+                Gizmos.color = targetColor;
                 Gizmos.DrawWireSphere(position, previewSize);
             }
+            
+            Gizmos.color = color;
         }
     }
 

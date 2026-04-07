@@ -4,6 +4,39 @@ namespace Runtime.Core.Formations
 {
     public abstract class FormationGizmo
     {
+        public static void DrawDirectionalPoints(Vector3[] points, Quaternion[] directions, Vector3 sizeOfDrone, Color directionColor, Color pointColor)
+        {
+            for (var i = 0; i < points.Length; i++)
+            {
+                var position = points[i];
+                var direction = directions[i];
+                
+                if (points.Length == 1)
+                {
+                    // TODO: directional points (for pyro-drones)
+                    //Debug.DrawLine(position, direction, directionColor);
+                    continue;
+                }
+                
+                Vector3 nextPosition;
+
+                if (i < points.Length - 1)
+                {
+                    nextPosition = points[i + 1];
+                }
+                else
+                {
+                    nextPosition = points[0];
+                }
+            
+                Debug.DrawLine(position, nextPosition, directionColor);
+
+                Gizmos.color = pointColor;
+                Gizmos.DrawWireCube(position, sizeOfDrone);
+                Gizmos.color = Color.white;
+            }
+        }
+        
         public static void DrawPoints(Vector3[] points, Vector3 sizeOfDrone, Color directionColor, Color pointColor, bool directionGizmo, bool pointGizmo)
         {
             for (var i = 0; i < points.Length; i++)

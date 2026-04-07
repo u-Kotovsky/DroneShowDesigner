@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Runtime.Core.Formations;
@@ -14,40 +13,40 @@ namespace Runtime.Core.Timeline
         
         public List<TimelineKeyFrame> keyframes = new List<TimelineKeyFrame>();
         
-        public bool isRunning = false;
-        public float time = 0;
-        public float maxtime = 0;
-        public float timeScale = 1f;
-        public bool loop = false;
+        public Timer Timer = new Timer();
 
         public bool drawTransitionLines = true;
         
-        public void OnEnable()
-        {
-            RefreshKeyframes();
-        }
+        public void OnEnable() => RefreshKeyframes();
         
-        public void OnValidate()
-        {
-            RefreshKeyframes();
-        }
-
+        public void OnValidate() => RefreshKeyframes();
+        
         private void RefreshKeyframes()
         {
             keyframes.Clear();
             
+            float maxTime = 0;
+            
             foreach (Transform o in transform)
             {
-                if (o.TryGetComponent<TimelineKeyFrame>(out var keyframe))
-                {
-                    keyframes.Add(keyframe);
+                if (!o.TryGetComponent<TimelineKeyFrame>(out var keyframe)) continue;
+                
+                keyframes.Add(keyframe);
 
-                    var endtime = keyframe.time + keyframe.delay;
-                    if (endtime > maxtime)
-                    {
-                        maxtime = endtime;
-                    }
+                var endTime = keyframe.time + keyframe.delay;
+                if (endTime > maxTime)
+                {
+                    maxTime = endTime;
                 }
+            }
+            
+            Timer.MaxTime = maxTime;
+            
+            dronePositions = new Vector3[formationManager.drones.Count];
+            segmentStartPositions = new Vector3[formationManager.drones.Count];
+            for (int i = 0; i < dronePositions.Length; i++)
+            {
+                dronePositions[i] = Vector3.zero;
             }
         }
 
@@ -70,21 +69,23 @@ namespace Runtime.Core.Timeline
 
         private void FixedUpdate()
         {
-            if (!isRunning) return;
+            if (Timer == null || !Timer.IsRunning) return;
 
             CalculateTimeline(Time.fixedDeltaTime);
         }
         
         private Vector3[] dronePositions;
+        private Vector3[] segmentStartPositions;
+        private int prevLeft = -1, prevRight = -1;
         public void CalculateTimeline(float timeStep)
         {
-            time += timeStep * timeScale;
+            Timer.Tick(timeStep);
 
-            if (time >= maxtime && loop)
+            if (Timer.IsOvertime)
             {
-                if (loop)
+                if (Timer.IsLoop)
                 {
-                    time = 0;
+                    Timer.CurrentTime = 0;
                 }
                 else
                 {
@@ -103,7 +104,20 @@ namespace Runtime.Core.Timeline
             float t = 0;
             if (leftIndex != rightIndex && rightEffective > leftEffective)
             {
-                t = Mathf.Clamp01((time - leftEffective) / (rightEffective - leftEffective));
+                t = Mathf.Clamp01((Timer.CurrentTime - leftEffective) / (rightEffective - leftEffective));
+            }
+
+            // On segment change
+            if (leftIndex != prevLeft || rightIndex != prevRight)
+            {
+                for (int i = 0; i < formationManager.drones.Count; i++)
+                {
+                    var drone = formationManager.drones[i];
+                    if (drone != null) segmentStartPositions[i] = drone.position;
+                }
+                
+                prevLeft = leftIndex;
+                prevRight = rightIndex;
             }
 
             var leftPoints = new Dictionary<int, (Transform formationTransform, Vector3 localPos)>();
@@ -126,16 +140,14 @@ namespace Runtime.Core.Timeline
             for (var i = 0; i < formationManager.drones.Count; i++)
             {
                 var drone = formationManager.drones[i];
-                if (drone == null) 
-                    continue;
+                if (drone == null) continue;
                 
                 var ld = formationManager.lightingDrones[i];
 
                 var hasLeft = leftPoints.TryGetValue(i, out var leftData);
                 var hasRight = rightPoints.TryGetValue(i, out var rightData);
                 
-                // TODO: separate color state
-                ld.Color = t == 0 ? Color.white * 0.25f : Color.black;
+                ld.Color = t == 0 ? leftKeyframe.targetColor : Color.black;
                 
                 Vector3 targetPosition;
                 if (hasLeft && hasRight)
@@ -150,7 +162,10 @@ namespace Runtime.Core.Timeline
                 }
                 else if (hasRight)
                 {
-                    targetPosition = rightData.formationTransform.TransformPoint(rightData.localPos);
+                    Vector3 rightWorld = rightData.formationTransform.TransformPoint(rightData.localPos);
+                    Vector3 startPos = segmentStartPositions[i];
+                    targetPosition = Vector3.Lerp(startPos, rightWorld, t);
+                    //targetPosition = rightData.formationTransform.TransformPoint(rightData.localPos);
                 }
                 else
                 {
@@ -158,6 +173,7 @@ namespace Runtime.Core.Timeline
                 }
                 
                 drone.localPosition = targetPosition;
+                dronePositions[i] = targetPosition;
             }
             
             // Clear things
@@ -177,7 +193,7 @@ namespace Runtime.Core.Timeline
             int currentIdx = -1;
             for (int i = 0; i < keyframes.Count; i++)
             {
-                if (keyframes[i].time <= time)
+                if (keyframes[i].time <= Timer.CurrentTime)
                     currentIdx = i;
             }
 
@@ -189,7 +205,7 @@ namespace Runtime.Core.Timeline
             }
 
             float holdEnd = keyframes[currentIdx].time + keyframes[currentIdx].delay;
-            if (time <= holdEnd) // Hold
+            if (Timer.CurrentTime <= holdEnd) // Hold
             {
                 left = currentIdx;
                 right = currentIdx;

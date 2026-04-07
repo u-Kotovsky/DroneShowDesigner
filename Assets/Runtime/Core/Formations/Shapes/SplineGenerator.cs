@@ -17,7 +17,7 @@ namespace Runtime.Core.Formations.Shapes
         public bool GeneratePoint(int index, out Vector3 point)
         {
             float t = (float)index / count;
-            if (splineContainer == null) // heavy check uh...
+            if (splineContainer == null)
             {
                 point = Vector3.zero;
                 return false;

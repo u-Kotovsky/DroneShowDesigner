@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Runtime.Core.Formations;
@@ -14,10 +15,23 @@ namespace Runtime.Core.Timeline
         public bool overrideIndexes;
         public int offset;
         public int length;
+
+        public Color targetColor;
         
         public List<FormationInstance> formationInstances = new List<FormationInstance>();
 
         public List<FormationIndexData> indexData = new List<FormationIndexData>();
+
+        /*private void OnDrawGizmosSelected()
+        {
+            var color = Gizmos.color;
+            Gizmos.color = targetColor;
+            foreach (var formationInstance in formationInstances)
+            {
+                formationInstance.DrawDronesGizmos();
+            }
+            Gizmos.color = color;
+        }*/
 
         private void OnEnable()
         {
